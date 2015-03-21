@@ -27,3 +27,11 @@ By now, I count 3 layers, but there may be more in the future.
 - Layer 7: the applicative layer. Here we are talking about ear, war, zip, html, css, ...
 
 **Flue** should be able to deploy any layer, and any composant of the layer.
+
+
+# Note
+This project is in developpement.
+It is a work in progress and a Feature Driven Developement.
+On top of that, I'm learning go (and the developement). 
+
+Be tolerant !@
