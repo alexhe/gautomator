@@ -30,8 +30,8 @@ By now, I count 3 layers, but there may be more in the future.
 
 # How to
 
-1) get a Go compiler
-2) go get github.com/owulveryck/flue
+* grab a Go compiler from https://golang.org
+* go get github.com/owulveryck/flue
 
 # tests and developement
 
@@ -45,4 +45,4 @@ This project is in developpement.
 It is a work in progress and a Feature Driven Developement.
 On top of that, I'm learning go (and the developement). 
 
-Be tolerant !@
+Be tolerant !
