@@ -1,5 +1,5 @@
 # flue
-A piece of code in go
+A distributed agentless configuration and management tool written in go
 
 This is my first project in Go.
 
