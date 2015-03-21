@@ -17,3 +17,13 @@ What **flue** should be someday:
 - Not too difficult to learn (I will tell you that in a few weeks)
 - A lot of library exists in the standard implementation
 
+# Principles
+
+I seperate the topology in layers.
+By now, I count 3 layers, but there may be more in the future.
+- Layer 1: the infrastructure layer. Here we are talking about os, ssh, users, ports and so on.
+- Layer 2: the product layer. Here we are talking about apache, nginx, weblogic, jboss, ...
+- Layer 3: the middleware layer. Here we are talking about applicative architecture: producer, consumer, database, webserver
+- Layer 7: the applicative layer. Here we are talking about ear, war, zip, html, css, ...
+
+**Flue** should be able to deploy any layer, and any composant of the layer.
