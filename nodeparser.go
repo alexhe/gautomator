@@ -1,4 +1,4 @@
-package main
+package flue
 
 import (
 	"encoding/json"

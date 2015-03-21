@@ -1,4 +1,4 @@
-package main
+package flue
 
 // http://mholt.github.io/json-to-go/
 type Roles struct {
