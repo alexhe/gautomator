@@ -28,6 +28,17 @@ By now, I count 3 layers, but there may be more in the future.
 
 **Flue** should be able to deploy any layer, and any composant of the layer.
 
+# How to
+
+1) get a Go compiler
+2) go get github.com/owulveryck/flue
+
+# tests and developement
+
+This work is developed on MacOS and FreeBSD.
+It will be tested as well on Linux.
+
+I will try to stick to pure go implementation to remain portable.
 
 # Note
 This project is in developpement.
