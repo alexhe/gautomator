@@ -12,12 +12,20 @@ import (
 )
 
 // RemoteCommand is the run parameters to be executed remotely
-type RemoteCommand struct {
+type RemoteCommandClient struct {
 	Cmd        string
 	Args       []string
 	Stdin      io.Writer
 	Stdout     io.Reader
 	Stderr     io.Reader
+	StatusChan libchan.Sender
+}
+type RemoteCommandServer struct {
+	Cmd        string
+	Args       []string
+	Stdin      io.Reader
+	Stdout     io.WriteCloser
+	Stderr     io.WriteCloser
 	StatusChan libchan.Sender
 }
 
@@ -56,7 +64,7 @@ func Server(socketName string) {
 
 				go func() {
 					for {
-						command := &RemoteCommand{}
+						command := &RemoteCommandServer{}
 						err := receiver.Receive(command)
 						if err != nil {
 							log.Print(err)
@@ -102,7 +110,7 @@ func Server(socketName string) {
 
 }
 
-func Client(command RemoteCommand, socketName string) int {
+func Client(command *RemoteCommandClient, socketName string) int {
 	var client net.Conn
 	var err error
 	client, err = net.Dial("unix", socketName)
@@ -118,7 +126,8 @@ func Client(command RemoteCommand, socketName string) int {
 		log.Fatal(err)
 	}
 
-	receiver, remoteSender := libchan.Pipe()
+	//	receiver, remoteSender := libchan.Pipe()
+	receiver, _ := libchan.Pipe()
 
 	err = sender.Send(command)
 	if err != nil {
