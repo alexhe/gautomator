@@ -126,8 +126,9 @@ func Client(command *RemoteCommandClient, socketName string) int {
 		log.Fatal(err)
 	}
 
-	//	receiver, remoteSender := libchan.Pipe()
-	receiver, _ := libchan.Pipe()
+	receiver, remoteSender := libchan.Pipe()
+	command.StatusChan = remoteSender
+	//receiver, _ := libchan.Pipe()
 
 	err = sender.Send(command)
 	if err != nil {
