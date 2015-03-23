@@ -20,7 +20,7 @@ What **flue** should be someday:
 # Principles
 
 I separate the topology in layers.
-By now, I count 3 layers, but there may be more in the future.
+By now, I count 4 layers, but there may be more in the future.
 - Layer 1: the infrastructure layer. Here we are talking about os, ssh, users, ports and so on.
 - Layer 2: the product layer. Here we are talking about apache, nginx, weblogic, jboss, ...
 - Layer 3: the middleware layer. Here we are talking about applicative architecture: producer, consumer, database, webserver
