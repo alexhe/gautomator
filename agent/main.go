@@ -4,15 +4,19 @@ import (
 	"github.com/owulveryck/flue"
 	"log"
 	"os"
+	"github.com/nu7hatch/gouuid"
 )
 
 func main() {
 	//	flue.ParseTopology()
 	//	flue.ParseNode()
+
 	if len(os.Args) < 2 {
-		log.Println("We are a server...")
+		uuid, err := uuid.NewV4()
+		log.Println("We are a server, uuid is: ", string(uuid[:]))
 		flue.Server("/tmp/mysocket.sock")
 	} else {
+	    uuid
 		log.Println("We are a client...")
 		command := &flue.RemoteCommandClient{
 			Cmd:    os.Args[1],
