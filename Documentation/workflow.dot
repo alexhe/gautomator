@@ -1,0 +1,28 @@
+digraph flue {
+
+    start -> "launched with -u=uuid";
+    "launched with -u=uuid" -> "create uuid" [label="no"];
+    "create uuid" -> "Check if we are client or server";
+    "launched with -u=uuid" -> "Check if we are client or server" [label="yes"];
+
+    "Check if we are client or server" -> "create a socket named uuid.sock" [label="server"];
+    "Check if we are client or server" -> "dial the socked named uuid.sock" [label="client"];
+
+    "create a socket named uuid.sock" -> "create a stack and add it as a channel on the socket";
+    "create a stack and add it as a channel on the socket" -> "Add the tasks to the stack";
+    "dial the socked named uuid.sock" -> "Parse command line arguments" ;
+    "Parse command line arguments"  -> "Display the tasks taken from the socket" [label="status"];
+    "Parse command line arguments"  -> "Parse the task list" [label="tasklist"];
+    "Parse the task list"  -> "Add the tasks to the stack"; 
+    "Parse the task list"  -> "Return the current status" ;
+    "create a stack and add it as a channel on the socket" -> "Run the tasks";
+    "Run the tasks" -> end;
+    "Return the current status" -> end;
+
+    node [shape=diamond,style=filled,color=lightgrey]; "Check if we are client or server"; "launched with -u=uuid"; 
+    start [shape=Mdiamond];
+    end [shape=Msquare];
+    label = "\n\nFlue workflow diagram";
+    fontsize=20;
+
+}
