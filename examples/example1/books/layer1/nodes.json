@@ -10,12 +10,12 @@
 		{
 		"path": "principal"
 		"driver": "ssh"
-		"arguments": "port=22;user==$user;hostname=localhost;keyfile=~/.ssh/id_rsa"
+		"arguments": "port=22;user=$user;hostname=localhost;keyfile=~/.ssh/id_rsa"
 		},
 	  {
 		"path": "admin"
 		"driver": "ssh"
-		"arguments": "port=22;user==admin;hostname=127.0.0.1;keyfile=~/.ssh/id_rsa"
+		"arguments": "port=22;user=admin;hostname=127.0.0.1;keyfile=~/.ssh/id_rsa"
 		}]
           "datasource": [
             {
@@ -24,7 +24,7 @@
             },
             {
               "driver": "FILE",
-              "path": "/livraison/mestokens.dico",
+              "path": "/delivery/mestokens.dico",
               "name": "password"
             }
           ]
@@ -60,7 +60,7 @@
             },
             {
               "driver": "FILE",
-              "path": "/livraison/mestokens.dico",
+              "path": "/delivery/mestokens.dico",
               "name": "password"
             }
           ]
