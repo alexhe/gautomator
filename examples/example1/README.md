@@ -30,3 +30,15 @@ We can install the product in a parrallel way, the topology is represented in th
 Then each role has a task list associated (see layer3/layer3.\*.tasks.dot).
 On a given node, **flue** will run locate from Layer0 what is the layer3 role associated, and then execute all the tasks.
 
+## Middle role (layer 5)
+- WebServer role is to server static pictures
+- Middleware is composed of two role: a producer and a consummer. When the setup task will be finished, we may have two weblogic domains and the weblogic stuff associated to run a portal instance (datasources, jms and co)
+- Database, as said previously is a dataguard architecture composed of a master and a slave
+
+The "container for static pictures" is an apache instance that can server static content. It may be installed at any moment.
+
+Due to the "Weblogic portal architecture" we shall setup the database first.
+
+See the layer5.topology.png for a representation
+
+
