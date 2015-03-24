@@ -1,28 +1,64 @@
 digraph flue {
 
-    start -> "launched with -u=uuid";
-    "launched with -u=uuid" -> "create uuid" [label="no"];
-    "create uuid" -> "Check if we are client or server";
-    "launched with -u=uuid" -> "Check if we are client or server" [label="yes"];
+	start -> "Parse commande line arguments";
+        /* status */
+	"Parse commande line arguments" -> "get the current runing status" [label="action=status"];
+        /* add */
+//	"Parse commande line arguments" -> "parse the task list" [label="action=add"];
+	"Parse commande line arguments" -> "-task on the command line?" [label="action=add"]; 
+	"-task on the command line?" -> "uuid?" [label="yes"]; 
+	"-task on the command line?" -> "end" [label="no"]; 
+	"uuid?" -> "agent_uuid running?" [label="yes"]; // We have passed a uuid on the CLI
+	"uuid?" -> "generate a uuid" [label="no"]; // no uuid on the CLI
+	"generate a uuid" -> "start a new server"; // no uuid on the CLI
+	"agent_uuid running?" -> "connect to the socket and read the channel" [label="yes"];
+	"agent_uuid running?" -> "start a new server" [label="no"];
+	"connect to the socket and read the channel" -> "parse the task list";
+	"parse the task list" -> "agent_uuid has the task done?";
+	"parse the task list" -> "agent_uuid has the task wip?";
+	"agent_uuid has the task done?" -> "return status done" [label="yes"];
+	"agent_uuid has the task wip?" -> "return status wip" [label="yes"];
+	"agent_uuid has the task done?" -> "add the task to the stack" [label="no"];
+	"agent_uuid has the task wip?" -> "add the task to the stack" [label="no"];
+	"add the task to the stack" -> "return status added";
+	"return status added" -> end;
+	"return status done" -> end;
+	"return status wip" -> end;
 
-    "Check if we are client or server" -> "create a socket named uuid.sock" [label="server"];
-    "Check if we are client or server" -> "dial the socked named uuid.sock" [label="client"];
+/* Start a new agent */
+	"start a new server" -> "Create a socket and a channel in listen mode";
+	"Create a socket and a channel in listen mode" -> "parse the task list";
 
-    "create a socket named uuid.sock" -> "create a stack and add it as a channel on the socket";
-    "create a stack and add it as a channel on the socket" -> "Add the tasks to the stack";
-    "dial the socked named uuid.sock" -> "Parse command line arguments" ;
-    "Parse command line arguments"  -> "Display the tasks taken from the socket" [label="status"];
-    "Parse command line arguments"  -> "Parse the task list" [label="tasklist"];
-    "Parse the task list"  -> "Add the tasks to the stack"; 
-    "Parse the task list"  -> "Return the current status" ;
-    "create a stack and add it as a channel on the socket" -> "Run the tasks";
-    "Run the tasks" -> end;
-    "Return the current status" -> end;
+        /* list */
+	"Parse commande line arguments" -> "display all existing socket (running or dead)" [label="action=list"];
 
-    node [shape=diamond,style=filled,color=lightgrey]; "Check if we are client or server"; "launched with -u=uuid"; 
-    start [shape=Mdiamond];
-    end [shape=Msquare];
-    label = "\n\nFlue workflow diagram";
-    fontsize=20;
+        /* wipe */
+	"Parse commande line arguments" -> "wipe a socket" [label="action=wipe"];
+/*
+	start -> "launched with -u=uuid";
+	"launched with -u=uuid" -> "create uuid" [label="no"];
+	"create uuid" -> "Check if we are client or server";
+	"launched with -u=uuid" -> "Check if we are client or server" [label="yes"];
+
+	"Check if we are client or server" -> "create a socket named uuid.sock" [label="server"];
+	"Check if we are client or server" -> "dial the socked named uuid.sock" [label="client"];
+
+	"create a socket named uuid.sock" -> "create a stack and add it as a channel on the socket";
+	"create a stack and add it as a channel on the socket" -> "Add the tasks to the stack";
+	"dial the socked named uuid.sock" -> "Parse command line arguments" ;
+	"Parse command line arguments"  -> "Display the tasks taken from the socket" [label="status"];
+	"Parse command line arguments"  -> "Parse the task list" [label="tasklist"];
+	"Parse the task list"  -> "Add the tasks to the stack"; 
+	"Parse the task list"  -> "Return the current status" ;
+	"create a stack and add it as a channel on the socket" -> "Run the tasks";
+	"Run the tasks" -> end;
+	"Return the current status" -> end;
+
+	node [shape=diamond,style=filled,color=lightgrey]; "Check if we are client or server"; "launched with -u=uuid"; 
+*/
+	start [shape=Mdiamond];
+	end [shape=Msquare];
+	label = "\n\nFlue workflow diagram";
+	fontsize=20;
 
 }
