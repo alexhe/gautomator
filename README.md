@@ -21,10 +21,10 @@ What **flue** should be someday:
 
 I separate the topology in layers.
 By now, I count 4 layers, but there may be more in the future.
-- Layer 0: the infrastructure layer. Here we are talking about os, ssh, users, ports and so on.
-- Layer 3: the product layer. Here we are talking about apache, nginx, weblogic, jboss, ...
-- Layer 5: the middleware layer. Here we are talking about applicative architecture: producer, consumer, database, webserver
-- Layer 7: the applicative layer. Here we are talking about ear, war, zip, html, css, ...
+- Layer 0: the infrastructure layer. Here we are talking about `os`, `ssh`, `users`, `ports` and so on.
+- Layer 3: the product layer. Here we are talking about `apache`, `nginx`, `weblogic`, `jboss`, ...
+- Layer 5: the middleware layer. Here we are talking about applicative architecture: `producer`, `consummer`, `database`, `webserver`
+- Layer 7: the applicative layer. Here we are talking about `ear`, `war`, `zip`, `html`, `sql`, ...
 
 **Flue** should be able to deploy any layer, and any composant of the layer.
 
