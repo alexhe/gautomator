@@ -1,0 +1,7 @@
+digraph layer7 {
+	layer7 -> FancyPics;
+	layer7 -> SqlData;
+	Database -> "Weblogic Producer";
+	"Weblogic Producer" -> "Weblogic Consummer";
+
+}
