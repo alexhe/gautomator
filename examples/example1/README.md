@@ -20,6 +20,22 @@ The topoloy is represented in layer0.topology.png (see layer0/layer0.topology.do
 ### The nodes.json file
 This file will list the nodes and the associated role informations (see layer0/nodes.json for example)
 
+Example:
+```json
+{
+   "nodes":[
+      {
+         "name":"web01",
+         "hostname":"web01.local",
+         "user":"useradm",
+         "layer3":"WebsServers",
+         "layer5":"StaticInstance",
+         "layer7":"FancyPics"
+      },
+  ]
+}
+```
+
 ## Product role (Layer 3)
 - web01, web02 and web03 will have the role **WebServer** and run apache
 - mdw01 and mdw02 will have the role **Middleware** and run Oracle Weblogic Server
