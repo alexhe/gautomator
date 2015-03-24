@@ -31,7 +31,7 @@ By now, I count 4 layers, but there may be more in the future.
 # How to
 
 * grab a Go compiler from https://golang.org
-* go get github.com/owulveryck/flue
+* `go get github.com/owulveryck/flue`
 
 # tests and developement
 
