@@ -45,13 +45,4 @@ This project is in developpement.
 It is a work in progress and a Feature Driven Developement.
 On top of that, I'm learning go (and the developement). 
 
-# Work in progress
-- [ ] Documentation
-- [ ] Example
--- [x] Layer 0
--- [x] Layer 3
--- [x] Layer 5
--- [ ] Layer 7
-- [ ] Code
-
 Be tolerant !
