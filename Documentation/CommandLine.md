@@ -1,4 +1,4 @@
-# Command line arguments for the flue-agent
+# Command line arguments of the flue-agent
 
 I think I should implement the following command line arguments
 
@@ -13,5 +13,7 @@ if **uuid** is specified, connect to the running **flue** instance and add the t
 If **uuid** is not specified, create a new server instance and add the command line arguments
 
 * `flue -action=list` to list all the running uuid
+
+* `flue -action=wipe -uuid=uuid` to wipe the socket identified by uuid
 
 
