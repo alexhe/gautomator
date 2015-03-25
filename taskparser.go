@@ -8,7 +8,7 @@ import (
 // The index is the source node
 // The value is an array of strings containing the destination
 type TopologyGraphStructure struct {
-	allTheTasks []string
+	AllTheTasks []string
 	waiter      map[string][]string // A map index task1 will wait for task2, task3 and task4 to be completed
 }
 
@@ -41,7 +41,7 @@ func (this *TopologyGraphStructure) SetStrict(strict bool) {}
 func (this *TopologyGraphStructure) SetDir(directed bool)  {}
 func (this *TopologyGraphStructure) SetName(name string)   {}
 func (this *TopologyGraphStructure) AddPortEdge(src, srcPort, dst, dstPort string, directed bool, attrs map[string]string) {
-	this.allTheTasks = appendTask(this.allTheTasks, src)
+	this.AllTheTasks = appendTask(this.AllTheTasks, src)
 	this.waiter[dst] = append(this.waiter[dst], src)
 }
 func (this *TopologyGraphStructure) AddEdge(src, dst string, directed bool, attrs map[string]string) {
@@ -52,9 +52,7 @@ func (this *TopologyGraphStructure) AddNode(parentGraph string, name string, att
 func (this *TopologyGraphStructure) AddAttr(parentGraph string, field, value string) {}
 func (this *TopologyGraphStructure) AddSubGraph(parentGraph string, name string, attrs map[string]string) {
 }
-func (this *TopologyGraphStructure) String() string {
-	return this.allTheTasks
-}
+func (this *TopologyGraphStructure) String() string { return "" }
 
 func ParseTopology(topologyDot []byte) *TopologyGraphStructure {
 

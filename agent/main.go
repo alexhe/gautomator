@@ -13,6 +13,7 @@ func main() {
 	topologyDot := []byte(`
 digraph layer3Tasks {
 	start -> purge;
+	test -> start;
 	purge -> installProduit1;
 	purge -> installProduit2;
 	installProduit1 -> startAll;
@@ -21,7 +22,14 @@ digraph layer3Tasks {
 
 }
 `)
-	flue.ParseTopology(topologyDot)
+	// Will have;
+	// start waits for nothing
+	// purge waits for start
+	// installProduit1 waits for purge
+	// installProduit2 waits for purge
+	// startAll waits for installProduit1 AND instannProduit2
+	// end waits for startAll
+	myTasks := flue.ParseTopology(topologyDot)
 	//	flue.ParseNode()
 
 	if len(os.Args) < 2 {
@@ -30,15 +38,10 @@ digraph layer3Tasks {
 		flue.Server("/tmp/mysocket.sock")
 	} else {
 		log.Println("We are a client...")
-		command := &flue.RemoteCommandClient{
-			Cmd:    os.Args[1],
-			Args:   os.Args[2:],
-			Stdin:  os.Stdin,
-			Stdout: os.Stdout,
-			Stderr: os.Stderr,
-			//StatusChan: remoteSender,
+		myTasksChan := make(chan *flue.TopologyGraphStructure)
+		for _, task := range myTasks.AllTheTasks {
+			go flue.RunTask(task, myTasksChan)
 		}
-		flue.Client(command, "/tmp/mysocket.sock")
+		myTasksChan <- myTasks
 	}
-
 }

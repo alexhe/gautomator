@@ -111,7 +111,32 @@ func Server(socketName string) {
 	}
 }
 
+func RunTask(task string, allTasks chan *TopologyGraphStructure) *TopologyGraphStructure {
+	allTasksLocal := <-allTasks
+	log.Println("Queuing:", task)
+	if _, ok := allTasksLocal.waiter[task]; ok {
+		log.Println("Waiting for the folowing tasks to finish:")
+
+		for _, s := range allTasksLocal.waiter[task] {
+			log.Println(s)
+		}
+	} else {
+		log.Println("Let's go")
+		command := &RemoteCommandClient{
+			Cmd:    "sleep",
+			Args:   []string{"5"},
+			Stdin:  os.Stdin,
+			Stdout: os.Stdout,
+			Stderr: os.Stderr,
+			//StatusChan: remoteSender,
+		}
+		Client(command, "/tmp/mysocket.sock")
+		log.Println("Finished:", task)
+	}
+	return allTasksLocal
+}
 func Client(command *RemoteCommandClient, socketName string) int {
+	log.Println("Entering the client goroutine")
 	var client net.Conn
 	var err error
 	client, err = net.Dial("unix", socketName)
@@ -142,5 +167,6 @@ func Client(command *RemoteCommandClient, socketName string) int {
 		log.Fatal(err)
 	}
 
+	log.Println("returning", response.Status)
 	return response.Status
 }
