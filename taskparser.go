@@ -52,7 +52,9 @@ func (this *TopologyGraphStructure) AddNode(parentGraph string, name string, att
 func (this *TopologyGraphStructure) AddAttr(parentGraph string, field, value string) {}
 func (this *TopologyGraphStructure) AddSubGraph(parentGraph string, name string, attrs map[string]string) {
 }
-func (this *TopologyGraphStructure) String() string { return "" }
+func (this *TopologyGraphStructure) String() string {
+	return this.allTheTasks
+}
 
 func ParseTopology(topologyDot []byte) *TopologyGraphStructure {
 
