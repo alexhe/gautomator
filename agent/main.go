@@ -1,10 +1,10 @@
 package main
 
 import (
+	"github.com/nu7hatch/gouuid"
 	"github.com/owulveryck/flue"
 	"log"
 	"os"
-	"github.com/nu7hatch/gouuid"
 )
 
 func main() {
@@ -12,11 +12,10 @@ func main() {
 	//	flue.ParseNode()
 
 	if len(os.Args) < 2 {
-		uuid, err := uuid.NewV4()
+		uuid, _ := uuid.NewV4()
 		log.Println("We are a server, uuid is: ", string(uuid[:]))
 		flue.Server("/tmp/mysocket.sock")
 	} else {
-	    uuid
 		log.Println("We are a client...")
 		command := &flue.RemoteCommandClient{
 			Cmd:    os.Args[1],

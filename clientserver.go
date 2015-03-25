@@ -107,7 +107,6 @@ func Server(socketName string) {
 			}
 		}()
 	}
-
 }
 
 func Client(command *RemoteCommandClient, socketName string) int {
