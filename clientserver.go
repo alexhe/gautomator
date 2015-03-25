@@ -4,6 +4,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"os"
 	"os/exec"
 	"syscall"
 
@@ -38,6 +39,7 @@ func Server(socketName string) {
 	var listener net.Listener
 	var err error
 	listener, err = net.Listen("unix", socketName)
+	defer os.Remove(socketName)
 	if err != nil {
 		log.Fatal(err)
 	}

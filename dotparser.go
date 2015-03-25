@@ -1,22 +1,31 @@
 package flue
 
 import (
-	"fmt"
 	"github.com/awalterschulze/gographviz"
-	"io/ioutil"
 )
 
 // We store the nodes in a map
 // The index is the source node
 // The value is an array of strings containing the destination
 type TopologyGraphStructure struct {
-	role map[string][]string
+	allTheTasks []string
+	waiter      map[string][]string // A map index task1 will wait for task2, task3 and task4 to be completed
 }
 
 func NewTopologyGraphStructure() *TopologyGraphStructure {
 	return &TopologyGraphStructure{
+		make([]string, 0),
 		make(map[string][]string),
 	}
+}
+
+func appendTask(slice []string, task string) []string {
+	for _, ele := range slice {
+		if ele == task {
+			return slice
+		}
+	}
+	return append(slice, task)
 }
 
 // Compsite literal ?
@@ -32,9 +41,8 @@ func (this *TopologyGraphStructure) SetStrict(strict bool) {}
 func (this *TopologyGraphStructure) SetDir(directed bool)  {}
 func (this *TopologyGraphStructure) SetName(name string)   {}
 func (this *TopologyGraphStructure) AddPortEdge(src, srcPort, dst, dstPort string, directed bool, attrs map[string]string) {
-	// If SourceName already exists, add destination to the structure
-	// else, add a new entry in the structure
-	this.role[src] = append(this.role[src], dst)
+	this.allTheTasks = appendTask(this.allTheTasks, src)
+	this.waiter[dst] = append(this.waiter[dst], src)
 }
 func (this *TopologyGraphStructure) AddEdge(src, dst string, directed bool, attrs map[string]string) {
 	this.AddPortEdge(src, "", dst, "", directed, attrs)
@@ -46,12 +54,7 @@ func (this *TopologyGraphStructure) AddSubGraph(parentGraph string, name string,
 }
 func (this *TopologyGraphStructure) String() string { return "" }
 
-func ParseTopology() *TopologyGraphStructure {
-	// Testing the DOT parsing...
-	topologyDot, err := ioutil.ReadFile("books/topology.dot")
-	if err != nil {
-		fmt.Println("Err is ", err)
-	}
+func ParseTopology(topologyDot []byte) *TopologyGraphStructure {
 
 	parsed, err := gographviz.Parse(topologyDot)
 	if err != nil {
