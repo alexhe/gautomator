@@ -38,7 +38,8 @@ type CommandResponse struct {
 func Server(socketName string) {
 	var listener net.Listener
 	var err error
-	listener, err = net.Listen("unix", socketName)
+	//listener, err = net.Listen("unix", socketName)
+	listener, err = net.Listen("tcp", socketName)
 	defer os.Remove(socketName)
 	if err != nil {
 		log.Fatal(err)
@@ -130,7 +131,8 @@ func RunTask(task string, allTasks chan *TopologyGraphStructure) *TopologyGraphS
 			Stderr: os.Stderr,
 			//StatusChan: remoteSender,
 		}
-		Client(command, "/tmp/mysocket.sock")
+		//Client(command, "/tmp/mysocket.sock")
+		Client(command, "localhost:5678")
 		log.Println("Finished:", task)
 	}
 	return allTasksLocal
@@ -139,7 +141,8 @@ func Client(command *RemoteCommandClient, socketName string) int {
 	log.Println("Entering the client goroutine")
 	var client net.Conn
 	var err error
-	client, err = net.Dial("unix", socketName)
+	// client, err = net.Dial("unix", socketName)
+	client, err = net.Dial("tcp", socketName)
 	if err != nil {
 		log.Fatal(err)
 	}

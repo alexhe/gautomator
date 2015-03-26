@@ -35,7 +35,7 @@ digraph layer3Tasks {
 	if len(os.Args) < 2 {
 		uuid, _ := uuid.NewV4()
 		log.Println("We are a server, uuid is: ", string(uuid[:]))
-		flue.Server("/tmp/mysocket.sock")
+		flue.Server("localhost:5678")
 	} else {
 		log.Println("We are a client...")
 		myTasksChan := make(chan *flue.TopologyGraphStructure)
