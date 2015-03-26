@@ -7,7 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"syscall"
-
+"sync"
 	"github.com/docker/libchan"
 	"github.com/docker/libchan/spdy"
 )
@@ -74,6 +74,8 @@ func Server(socketName string) {
 							break
 						}
 
+						log.Println("Will execute:",command.Cmd)
+						log.Println("Will execute:",command.Args[0])
 						cmd := exec.Command(command.Cmd, command.Args...)
 						cmd.Stdout = command.Stdout
 						cmd.Stderr = command.Stderr
@@ -113,31 +115,48 @@ func Server(socketName string) {
 }
 
 func RunTask(task string, allTasks chan *TopologyGraphStructure,wg *sync.WaitGroup) *TopologyGraphStructure {
-	allTasksLocal := <-allTasks
-	log.Println("Queuing:", task)
-	if _, ok := allTasksLocal.waiter[task]; ok {
-		log.Println("Waiting for the folowing tasks to finish:")
+	for {
+		allTasksLocal := <-allTasks
+		//log.Println("Queuing:", task)
+		if _, ok := allTasksLocal.waiter[task]; ok {
+			log.Printf("[%s] Waiting for the folowing tasks to finish:",task)
 
-		for _, s := range allTasksLocal.waiter[task] {
-			log.Println(s)
+			for _, s := range allTasksLocal.waiter[task] {
+				log.Printf("%s ",s)
+			}
+			log.Printf("\n")
+		} else {
+			log.Printf("[%s] Let's go", task)
+			command := &RemoteCommandClient{
+				Cmd:    "touch",
+				Args:   []string{task},
+				Stdin:  os.Stdin,
+				Stdout: os.Stdout,
+				Stderr: os.Stderr,
+				//StatusChan: remoteSender,
+			}
+			//Client(command, "/tmp/mysocket.sock")
+			Client(command, "localhost:5678")
+			log.Printf("[%s] Finished", task)
+			// Remove the task from all the dependencies
+			/*
+			for _, s := range allTasksLocal.waiter {
+				for _, e := range s {
+					log.Println("DEBUG",e)
+				}
+			}
+			*/
+			// Give it back to the channel
+			allTasks <- allTasksLocal
+			wg.Done()
+			// log.Printf("[%s] Finished",task)
+			return allTasksLocal
 		}
-	} else {
-		log.Println("Let's go")
-		command := &RemoteCommandClient{
-			Cmd:    "sleep",
-			Args:   []string{"5"},
-			Stdin:  os.Stdin,
-			Stdout: os.Stdout,
-			Stderr: os.Stderr,
-			//StatusChan: remoteSender,
-		}
-		//Client(command, "/tmp/mysocket.sock")
-		Client(command, "localhost:5678")
-		log.Println("Finished:", task)
+		allTasks <- allTasksLocal
 	}
-	    wg.Done()
-	return allTasksLocal
+	return nil
 }
+
 func Client(command *RemoteCommandClient, socketName string) int {
 	log.Println("Entering the client goroutine")
 	var client net.Conn
@@ -156,7 +175,8 @@ func Client(command *RemoteCommandClient, socketName string) int {
 		log.Fatal(err)
 	}
 
-	receiver, remoteSender := libchan.Pipe()
+	_, remoteSender := libchan.Pipe()
+	//receiver, remoteSender := libchan.Pipe()
 	command.StatusChan = remoteSender
 	//receiver, _ := libchan.Pipe()
 
@@ -165,6 +185,7 @@ func Client(command *RemoteCommandClient, socketName string) int {
 		log.Fatal(err)
 	}
 
+/*
 	response := &CommandResponse{}
 	err = receiver.Receive(response)
 	if err != nil {
@@ -173,4 +194,6 @@ func Client(command *RemoteCommandClient, socketName string) int {
 
 	log.Println("returning", response.Status)
 	return response.Status
+*/
+return 0
 }

@@ -5,6 +5,8 @@ import (
 	"github.com/owulveryck/flue"
 	"log"
 	"os"
+	"sync"
+	"fmt"
 )
 
 func main() {
@@ -45,6 +47,12 @@ digraph layer3Tasks {
 			go flue.RunTask(task, myTasksChan, &wg)
 		}
 		myTasksChan <- myTasks
+/*
+		myTasksChan <- myTasks
+		myTasksChan <- myTasks
+		myTasksChan <- myTasks
+		myTasksChan <- myTasks
+*/
 	}
 	   wg.Wait()
 	   fmt.Println("Done")
