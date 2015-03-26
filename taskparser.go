@@ -19,7 +19,7 @@ func NewTopologyGraphStructure() *TopologyGraphStructure {
 	}
 }
 
-func appendTask(slice []string, task string) []string {
+func AppendTask(slice []string, task string) []string {
 	for _, ele := range slice {
 		if ele == task {
 			return slice
@@ -41,7 +41,7 @@ func (this *TopologyGraphStructure) SetStrict(strict bool) {}
 func (this *TopologyGraphStructure) SetDir(directed bool)  {}
 func (this *TopologyGraphStructure) SetName(name string)   {}
 func (this *TopologyGraphStructure) AddPortEdge(src, srcPort, dst, dstPort string, directed bool, attrs map[string]string) {
-	this.AllTheTasks = appendTask(this.AllTheTasks, src)
+	this.AllTheTasks = AppendTask(this.AllTheTasks, src)
 	this.waiter[dst] = append(this.waiter[dst], src)
 }
 func (this *TopologyGraphStructure) AddEdge(src, dst string, directed bool, attrs map[string]string) {

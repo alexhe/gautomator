@@ -139,13 +139,19 @@ func RunTask(task string, allTasks chan *TopologyGraphStructure,wg *sync.WaitGro
 			Client(command, "localhost:5678")
 			log.Printf("[%s] Finished", task)
 			// Remove the task from all the dependencies
-			/*
-			for _, s := range allTasksLocal.waiter {
-				for _, e := range s {
-					log.Println("DEBUG",e)
+			var temp []string
+			temp = nil
+			for _, atask := range allTasksLocal.AllTheTasks {
+			    for _, deps := range  allTasksLocal.waiter[atask] {
+				if deps != task {
+				    AppendTask(temp,deps)
 				}
+			    }
+			    delete(allTasksLocal.waiter,atask)
+			    if temp != nil {
+				allTasksLocal.waiter[atask] = temp
+			    }
 			}
-			*/
 			// Give it back to the channel
 			allTasks <- allTasksLocal
 			wg.Done()
