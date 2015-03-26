@@ -112,7 +112,7 @@ func Server(socketName string) {
 	}
 }
 
-func RunTask(task string, allTasks chan *TopologyGraphStructure) *TopologyGraphStructure {
+func RunTask(task string, allTasks chan *TopologyGraphStructure,wg *sync.WaitGroup) *TopologyGraphStructure {
 	allTasksLocal := <-allTasks
 	log.Println("Queuing:", task)
 	if _, ok := allTasksLocal.waiter[task]; ok {
@@ -135,6 +135,7 @@ func RunTask(task string, allTasks chan *TopologyGraphStructure) *TopologyGraphS
 		Client(command, "localhost:5678")
 		log.Println("Finished:", task)
 	}
+	    wg.Done()
 	return allTasksLocal
 }
 func Client(command *RemoteCommandClient, socketName string) int {

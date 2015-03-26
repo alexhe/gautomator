@@ -31,6 +31,8 @@ digraph layer3Tasks {
 	// end waits for startAll
 	myTasks := flue.ParseTopology(topologyDot)
 	//	flue.ParseNode()
+	var wg sync.WaitGroup
+	wg.Add(len(myTasks.AllTheTasks)) 
 
 	if len(os.Args) < 2 {
 		uuid, _ := uuid.NewV4()
@@ -40,8 +42,10 @@ digraph layer3Tasks {
 		log.Println("We are a client...")
 		myTasksChan := make(chan *flue.TopologyGraphStructure)
 		for _, task := range myTasks.AllTheTasks {
-			go flue.RunTask(task, myTasksChan)
+			go flue.RunTask(task, myTasksChan, &wg)
 		}
 		myTasksChan <- myTasks
 	}
+	   wg.Wait()
+	   fmt.Println("Done")
 }
