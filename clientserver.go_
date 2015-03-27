@@ -114,7 +114,7 @@ func Server(socketName string) {
 	}
 }
 
-func RunTask(task string, allTasks chan *TopologyGraphStructure,wg *sync.WaitGroup) *TopologyGraphStructure {
+func RunTask(task string, allTasks chan *TaskGraphStructure,wg *sync.WaitGroup) *TaskGraphStructure {
 	for {
 		allTasksLocal := <-allTasks
 		//log.Println("Queuing:", task)
