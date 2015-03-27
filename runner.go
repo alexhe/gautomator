@@ -9,9 +9,12 @@ import(
 
 
 
-func random(min, max int) int {
-    rand.Seed(time.Now().Unix())
-    return rand.Intn(max - min) + min
+func random(min int, max int) int {
+        var bytes int
+	bytes = min + rand.Intn(max)
+	return int(bytes)
+	//rand.Seed(time.Now().UTC().UnixNano())
+	//return rand.Intn(max - min) + min
 }
 // Ths runner goroutine is a goroutinei which:
 // Consume the TaskGraphStructure from a channel
@@ -31,9 +34,10 @@ func Runner(taskStructure *TaskGraphStructure, task *Task, taskStructureChan <-c
 	    }
 	}
 	if letsGo == true {
-	    log.Printf("[%v] Running",task.Name)
+	    sleepTime := random(1,5)
+	    log.Printf("[%v] Running (sleep for %v seconds)",task.Name,sleepTime)
 	    // ... Do a lot of stufs...
-	    time.Sleep(time.Duration(random(1, 16)) * time.Second)
+	    time.Sleep(time.Duration(sleepTime) * time.Second)
 	    // Adjust the Status
 	    task.Status = 2
 	    // Send it on the channel

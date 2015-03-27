@@ -37,7 +37,7 @@ digraph layer3Tasks {
     E -> G;
     G -> end;
 
-    node [module = sleep,args = "2 3"]; A;
+    node [module = sleep,args = 2 3 4]; A;
 }
 `)
 	log.Println("Parsing...")
