@@ -12,18 +12,18 @@ func main() {
 	// Testing the DOT parsing...
 	//	topologyDot, err := ioutil.ReadFile("test.dot")
 	/*
-		topologyDot := []byte(`
-	digraph layer3Tasks {
-		start -> purge;
-		test -> start;
-		purge -> installProduit1;
-		purge -> installProduit2;
-		installProduit1 -> startAll;
-		installProduit2 -> startAll;
-		startAll -> end;
+			topologyDot := []byte(`
+		digraph layer3Tasks {
+			start -> purge;
+			test -> start;
+			purge -> installProduit1;
+			purge -> installProduit2;
+			installProduit1 -> startAll;
+			installProduit2 -> startAll;
+			startAll -> end;
 
-	}
-	`)
+		}
+		`)
 	*/
 	topologyDot := []byte(`
 digraph layer3Tasks {
@@ -44,6 +44,7 @@ digraph layer3Tasks {
 	taskStructure := flue.ParseTasks(topologyDot)
 	// How many tasks
 
+	var wg sync.WaitGroup
 	taskStructureChan := make(chan *flue.TaskGraphStructure)
 	doneChan := make(chan *flue.Task)
 	for i, task := range taskStructure.Tasks {
