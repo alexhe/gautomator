@@ -1,12 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/nu7hatch/gouuid"
 	"github.com/owulveryck/flue"
 	"log"
-	"os"
-	"sync"
-	"fmt"
 )
 
 func main() {
@@ -32,28 +30,25 @@ digraph layer3Tasks {
 	// startAll waits for installProduit1 AND instannProduit2
 	// end waits for startAll
 	myTasks := flue.ParseTopology(topologyDot)
-	//	flue.ParseNode()
-	var wg sync.WaitGroup
-	wg.Add(len(myTasks.AllTheTasks)) 
-
-	if len(os.Args) < 2 {
-		uuid, _ := uuid.NewV4()
-		log.Println("We are a server, uuid is: ", string(uuid[:]))
-		flue.Server("localhost:5678")
-	} else {
-		log.Println("We are a client...")
-		myTasksChan := make(chan *flue.TopologyGraphStructure)
-		for _, task := range myTasks.AllTheTasks {
-			go flue.RunTask(task, myTasksChan, &wg)
-		}
-		myTasksChan <- myTasks
-/*
-		myTasksChan <- myTasks
-		myTasksChan <- myTasks
-		myTasksChan <- myTasks
-		myTasksChan <- myTasks
-*/
-	}
-	   wg.Wait()
-	   fmt.Println("Done")
+	/*
+	   	if len(os.Args) < 2 {
+	   		uuid, _ := uuid.NewV4()
+	   		log.Println("We are a server, uuid is: ", string(uuid[:]))
+	   		flue.Server("localhost:5678")
+	   	} else {
+	   		log.Println("We are a client...")
+	   		myTasksChan := make(chan *flue.TopologyGraphStructure)
+	   		for _, task := range myTasks.AllTheTasks {
+	   			go flue.RunTask(task, myTasksChan, &wg)
+	   		}
+	   		myTasksChan <- myTasks
+	   /*
+	   		myTasksChan <- myTasks
+	   		myTasksChan <- myTasks
+	   		myTasksChan <- myTasks
+	   		myTasksChan <- myTasks
+	   	}
+	   	   wg.Wait()
+	   	   fmt.Println("Done")
+	*/
 }

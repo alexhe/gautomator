@@ -4,13 +4,6 @@ import (
 	"github.com/awalterschulze/gographviz"
 )
 
-func NewTaskGraphStructure() *TaskGraphStructure {
-	return &TaskGraphStructure{
-		make(map[string]int),
-		make(map[string][]string),
-	}
-}
-
 func AppendTask(slice []string, task string) []string {
 	for _, ele := range slice {
 		if ele == task {
