@@ -1,11 +1,13 @@
 package main
 
 import (
+	"time"
 //	"fmt"
 //	"github.com/nu7hatch/gouuid"
 	"github.com/owulveryck/flue"
 	"sync"
 	"log"
+	"runtime"
 )
 
 func main() {
@@ -37,7 +39,7 @@ digraph layer3Tasks {
     E -> G;
     G -> end;
 
-    node [shape = doublecircle];
+    node [module = sleep,args = "2 3"]; A;
 }
 `)
 	log.Println("Parsing...")
@@ -60,7 +62,10 @@ digraph layer3Tasks {
 	    }
 	}
 	go flue.Advertize(taskStructure,taskStructureChan, doneChan)
-
+	for {
+	    log.Printf("Number of existing goroutines: %v",runtime.NumGoroutine())
+	    time.Sleep(1 * time.Second)
+	}
 	/*
 	   	if len(os.Args) < 2 {
 	   		uuid, _ := uuid.NewV4()
