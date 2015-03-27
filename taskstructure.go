@@ -12,6 +12,8 @@ type Task struct {
         // 3: finished with error
         ReturnCode int // The return code of the task (0 is ok)
         Deps  []string // A map index task1 will wait for task2, task3 and task4 to be completed
+	startTime Time
+	endtime Time
 }
 
 // This is the structure corresponding to the "dot-graph" of a task list
