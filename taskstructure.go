@@ -40,4 +40,11 @@ func NewTaskGraphStructure() *TaskGraphStructure {
 	}
 }
 
-
+func GetTask(taskName string, taskStructure *TaskGraphStructure) *Task {
+    for _, task := range taskStructure.Tasks {
+	if task.Name == taskName {
+	    return task
+	} 
+    }
+    return nil
+}
