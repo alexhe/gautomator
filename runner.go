@@ -33,13 +33,13 @@ func Runner(taskStructure *TaskGraphStructure, task *Task, taskStructureChan <-c
 	if letsGo == true {
 	    log.Printf("[%v] Running",task.Name)
 	    // ... Do a lot of stufs...
-	    time.Sleep(time.Duration(random(1, 5)) * time.Second)
+	    time.Sleep(time.Duration(random(1, 16)) * time.Second)
 	    // Adjust the Status
 	    task.Status = 2
 	    // Send it on the channel
-	    log.Printf("[%v] Done -> channel", task.Name)
+	    log.Printf("[%v] Done", task.Name)
 	    doneChan <- task
-	    log.Printf("[%v] channel: Done", task.Name)
+	    //	    log.Printf("[%v] channel: Done", task.Name)
 	    wg.Done()
 	    return
 	}
@@ -49,8 +49,8 @@ func Runner(taskStructure *TaskGraphStructure, task *Task, taskStructureChan <-c
 // The advertize goroutine, reads the tasks from doneChannel and write the TaskGraphStructure back to the taskStructureChan
 func Advertize(taskGraphStructure *TaskGraphStructure, taskStructureChan chan<- *TaskGraphStructure, doneChan <-chan *Task) {
     for {
-	doneTask := <- doneChan
-	log.Printf("[%v] Finished, advertizing", doneTask.Name)
-	taskStructureChan <- taskGraphStructure
+	<- doneChan
+	//log.Printf("[%v] Finished, advertizing", doneTask.Name)
+	//taskStructureChan <- taskGraphStructure
     }
 }
