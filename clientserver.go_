@@ -114,8 +114,12 @@ func Server(socketName string) {
 	}
 }
 
+<<<<<<< HEAD:clientserver.go
 func RemoveTask(allTasksOriginal *TopologyGraphStructure, allTasks chan<- *TopologyGraphStructure, taskChan <-chan string, wg *sync.WaitGroup) {
 	allTasks <- allTasksOriginal
+=======
+func RunTask(task string, allTasks chan *TaskGraphStructure,wg *sync.WaitGroup) *TaskGraphStructure {
+>>>>>>> 5430f26b205058eb21be63ce73a24d74d14a210f:clientserver.go_
 	for {
 		log.Println("RemoveTask consumming channel")
 		taskLocal := <-taskChan

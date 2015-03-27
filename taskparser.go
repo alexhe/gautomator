@@ -1,60 +1,76 @@
 package flue
 
 import (
+    "log"
 	"github.com/awalterschulze/gographviz"
 )
 
-// We store the nodes in a map
-// The index is the source node
-// The value is an array of strings containing the destination
-type TopologyGraphStructure struct {
-	AllTheTasks []string
-	waiter      map[string][]string // A map index task1 will wait for task2, task3 and task4 to be completed
-}
-
-func NewTopologyGraphStructure() *TopologyGraphStructure {
-	return &TopologyGraphStructure{
-		make([]string, 0),
-		make(map[string][]string),
+func AppendTask(slice []*Task, task *Task) []*Task {
+	for _, element := range slice {
+		if element == task {
+			return slice
+		}
 	}
+	return append(slice, task)
 }
-
-func AppendTask(slice []string, task string) []string {
-	for _, ele := range slice {
-		if ele == task {
+func AppendString(slice []string, task string) []string {
+	for _, element := range slice {
+		if element == task {
 			return slice
 		}
 	}
 	return append(slice, task)
 }
 
-// Compsite literal ?
-// http://golang.org/ref/spec#Composite_literals
-//func Newmap[string][]string() *map[string][]string {
-//	return &map[string][]string{
-//	return make(map[string][]string)
-// Here wi shall make the array
-//	}
-//}
 
-func (this *TopologyGraphStructure) SetStrict(strict bool) {}
-func (this *TopologyGraphStructure) SetDir(directed bool)  {}
-func (this *TopologyGraphStructure) SetName(name string)   {}
-func (this *TopologyGraphStructure) AddPortEdge(src, srcPort, dst, dstPort string, directed bool, attrs map[string]string) {
-	this.AllTheTasks = AppendTask(this.AllTheTasks, src)
-	this.waiter[dst] = append(this.waiter[dst], src)
+func (this *TaskGraphStructure) SetStrict(strict bool) {}
+func (this *TaskGraphStructure) SetDir(directed bool)  {}
+func (this *TaskGraphStructure) SetName(name string)   {}
+func (this *TaskGraphStructure) AddPortEdge(src, srcPort, dst, dstPort string, directed bool, attrs map[string]string) {
+    taskDstExists := false // the flag to check if a task already exist
+    taskSrcExists := false // the flag to check if a task already exist
+    for _, aTask := range this.Tasks {
+	if aTask != nil { 
+	    //log.Println("Current task is",aTask.Name)
+	    // If the task exists, add src as a dependency
+	    if aTask.Name == dst {
+		taskDstExists = true
+		aTask.Deps = AppendString(aTask.Deps,src)
+	    }
+	    if aTask.Name == src {
+		taskSrcExists = true
+	    }
+	} 
+    }
+    // If the task does not exists, create it and add it to the structure
+    if taskSrcExists == false {
+	aTask := NewTask()
+	aTask.Name = src
+	this.Tasks = AppendTask(this.Tasks,aTask)
+    }
+    if taskDstExists == false {
+	aTask := NewTask()
+	aTask.Name = dst
+	aTask.Deps = AppendString(aTask.Deps,src)
+	this.Tasks = AppendTask(this.Tasks,aTask)
+    }
 }
-func (this *TopologyGraphStructure) AddEdge(src, dst string, directed bool, attrs map[string]string) {
+func (this *TaskGraphStructure) AddEdge(src, dst string, directed bool, attrs map[string]string) {
 	this.AddPortEdge(src, "", dst, "", directed, attrs)
 }
-func (this *TopologyGraphStructure) AddNode(parentGraph string, name string, attrs map[string]string) {
-}
-func (this *TopologyGraphStructure) AddAttr(parentGraph string, field, value string) {}
-func (this *TopologyGraphStructure) AddSubGraph(parentGraph string, name string, attrs map[string]string) {
-}
-func (this *TopologyGraphStructure) String() string { return "" }
+func (this *TaskGraphStructure) AddNode(parentGraph string, name string, attrs map[string]string) {
+    log.Printf("parentGraph: %v, name: %v",parentGraph,name)
+    for key, value := range attrs {
+	log.Printf("Arg: %v, Value:%v",key,value)
+    }
 
-func ParseTopology(topologyDot []byte) *TopologyGraphStructure {
+}
+func (this *TaskGraphStructure) AddAttr(parentGraph string, field, value string) {}
+func (this *TaskGraphStructure) AddSubGraph(parentGraph string, name string, attrs map[string]string) {
+}
+func (this *TaskGraphStructure) String() string { return "" }
+
+func ParseTasks(topologyDot []byte) *TaskGraphStructure {
 
 	parsed, err := gographviz.Parse(topologyDot)
 	if err != nil {
@@ -62,8 +78,8 @@ func ParseTopology(topologyDot []byte) *TopologyGraphStructure {
 	}
 	// Display the graph
 	//fmt.Println(parsed)
-	var topology *TopologyGraphStructure
-	topology = NewTopologyGraphStructure()
+	var topology *TaskGraphStructure
+	topology = NewTaskGraphStructure()
 	gographviz.Analyse(parsed, topology)
 	//fmt.Println(topology.role["Ref2"][0])
 	//fmt.Println(topology.role["Ref1"][1])

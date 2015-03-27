@@ -1,74 +1,87 @@
 package main
 
 import (
-	"fmt"
-	"github.com/nu7hatch/gouuid"
+	//	"fmt"
+	//	"github.com/nu7hatch/gouuid"
 	"github.com/owulveryck/flue"
 	"log"
-	"os"
 	"sync"
 )
 
 func main() {
 	// Testing the DOT parsing...
 	//	topologyDot, err := ioutil.ReadFile("test.dot")
+	/*
+		topologyDot := []byte(`
+	digraph layer3Tasks {
+		start -> purge;
+		test -> start;
+		purge -> installProduit1;
+		purge -> installProduit2;
+		installProduit1 -> startAll;
+		installProduit2 -> startAll;
+		startAll -> end;
+
+	}
+	`)
+	*/
 	topologyDot := []byte(`
 digraph layer3Tasks {
-	start -> purge;
-	test -> start;
-	purge -> installProduit1;
-	purge -> installProduit2;
-	installProduit1 -> startAll;
-	installProduit2 -> startAll;
-	startAll -> end;	
+    A -> B;
+    B -> D;
+    B -> C;
+    B -> E;
+    D -> F;
+    C -> F;
+    F -> G;
+    E -> G;
+    G -> end;
 
+    node [module = sleep,args = 2 3 4]; A;
 }
 `)
-	// Will have;
-	// start waits for nothing
-	// purge waits for start
-	// installProduit1 waits for purge
-	// installProduit2 waits for purge
-	// startAll waits for installProduit1 AND instannProduit2
-	// end waits for startAll
-	myTasks := flue.ParseTopology(topologyDot)
-	//	flue.ParseNode()
-	var wg sync.WaitGroup
-	wg.Add(len(myTasks.AllTheTasks))
+	log.Println("Parsing...")
+	taskStructure := flue.ParseTasks(topologyDot)
+	// How many tasks
 
-	if len(os.Args) < 2 {
-		uuid, _ := uuid.NewV4()
-		log.Println("We are a server, uuid is: ", string(uuid[:]))
-		flue.Server("localhost:5678")
-	} else {
-		log.Println("We are a client...")
-		//myTasksChan := make(chan *flue.TopologyGraphStructure)
-		//myTaskChan := make(chan string)
-
-		//flue.RunTask(myTasks)
-		//		for _, task := range myTasks.AllTheTasks {
-		command := &flue.RemoteCommandClient{
-			Cmd:    "echo",
-			Args:   []string{"aha"},
-			Stdin:  os.Stdin,
-			Stdout: os.Stdout,
-			Stderr: os.Stderr,
-			//StatusChan: remoteSender,
+	taskStructureChan := make(chan *flue.TaskGraphStructure)
+	doneChan := make(chan *flue.Task)
+	for i, task := range taskStructure.Tasks {
+		if task != nil {
+			go flue.Runner(taskStructure, task, taskStructureChan, doneChan, &wg)
+			wg.Add(1)
+			log.Printf("=> Tache %v: %s", i, task.Name)
+			for j, dep := range task.Deps {
+				log.Printf("==> Deps[%v]: %v", j, dep)
+			}
 		}
-		flue.Client(command, "localhost:5678")
-		//		go flue.RunTask(task, myTasksChan, myTaskChan)
-		//go flue.RemoveTask(myTasks, myTasksChan, myTaskChan)
-		//		}
-		/*
-			go flue.RemoveTask(myTasks, myTasksChan, myTaskChan, &wg)
-		*/
-		//myTasksChan <- myTasks
-		/*		myTasksChan <- myTasks
-				myTasksChan <- myTasks
-				myTasksChan <- myTasks
-				myTasksChan <- myTasks
-		*/
 	}
+	go flue.Advertize(taskStructure, taskStructureChan, doneChan)
+	/*
+		for {
+		    log.Printf("Number of existing goroutines: %v",runtime.NumGoroutine())
+		    time.Sleep(1 * time.Second)
+		}
+	*/
+	/*
+	   	if len(os.Args) < 2 {
+	   		uuid, _ := uuid.NewV4()
+	   		log.Println("We are a server, uuid is: ", string(uuid[:]))
+	   		flue.Server("localhost:5678")
+	   	} else {
+	   		log.Println("We are a client...")
+	   		myTasksChan := make(chan *flue.TopologyGraphStructure)
+	   		for _, task := range myTasks.AllTheTasks {
+	   			go flue.RunTask(task, myTasksChan, &wg)
+	   		}
+	   		myTasksChan <- myTasks
+	   /*
+	   		myTasksChan <- myTasks
+	   		myTasksChan <- myTasks
+	   		myTasksChan <- myTasks
+	   		myTasksChan <- myTasks
+	   	}
+	   	   fmt.Println("Done")
+	*/
 	wg.Wait()
-	fmt.Println("Done")
 }
