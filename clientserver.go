@@ -1,15 +1,15 @@
 package flue
 
 import (
+	"github.com/docker/libchan"
+	"github.com/docker/libchan/spdy"
 	"io"
 	"log"
 	"net"
 	"os"
 	"os/exec"
+	"sync"
 	"syscall"
-"sync"
-	"github.com/docker/libchan"
-	"github.com/docker/libchan/spdy"
 )
 
 // RemoteCommand is the run parameters to be executed remotely
@@ -74,8 +74,7 @@ func Server(socketName string) {
 							break
 						}
 
-						log.Println("Will execute:",command.Cmd)
-						log.Println("Will execute:",command.Args[0])
+						log.Println("Will execute:", command.Cmd)
 						cmd := exec.Command(command.Cmd, command.Args...)
 						cmd.Stdout = command.Stdout
 						cmd.Stderr = command.Stderr
@@ -103,6 +102,7 @@ func Server(socketName string) {
 							}
 						}
 
+						log.Println("Sending back ", returnResult.Status)
 						err = command.StatusChan.Send(returnResult)
 						if err != nil {
 							log.Print(err)
@@ -114,15 +114,97 @@ func Server(socketName string) {
 	}
 }
 
-func RunTask(task string, allTasks chan *TopologyGraphStructure,wg *sync.WaitGroup) *TopologyGraphStructure {
+func RemoveTask(allTasksOriginal *TopologyGraphStructure, allTasks chan<- *TopologyGraphStructure, taskChan <-chan string, wg *sync.WaitGroup) {
+	allTasks <- allTasksOriginal
+	for {
+		log.Println("RemoveTask consumming channel")
+		taskLocal := <-taskChan
+		// Remove the task from all the dependencies
+		var temp []string
+		temp = nil
+		for _, atask := range allTasksOriginal.AllTheTasks {
+			for _, deps := range allTasksOriginal.waiter[atask] {
+				if deps != taskLocal {
+					//log.Printf("Adding %s to waiter list %s", deps, atask)
+
+					AppendTask(temp, deps)
+				}
+			}
+			delete(allTasksOriginal.waiter, atask)
+			if temp != nil {
+				allTasksOriginal.waiter[atask] = temp
+			}
+			//DEBUG
+			for _, entry := range allTasksOriginal.waiter[atask] {
+				log.Println("DEBUG", entry)
+			}
+		}
+		// Give it back to the channel
+		//allTasks <- allTasksOriginal
+		// log.Printf("[%s] Finished",task)
+		log.Println("Writing back the channel")
+		allTasks <- allTasksOriginal
+		//allTasks <- allTasksOriginal
+		//wg.Done()
+	}
+}
+
+func RunTask(allTasksLocal *TopologyGraphStructure) {
+	for _, task := range allTasksLocal.AllTheTasks {
+		//allTasksLocal := <-allTasks
+		//log.Println("Queuing:", task)
+		//log.Println("DEBUG:", len(allTasksLocal.waiter[task]))
+		if len(allTasksLocal.waiter[task]) != 0 {
+			//if _, ok := allTasksLocal.waiter[task]; ok {
+			log.Printf("[%s] Waiting for the folowing tasks to finish:", task)
+
+			for _, s := range allTasksLocal.waiter[task] {
+				log.Printf("%s ", s)
+			}
+			log.Printf("\n")
+		} else {
+			log.Printf("[%s] Let's go\n", task)
+			command := &RemoteCommandClient{
+				Cmd:    "date",
+				Args:   []string{""},
+				Stdin:  os.Stdin,
+				Stdout: os.Stdout,
+				Stderr: os.Stderr,
+				//StatusChan: remoteSender,
+			}
+			//Client(command, "/tmp/mysocket.sock")
+			Client(command, "localhost:5678")
+			log.Printf("[%s] Finished", task)
+
+			var temp []string
+			for _, atask := range allTasksLocal.AllTheTasks {
+				for _, deps := range allTasksLocal.waiter[atask] {
+					if deps != task {
+						//log.Printf("Adding %s to waiter list %s", deps, atask)
+						AppendTask(temp, deps)
+					}
+				}
+				delete(allTasksLocal.waiter, atask)
+				allTasksLocal.waiter[atask] = temp
+				//DEBUG
+				for _, entry := range allTasksLocal.waiter[atask] {
+					log.Println("DEBUG", entry)
+				}
+			}
+		}
+	}
+}
+
+/*
+func RunTask(task string, allTasks <-chan *TopologyGraphStructure, taskChan chan<- string) *TopologyGraphStructure {
 	for {
 		allTasksLocal := <-allTasks
 		//log.Println("Queuing:", task)
 		if _, ok := allTasksLocal.waiter[task]; ok {
-			log.Printf("[%s] Waiting for the folowing tasks to finish:",task)
+			log.Printf("[%s] Waiting for the folowing tasks to finish:", task)
 
 			for _, s := range allTasksLocal.waiter[task] {
-				log.Printf("%s ",s)
+				log.Printf("%s ", s)
 			}
 			log.Printf("\n")
 		} else {
@@ -138,33 +220,16 @@ func RunTask(task string, allTasks chan *TopologyGraphStructure,wg *sync.WaitGro
 			//Client(command, "/tmp/mysocket.sock")
 			Client(command, "localhost:5678")
 			log.Printf("[%s] Finished", task)
-			// Remove the task from all the dependencies
-			var temp []string
-			temp = nil
-			for _, atask := range allTasksLocal.AllTheTasks {
-			    for _, deps := range  allTasksLocal.waiter[atask] {
-				if deps != task {
-				    AppendTask(temp,deps)
-				}
-			    }
-			    delete(allTasksLocal.waiter,atask)
-			    if temp != nil {
-				allTasksLocal.waiter[atask] = temp
-			    }
-			}
-			// Give it back to the channel
-			allTasks <- allTasksLocal
-			wg.Done()
-			// log.Printf("[%s] Finished",task)
+			taskChan <- task
 			return allTasksLocal
 		}
-		allTasks <- allTasksLocal
 	}
 	return nil
 }
+*/
 
 func Client(command *RemoteCommandClient, socketName string) int {
-	log.Println("Entering the client goroutine")
+	log.Println("Client is running:", command.Args[0])
 	var client net.Conn
 	var err error
 	// client, err = net.Dial("unix", socketName)
@@ -181,7 +246,7 @@ func Client(command *RemoteCommandClient, socketName string) int {
 		log.Fatal(err)
 	}
 
-	_, remoteSender := libchan.Pipe()
+	receiver, remoteSender := libchan.Pipe()
 	//receiver, remoteSender := libchan.Pipe()
 	command.StatusChan = remoteSender
 	//receiver, _ := libchan.Pipe()
@@ -191,7 +256,6 @@ func Client(command *RemoteCommandClient, socketName string) int {
 		log.Fatal(err)
 	}
 
-/*
 	response := &CommandResponse{}
 	err = receiver.Receive(response)
 	if err != nil {
@@ -200,6 +264,6 @@ func Client(command *RemoteCommandClient, socketName string) int {
 
 	log.Println("returning", response.Status)
 	return response.Status
-*/
-return 0
+
+	return 0
 }

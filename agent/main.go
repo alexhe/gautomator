@@ -1,12 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"github.com/nu7hatch/gouuid"
 	"github.com/owulveryck/flue"
 	"log"
 	"os"
 	"sync"
-	"fmt"
 )
 
 func main() {
@@ -34,7 +34,7 @@ digraph layer3Tasks {
 	myTasks := flue.ParseTopology(topologyDot)
 	//	flue.ParseNode()
 	var wg sync.WaitGroup
-	wg.Add(len(myTasks.AllTheTasks)) 
+	wg.Add(len(myTasks.AllTheTasks))
 
 	if len(os.Args) < 2 {
 		uuid, _ := uuid.NewV4()
@@ -42,18 +42,33 @@ digraph layer3Tasks {
 		flue.Server("localhost:5678")
 	} else {
 		log.Println("We are a client...")
-		myTasksChan := make(chan *flue.TopologyGraphStructure)
-		for _, task := range myTasks.AllTheTasks {
-			go flue.RunTask(task, myTasksChan, &wg)
+		//myTasksChan := make(chan *flue.TopologyGraphStructure)
+		//myTaskChan := make(chan string)
+
+		//flue.RunTask(myTasks)
+		//		for _, task := range myTasks.AllTheTasks {
+		command := &flue.RemoteCommandClient{
+			Cmd:    "echo",
+			Args:   []string{"aha"},
+			Stdin:  os.Stdin,
+			Stdout: os.Stdout,
+			Stderr: os.Stderr,
+			//StatusChan: remoteSender,
 		}
-		myTasksChan <- myTasks
-/*
-		myTasksChan <- myTasks
-		myTasksChan <- myTasks
-		myTasksChan <- myTasks
-		myTasksChan <- myTasks
-*/
+		flue.Client(command, "localhost:5678")
+		//		go flue.RunTask(task, myTasksChan, myTaskChan)
+		//go flue.RemoveTask(myTasks, myTasksChan, myTaskChan)
+		//		}
+		/*
+			go flue.RemoveTask(myTasks, myTasksChan, myTaskChan, &wg)
+		*/
+		//myTasksChan <- myTasks
+		/*		myTasksChan <- myTasks
+				myTasksChan <- myTasks
+				myTasksChan <- myTasks
+				myTasksChan <- myTasks
+		*/
 	}
-	   wg.Wait()
-	   fmt.Println("Done")
+	wg.Wait()
+	fmt.Println("Done")
 }
