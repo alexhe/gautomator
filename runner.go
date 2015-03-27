@@ -48,8 +48,8 @@ func Runner(taskStructure *TaskGraphStructure, task *Task, taskStructureChan <-c
 // The advertize goroutine, reads the tasks from doneChannel and write the TaskGraphStructure back to the taskStructureChan
 func Advertize(taskGraphStructure *TaskGraphStructure, taskStructureChan chan<- *TaskGraphStructure, doneChan <-chan *Task) {
     for {
-	doneTask := <- doneChan
-	log.Printf("[%v] Finished, advertizing", doneTask.Name)
+	//doneTask := <- doneChan
+	//log.Printf("[%v] Finished, advertizing", doneTask.Name)
 	taskStructureChan <- taskGraphStructure
     }
 }

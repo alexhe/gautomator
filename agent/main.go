@@ -37,6 +37,7 @@ digraph layer3Tasks {
     E -> G;
     G -> end;
 
+    node [shape = doublecircle];
 }
 `)
 	log.Println("Parsing...")
@@ -44,7 +45,7 @@ digraph layer3Tasks {
 	// How many tasks
 
 	var wg sync.WaitGroup
-	wg.Add(5)
+	wg.Add(2)
 
 
 	taskStructureChan := make(chan *flue.TaskGraphStructure)   	

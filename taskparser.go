@@ -1,6 +1,7 @@
 package flue
 
 import (
+    "log"
 	"github.com/awalterschulze/gographviz"
 )
 
@@ -58,6 +59,11 @@ func (this *TaskGraphStructure) AddEdge(src, dst string, directed bool, attrs ma
 	this.AddPortEdge(src, "", dst, "", directed, attrs)
 }
 func (this *TaskGraphStructure) AddNode(parentGraph string, name string, attrs map[string]string) {
+    log.Printf("parentGraph: %v, name: %v",parentGraph,name)
+    for key, value := range attrs {
+	log.Printf("Arg: %v, Value:%v",key,value)
+    }
+
 }
 func (this *TaskGraphStructure) AddAttr(parentGraph string, field, value string) {}
 func (this *TaskGraphStructure) AddSubGraph(parentGraph string, name string, attrs map[string]string) {
