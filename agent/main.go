@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"github.com/nu7hatch/gouuid"
+//	"fmt"
+//	"github.com/nu7hatch/gouuid"
 	"github.com/owulveryck/flue"
 	"log"
 )
@@ -29,7 +29,16 @@ digraph layer3Tasks {
 	// installProduit2 waits for purge
 	// startAll waits for installProduit1 AND instannProduit2
 	// end waits for startAll
-	myTasks := flue.ParseTopology(topologyDot)
+	log.Println("Parsing...")
+	taskStructure := flue.ParseTasks(topologyDot)
+	for i, task := range taskStructure.Tasks {
+	    if task != nil {
+		log.Printf("=> Tache %v: %s",i, task.Name)
+		for j, dep := range task.Deps {
+		    log.Printf("==> Deps[%v]: %v",j,dep)
+		}
+	    }
+	}
 	/*
 	   	if len(os.Args) < 2 {
 	   		uuid, _ := uuid.NewV4()
