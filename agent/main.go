@@ -4,6 +4,7 @@ import (
 //	"fmt"
 //	"github.com/nu7hatch/gouuid"
 	"github.com/owulveryck/flue"
+	"sync"
 	"log"
 )
 
@@ -22,6 +23,8 @@ digraph layer3Tasks {
 
 }
 `)
+	var wg sync.WaitGroup
+	wg.Add(5)
 	// Will have;
 	// start waits for nothing
 	// purge waits for start
@@ -62,7 +65,8 @@ digraph layer3Tasks {
 	   		myTasksChan <- myTasks
 	   		myTasksChan <- myTasks
 	   	}
-	   	   wg.Wait()
 	   	   fmt.Println("Done")
 	*/
+       wg.Wait()
+
 }
