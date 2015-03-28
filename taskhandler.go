@@ -1,9 +1,7 @@
 package flue
 
 import (
-	"encoding/json"
-	"net/http"
-	//"time"
+//"time"
 )
 
 // A task is an action executed by a module
@@ -57,9 +55,4 @@ func GetTask(taskName string, taskStructure *TaskGraphStructure) *Task {
 		}
 	}
 	return nil
-}
-
-// Courtesy of http://stackoverflow.com/questions/26211954/how-do-i-pass-arguments-to-my-handler
-func (tasks *TaskGraphStructure) showTasks(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(tasks)
 }

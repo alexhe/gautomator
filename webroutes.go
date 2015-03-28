@@ -1,6 +1,7 @@
 package flue
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -15,9 +16,17 @@ type Route struct {
 
 type Routes []Route
 
+// Courtesy of http://stackoverflow.com/questions/26211954/how-do-i-pass-arguments-to-my-handler
+func showTasks(w http.ResponseWriter, r *http.Request, taskStruct TaskGraphStructure) {
+	json.NewEncoder(w).Encode(taskStruct)
+}
+
 func NewRouter(taskStruct TaskGraphStructure) *mux.Router {
 
 	router := mux.NewRouter().StrictSlash(true)
+	router.Methods("GET").Path("/tasks").Name("TaskIndex").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		showTasks(w, r, taskStruct)
+	})
 	for _, route := range routes {
 		router.
 			Methods(route.Method).
@@ -35,12 +44,14 @@ var routes = Routes{
 		"/",
 		Index,
 	},
-	Route{
-		"TaskIndex",
-		"GET",
-		"/tasks",
-		TaskIndex,
-	},
+	/*
+		Route{
+			"TaskIndex",
+			"GET",
+			"/tasks",
+			showTasks,
+		},
+	*/
 	Route{
 		"TaskShow",
 		"GET",
