@@ -5,6 +5,7 @@ import (
 	//	"github.com/nu7hatch/gouuid"
 	"github.com/owulveryck/flue"
 	"log"
+	"net/http"
 	"sync"
 )
 
@@ -58,31 +59,8 @@ digraph layer3Tasks {
 		}
 	}
 	go flue.Advertize(taskStructure, taskStructureChan, doneChan)
-	/*
-		for {
-		    log.Printf("Number of existing goroutines: %v",runtime.NumGoroutine())
-		    time.Sleep(1 * time.Second)
-		}
-	*/
-	/*
-	   	if len(os.Args) < 2 {
-	   		uuid, _ := uuid.NewV4()
-	   		log.Println("We are a server, uuid is: ", string(uuid[:]))
-	   		flue.Server("localhost:5678")
-	   	} else {
-	   		log.Println("We are a client...")
-	   		myTasksChan := make(chan *flue.TopologyGraphStructure)
-	   		for _, task := range myTasks.AllTheTasks {
-	   			go flue.RunTask(task, myTasksChan, &wg)
-	   		}
-	   		myTasksChan <- myTasks
-	   /*
-	   		myTasksChan <- myTasks
-	   		myTasksChan <- myTasks
-	   		myTasksChan <- myTasks
-	   		myTasksChan <- myTasks
-	   	}
-	   	   fmt.Println("Done")
-	*/
+	router := flue.NewRouter(*taskStructure)
+
+	go log.Fatal(http.ListenAndServe(":8080", router))
 	wg.Wait()
 }
