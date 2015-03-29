@@ -1,0 +1,4 @@
+div.box { background: #EEE; height: 100%; width: 100%; }
+div.div1{background: #999; float: left; height: 100%; width: auto; }
+div.div2{ height: 100%; }
+div.clear { clear: both; height: 1px; overflow: hidden; font-size:0pt; margin-top: -1px; }

@@ -34,6 +34,7 @@ func Runner(taskStructure *TaskGraphStructure, task *Task, taskStructureChan <-c
 		}
 		if letsGo == true {
 			sleepTime := random(5, 15)
+			task.Status = 1
 			log.Printf("[%v] Running (sleep for %v seconds)", task.Name, sleepTime)
 			// ... Do a lot of stufs...
 			time.Sleep(time.Duration(sleepTime) * time.Second)

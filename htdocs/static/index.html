@@ -1,19 +1,28 @@
 <html>
 <head>
     <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js'></script>
+     <link rel="stylesheet" type="text/css" href="/css/table.css">
+     <link rel="stylesheet" type="text/css" href="/css/div.css">
 </head>
 <body>
 	</p>
-	<table class="mGrid" id="jsondata" border="1">
+	<div class="box">
+		<div class="div1">
+		<table class="mGrid" id="jsondata" border="1">
 		<thead>
-			<th>Name</th>
+			<th>Task</th>
 			<th>Node</th>
 			<th>Status</th>
 			<th>ReturnCode</th>
 		</thead>
 		<tbody></tbody>
 	</table>
-</div>
+		</div>
+		<div class="div2">
+			<img src="example.png"/>	
+		</div>
+		<div class="clear"> </div>
+	</div>
 
 <script type="text/javascript">
 
@@ -22,8 +31,15 @@
 		$("#jsondata tbody").html("");
 		$.getJSON(url,function(data){
 			$.each(data.Tasks, function(key,val){
+				color = "white"
+				if (val.Status == 2) {
+						color = "green"
+				}
+				if (val.Status == 1) {
+						color = "orange"
+				}
 				var newRow =
-				"<tr>"
+				"<tr bgcolor="+color+">"
 				+"<td>"+val.Name+"</td>"
 				+"<td>"+val.Node+"</td>"
 				+"<td>"+val.Status+"</td>"
