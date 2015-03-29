@@ -24,19 +24,25 @@ func showTasks(w http.ResponseWriter, r *http.Request, taskStruct TaskGraphStruc
 func NewRouter(taskStruct TaskGraphStructure) *mux.Router {
 
 	router := mux.NewRouter().StrictSlash(true)
+	router.Headers("Content-Type", "application/json", "X-Requested-With", "XMLHttpRequest")
 	router.Methods("GET").Path("/tasks").Name("TaskIndex").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		showTasks(w, r, taskStruct)
 	})
-	for _, route := range routes {
-		router.
-			Methods(route.Method).
-			Path(route.Pattern).
-			Name(route.Name).
-			Handler(route.HandlerFunc)
-	}
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("../htdocs/static/")))
+
+	/*
+		for _, route := range routes {
+			router.
+				Methods(route.Method).
+				Path(route.Pattern).
+				Name(route.Name).
+				Handler(route.HandlerFunc)
+		}
+	*/
 	return router
 }
 
+/*
 var routes = Routes{
 	Route{
 		"Index",
@@ -44,14 +50,12 @@ var routes = Routes{
 		"/",
 		Index,
 	},
-	/*
 		Route{
 			"TaskIndex",
 			"GET",
 			"/tasks",
 			showTasks,
 		},
-	*/
 	Route{
 		"TaskShow",
 		"GET",
@@ -59,3 +63,4 @@ var routes = Routes{
 		TaskShow,
 	},
 }
+*/

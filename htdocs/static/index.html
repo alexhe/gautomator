@@ -1,0 +1,40 @@
+<html>
+<head>
+    <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js'></script>
+</head>
+<body>
+	</p>
+	<table class="mGrid" id="jsondata" border="1">
+		<thead>
+			<th>Name</th>
+			<th>Node</th>
+			<th>Status</th>
+			<th>ReturnCode</th>
+		</thead>
+		<tbody></tbody>
+	</table>
+</div>
+
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		var url="http://localhost:8080/tasks";
+		$("#jsondata tbody").html("");
+		$.getJSON(url,function(data){
+			$.each(data.Tasks, function(key,val){
+				var newRow =
+				"<tr>"
+				+"<td>"+val.Name+"</td>"
+				+"<td>"+val.Node+"</td>"
+				+"<td>"+val.Status+"</td>"
+				+"<td>"+val.ReturnCode+"</td>"
+				+"</tr>" ;
+				$(newRow).appendTo("#jsondata tbody");
+			});
+		});
+	});
+
+</script>
+<p style="text-align: justify;">
+</body>
+</html>
