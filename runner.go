@@ -33,8 +33,12 @@ func Runner(taskStructure *TaskGraphStructure, task *Task, taskStructureChan <-c
 			}
 		}
 		if letsGo == true {
+			task.Module = "hostname"
+			proto := "tcp"
+			socket := "localhost:4546"
 			sleepTime := random(5, 15)
 			task.Status = 1
+			Client(task, &proto, &socket)
 			log.Printf("[%v] Running (sleep for %v seconds)", task.Name, sleepTime)
 			// ... Do a lot of stufs...
 			time.Sleep(time.Duration(sleepTime) * time.Second)

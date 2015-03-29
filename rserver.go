@@ -30,7 +30,7 @@ type CommandResponse struct {
 	Status int
 }
 
-func main() {
+func Rserver(proto *string, socket *string) {
 	cert := os.Getenv("TLS_CERT")
 	key := os.Getenv("TLS_KEY")
 
@@ -46,13 +46,13 @@ func main() {
 			Certificates:       []tls.Certificate{tlsCert},
 		}
 
-		listener, err = tls.Listen("tcp", "localhost:9323", tlsConfig)
+		listener, err = tls.Listen(*proto, *socket, tlsConfig)
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else {
 		var err error
-		listener, err = net.Listen("tcp", "localhost:9323")
+		listener, err = net.Listen(*proto, *socket)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -96,25 +96,39 @@ func main() {
 							log.Print(err)
 							break
 						}
+						if err != nil {
+							log.Fatal(err)
+						}
 						go func() {
+							log.Println("Copying back to stdin")
 							io.Copy(stdin, command.Stdin)
+							log.Println("Closing stdin")
 							stdin.Close()
 						}()
-
+						log.Println("Running the command")
 						res := cmd.Run()
+						log.Printf("Command finished with error: %v", err)
+						log.Println("Done")
+						log.Println("Closing the Stdout")
 						command.Stdout.Close()
+						log.Println("Closing the Stderr")
 						command.Stderr.Close()
+						log.Println("Assigning returnResult")
 						returnResult := &CommandResponse{}
 						if res != nil {
+							log.Println("Res is not null")
 							if exiterr, ok := res.(*exec.ExitError); ok {
+								log.Println("Treating the error code")
 								returnResult.Status = exiterr.Sys().(syscall.WaitStatus).ExitStatus()
+								log.Println("We have the result")
 							} else {
 								log.Print(res)
 								returnResult.Status = 10
 							}
 						}
-
+						log.Println("Res is not null")
 						err = command.StatusChan.Send(returnResult)
+						log.Println("Finished")
 						if err != nil {
 							log.Print(err)
 						}
