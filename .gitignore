@@ -2,3 +2,4 @@
 *.exe
 agent/*.exe?
 htdocs/static/example*
+sg/*
