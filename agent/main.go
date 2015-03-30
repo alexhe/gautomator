@@ -9,11 +9,29 @@ import (
 	"log"
 	"net/http"
 	"sync"
+	//	"os"
+	//	    "syscall"
+	//	"os/signal"
 )
 
-func main() {
-	// Testing the DOT parsing...
+func cleanup() {
+	log.Println("cleanup")
+}
 
+func main() {
+
+	/*
+		// Catching the interrupt
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, os.Interrupt)
+		signal.Notify(c, syscall.SIGTERM)
+		go func() {
+		    <-c
+		    cleanup()
+		    os.Exit(1)
+		}()
+	*/
+	//Parsing the dot
 	dotFile := flag.String("dot", "", "The dot file")
 
 	flag.Parse()

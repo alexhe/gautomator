@@ -1,9 +1,9 @@
 <html>
 <head>
-    <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js'></script>
+    <script type='text/javascript' src='/js/jquery.min.js'></script>
      <link rel="stylesheet" type="text/css" href="/css/table.css">
      <link rel="stylesheet" type="text/css" href="/css/div.css">
-     <META HTTP-EQUIV="Refresh" CONTENT="2" URL="http://localhost:8080/index.html">
+     <META HTTP-EQUIV="Refresh" CONTENT="5" URL="/index.html">
 </head>
 <body>
 	</p>
@@ -14,7 +14,10 @@
 			<th>Task</th>
 			<th>Node</th>
 			<th>Status</th>
-			<th>ReturnCode</th>
+			<th>Command/Module</th>
+			<th>Arguments</th>
+                        <th>Start Time</th>
+                        <th>End time</th>
 		</thead>
 		<tbody></tbody>
 	</table>
@@ -28,7 +31,7 @@
 <script type="text/javascript">
 
 	$(document).ready(function(){
-		var url="http://localhost:8080/tasks";
+		var url="/tasks";
 		$("#jsondata tbody").html("");
 		$.getJSON(url,function(data){
 			$.each(data.Tasks, function(key,val){
@@ -47,7 +50,10 @@
 				+"<td>"+val.Name+"</td>"
 				+"<td>"+val.Node+"</td>"
 				+"<td>"+rstatus+"</td>"
-				+"<td>"+val.ReturnCode+"</td>"
+				+"<td>"+val.Module+"</td>"
+				+"<td>"+val.Args+"</td>"
+				+"<td>"+val.StartDate+"</td>"
+				+"<td>"+val.EndDate+"</td>"
 				+"</tr>" ;
 				$(newRow).appendTo("#jsondata tbody");
 			});
