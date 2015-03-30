@@ -3,6 +3,7 @@ package flue
 import (
 	"log"
 	"math/rand" // Temp
+	"strconv"
 	"sync"
 )
 
@@ -27,7 +28,7 @@ func Runner(taskStructure *TaskGraphStructure, task *Task, taskStructureChan <-c
 		// For each dependency of the task
 		for _, dep := range task.Deps {
 			depTask := GetTask(dep, taskStructure)
-			if depTask.Status <= 0 {
+			if depTask.Status < 0 {
 				letsGo = false
 			}
 		}
@@ -35,11 +36,11 @@ func Runner(taskStructure *TaskGraphStructure, task *Task, taskStructureChan <-c
 			proto := "tcp"
 			socket := "localhost:4546"
 			sleepTime := random(5, 15)
-			task.Module = "notepad.exe"
-			task.Args = []string{"aha",string(sleepTime)}
+			task.Module = "sleep"
+			task.Args = []string{strconv.Itoa(sleepTime)}
 			task.Status = -1
 			log.Printf("[%v] Running (%v %v)", task.Name, task.Module, task.Args[0])
-			log.Printf("[%v] Connecting in %v on %v",task.Name, proto,socket)
+			log.Printf("[%v] Connecting in %v on %v", task.Name, proto, socket)
 			task.Status = Client(task, &proto, &socket)
 			// ... Do a lot of stufs...
 			//time.Sleep(time.Duration(sleepTime) * time.Second)

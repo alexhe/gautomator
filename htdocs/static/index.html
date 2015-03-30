@@ -33,17 +33,20 @@
 		$.getJSON(url,function(data){
 			$.each(data.Tasks, function(key,val){
 				color = "white"
-				if (val.Status == 2) {
+				rstatus = "Queud"
+				if (val.Status >= 0) {
+						rstatus = "Done"
 						color = "green"
 				}
-				if (val.Status == 1) {
+				if (val.Status == -1) {
+						rstatus = "Running"
 						color = "orange"
 				}
 				var newRow =
 				"<tr bgcolor="+color+">"
 				+"<td>"+val.Name+"</td>"
 				+"<td>"+val.Node+"</td>"
-				+"<td>"+val.Status+"</td>"
+				+"<td>"+rstatus+"</td>"
 				+"<td>"+val.ReturnCode+"</td>"
 				+"</tr>" ;
 				$(newRow).appendTo("#jsondata tbody");
