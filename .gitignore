@@ -2,3 +2,5 @@
 *.exe
 agent/*.exe?
 htdocs/static/example*
+agent/main
+agent/agent
