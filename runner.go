@@ -5,6 +5,7 @@ import (
 	"math/rand" // Temp
 	"strconv"
 	"sync"
+	"time"
 )
 
 func random(min int, max int) int {
@@ -41,7 +42,9 @@ func Runner(taskStructure *TaskGraphStructure, task *Task, taskStructureChan <-c
 			task.Status = -1
 			log.Printf("[%v] Running (%v %v)", task.Name, task.Module, task.Args[0])
 			log.Printf("[%v] Connecting in %v on %v", task.Name, proto, socket)
+			task.StartTime = time.Now()
 			task.Status = Client(task, &proto, &socket)
+			task.EndTime = time.Now()
 			// ... Do a lot of stufs...
 			//time.Sleep(time.Duration(sleepTime) * time.Second)
 			// Adjust the Status

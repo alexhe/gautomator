@@ -1,7 +1,7 @@
 package flue
 
 import (
-//	"time"
+	"time"
 )
 
 // A task is an action executed by a module
@@ -13,9 +13,9 @@ type Task struct {
 	Status int // -2: queued
 	// -1: running
 	// >=0 : return code
-	Deps []string // A map index task1 will wait for task2, task3 and task4 to be completed
-	//startTime time.Time
-	//endtime   time.Time
+	Deps      []string // A map index task1 will wait for task2, task3 and task4 to be completed
+	StartTime time.Time
+	EndTime   time.Time
 }
 
 // This is the structure corresponding to the "dot-graph" of a task list
@@ -34,6 +34,8 @@ func NewTask() *Task {
 		make([]string, 1),
 		-2,
 		make([]string, 0),
+		time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
+		time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
 	}
 
 }
