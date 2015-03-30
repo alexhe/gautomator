@@ -39,17 +39,17 @@ func Client(task *Task, proto *string, socket *string) int {
 	if err != nil {
 		log.Fatal(err)
 	}
-	//receiver, remoteSender := libchan.Pipe()
-	_, remoteSender := libchan.Pipe()
+	receiver, remoteSender := libchan.Pipe()
+	//_, remoteSender := libchan.Pipe()
 	command := &Command{
 		Cmd:        task.Module,
-		Args:       task.Args[:],
+		Args:       task.Args[0:],
 		Stdin:      os.Stdin,
 		Stdout:     os.Stdout,
 		Stderr:     os.Stderr,
 		StatusChan: remoteSender,
 	}
-	log.Println("Sending command")
+	log.Printf("Sending command %v %s",command.Cmd,command.Args)
 	err = sender.Send(command)
 	if err != nil {
 		log.Fatal(err)
@@ -57,15 +57,16 @@ func Client(task *Task, proto *string, socket *string) int {
 	//sender.Close()
 	response := &CommandResponse{}
 	log.Println("Receiving response")
-	//err = receiver.Receive(response)
+	err = receiver.Receive(response)
 	log.Println("Received")
 	if err != nil {
 		log.Fatal(err)
 	}
-	command.StatusChan.Close()
-	sender.Close()
-	remoteSender.Close()
-	client.Close()
+	//command.StatusChan.Close()
+	//sender.Close()
+	//remoteSender.Close()
+	//client.Close()
+	log.Println("All done, returning")
 	return response.Status
 	//	os.Exit(response.Status)
 }

@@ -4,7 +4,6 @@ import (
 	"log"
 	"math/rand" // Temp
 	"sync"
-	"time"
 )
 
 func random(min int, max int) int {
@@ -28,26 +27,27 @@ func Runner(taskStructure *TaskGraphStructure, task *Task, taskStructureChan <-c
 		// For each dependency of the task
 		for _, dep := range task.Deps {
 			depTask := GetTask(dep, taskStructure)
-			if depTask.Status != 2 {
+			if depTask.Status <= 0 {
 				letsGo = false
 			}
 		}
 		if letsGo == true {
-			task.Module = "hostname"
 			proto := "tcp"
 			socket := "localhost:4546"
 			sleepTime := random(5, 15)
-			task.Status = 1
-			Client(task, &proto, &socket)
-			log.Printf("[%v] Running (sleep for %v seconds)", task.Name, sleepTime)
+			task.Module = "notepad.exe"
+			task.Args = []string{"aha",string(sleepTime)}
+			task.Status = -1
+			log.Printf("[%v] Running (%v %v)", task.Name, task.Module, task.Args[0])
+			log.Printf("[%v] Connecting in %v on %v",task.Name, proto,socket)
+			task.Status = Client(task, &proto, &socket)
 			// ... Do a lot of stufs...
-			time.Sleep(time.Duration(sleepTime) * time.Second)
+			//time.Sleep(time.Duration(sleepTime) * time.Second)
 			// Adjust the Status
-			task.Status = 2
+			//task.Status = 2
 			// Send it on the channel
 			log.Printf("[%v] Done", task.Name)
 			doneChan <- task
-			//	    log.Printf("[%v] channel: Done", task.Name)
 			wg.Done()
 			return
 		}

@@ -10,11 +10,9 @@ type Task struct {
 	Node   string // The node name
 	Module string
 	Args   []string
-	Status int // 0: not run yet
-	// 1: running
-	// 2: finished with success
-	// 3: finished with error
-	ReturnCode int      // The return code of the task (0 is ok)
+	Status int // -2: queued
+	// -1: running
+	// >=0 : return code
 	Deps       []string // A map index task1 will wait for task2, task3 and task4 to be completed
 	//startTime  time.Time
 	//endtime    time.Time
@@ -33,9 +31,8 @@ func NewTask() *Task {
 		"null",
 		"localhost",
 		"dummy",
-		make([]string, 0),
-		0,
-		0,
+		make([]string, 1),
+		-2,
 		make([]string, 0),
 		//0,
 		//0,

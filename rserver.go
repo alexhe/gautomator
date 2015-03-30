@@ -90,6 +90,8 @@ func Rserver(proto *string, socket *string) {
 						cmd := exec.Command(command.Cmd, command.Args...)
 						cmd.Stdout = command.Stdout
 						cmd.Stderr = command.Stderr
+						//cmd.Stdout = os.Stdout
+						//cmd.Stderr = os.Stderr
 
 						stdin, err := cmd.StdinPipe()
 						if err != nil {
@@ -102,17 +104,17 @@ func Rserver(proto *string, socket *string) {
 						go func() {
 							log.Println("Copying back to stdin")
 							io.Copy(stdin, command.Stdin)
-							log.Println("Closing stdin")
-							stdin.Close()
+							//log.Println("Closing stdin")
+							//stdin.Close()
 						}()
 						log.Println("Running the command")
 						res := cmd.Run()
 						log.Printf("Command finished with error: %v", err)
 						log.Println("Done")
-						log.Println("Closing the Stdout")
-						command.Stdout.Close()
-						log.Println("Closing the Stderr")
-						command.Stderr.Close()
+						//log.Println("Closing the Stdout")
+						//command.Stdout.Close()
+						//log.Println("Closing the Stderr")
+						//command.Stderr.Close()
 						log.Println("Assigning returnResult")
 						returnResult := &CommandResponse{}
 						if res != nil {
