@@ -27,12 +27,12 @@ func Runner(taskStructure *TaskGraphStructure, task *Task, taskStructureChan <-c
 		// Let's go unless we cannot
 		letsGo := true
 		// For each dependency of the task
-		for _, dep := range task.Deps {
-			depTask := GetTask(dep, taskStructure)
-			if depTask.Status < 0 {
-				letsGo = false
-			}
-		}
+		//		for _, dep := range task.Deps {
+		//			depTask := GetTask(dep, taskStructure)
+		//			if depTask.Status < 0 {
+		//				letsGo = false
+		//			}
+		//		}
 		if letsGo == true {
 			proto := "tcp"
 			socket := "localhost:4546"

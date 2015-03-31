@@ -1,8 +1,8 @@
 package flue
 
 import (
-    "log"
 	"github.com/awalterschulze/gographviz"
+	"log"
 )
 
 func AppendTask(slice []*Task, task *Task) []*Task {
@@ -22,47 +22,66 @@ func AppendString(slice []string, task string) []string {
 	return append(slice, task)
 }
 
-
 func (this *TaskGraphStructure) SetStrict(strict bool) {}
 func (this *TaskGraphStructure) SetDir(directed bool)  {}
 func (this *TaskGraphStructure) SetName(name string)   {}
 func (this *TaskGraphStructure) AddPortEdge(src, srcPort, dst, dstPort string, directed bool, attrs map[string]string) {
-    taskDstExists := false // the flag to check if a task already exist
-    taskSrcExists := false // the flag to check if a task already exist
-    for _, aTask := range this.Tasks {
-	if aTask != nil { 
-	    //log.Println("Current task is",aTask.Name)
-	    // If the task exists, add src as a dependency
-	    if aTask.Name == dst {
-		taskDstExists = true
-		aTask.Deps = AppendString(aTask.Deps,src)
-	    }
-	    if aTask.Name == src {
-		taskSrcExists = true
-	    }
-	} 
-    }
-    // If the task does not exists, create it and add it to the structure
-    if taskSrcExists == false {
-	aTask := NewTask()
-	aTask.Name = src
-	this.Tasks = AppendTask(this.Tasks,aTask)
-    }
-    if taskDstExists == false {
-	aTask := NewTask()
-	aTask.Name = dst
-	aTask.Deps = AppendString(aTask.Deps,src)
-	this.Tasks = AppendTask(this.Tasks,aTask)
-    }
+	lastIndex := len(this.Tasks)
+	// Find the index of the task src and the index of the task dst
+	srcTaskId := -1
+	dstTaskId := -1
+	increment := 0 // The number of new lines and cols needed
+	for taskId, taskObject := range this.Tasks {
+		if taskObject != nil {
+			//log.Println("Current task is",taskObject.Name)
+			// If the task exists, add src as a dependency
+			if taskObject.Name == dst {
+				dstTaskId = taskId
+			}
+			if taskObject.Name == src {
+				srcTaskId = taskId
+			}
+		}
+	}
+	// If the task does not exists, create it and add it to the structure
+	if dstTaskId == -1 {
+		taskObject := NewTask()
+		taskObject.Name = dst
+		this.Tasks[lastIndex] = taskObject
+		increment += 1
+		lastIndex += 1
+	}
+	// If the task does not exists, create it and add it to the structure
+	if srcTaskId == -1 {
+		taskObject := NewTask()
+		taskObject.Name = src
+		this.Tasks[lastIndex] = taskObject
+		increment += 1
+		lastIndex += 1
+	}
+	// If the size of the increment is not null
+	// use Grow...
+	if increment > 0 {
+		this.DegreeMatrix.Grow(increment, increment)
+		this.AdjacencyMatrix.Grow(increment, increment)
+	}
+	// Now fill the matrix
+	this.DegreeMatrix.Set(srcTaskId, srcTaskId, this.DegreeMatrix.At(srcTaskId, srcTaskId)+1)
+	this.DegreeMatrix.Set(dstTaskId, dstTaskId, this.DegreeMatrix.At(dstTaskId, dstTaskId)+1)
+	this.DegreeMatrix.Set(srcTaskId, dstTaskId, 1)
 }
+
+//TODO: write a merge function to merge two structures:
+// -> Concat the task map
+// -> merge the matrix
 func (this *TaskGraphStructure) AddEdge(src, dst string, directed bool, attrs map[string]string) {
 	this.AddPortEdge(src, "", dst, "", directed, attrs)
 }
 func (this *TaskGraphStructure) AddNode(parentGraph string, name string, attrs map[string]string) {
-    log.Printf("parentGraph: %v, name: %v",parentGraph,name)
-    for key, value := range attrs {
-	log.Printf("Arg: %v, Value:%v",key,value)
-    }
+	log.Printf("parentGraph: %v, name: %v", parentGraph, name)
+	for key, value := range attrs {
+		log.Printf("Arg: %v, Value:%v", key, value)
+	}
 
 }
 func (this *TaskGraphStructure) AddAttr(parentGraph string, field, value string) {}
