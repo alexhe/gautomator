@@ -2,6 +2,7 @@ package flue
 
 import (
 	"github.com/awalterschulze/gographviz"
+	"github.com/gonum/matrix/mat64"
 	"log"
 )
 
@@ -49,6 +50,7 @@ func (this *TaskGraphStructure) AddPortEdge(src, srcPort, dst, dstPort string, d
 		taskObject.Name = dst
 		this.Tasks[lastIndex] = taskObject
 		increment += 1
+		dstTaskId = lastIndex
 		lastIndex += 1
 	}
 	// If the task does not exists, create it and add it to the structure
@@ -57,17 +59,18 @@ func (this *TaskGraphStructure) AddPortEdge(src, srcPort, dst, dstPort string, d
 		taskObject.Name = src
 		this.Tasks[lastIndex] = taskObject
 		increment += 1
+		srcTaskId = lastIndex
 		lastIndex += 1
 	}
 	// If the size of the increment is not null
 	// use Grow...
 	if increment > 0 {
-		this.DegreeMatrix.Grow(increment, increment)
-		this.AdjacencyMatrix.Grow(increment, increment)
+		this.DegreeMatrix = mat64.DenseCopyOf(this.DegreeMatrix.Grow(increment, increment))
+		this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(increment, increment))
 	}
 	// Now fill the matrix
-	this.DegreeMatrix.Set(srcTaskId, srcTaskId, this.DegreeMatrix.At(srcTaskId, srcTaskId)+1)
 	this.DegreeMatrix.Set(dstTaskId, dstTaskId, this.DegreeMatrix.At(dstTaskId, dstTaskId)+1)
+	this.DegreeMatrix.Set(srcTaskId, srcTaskId, this.DegreeMatrix.At(srcTaskId, srcTaskId)+1)
 	this.DegreeMatrix.Set(srcTaskId, dstTaskId, 1)
 }
 
