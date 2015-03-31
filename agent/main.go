@@ -55,18 +55,14 @@ func main() {
 
 		var wg sync.WaitGroup
 		taskStructureChan := make(chan *flue.TaskGraphStructure)
-		doneChan := make(chan *flue.Task)
-		for i, task := range taskStructure.Tasks {
+		doneChan := make(chan *int)
+		for taskIndex, _ := range taskStructure.Tasks {
 			if task != nil {
-				go flue.Runner(taskStructure, task, taskStructureChan, doneChan, &wg)
+				go flue.Runner(taskStructure, taskIndex, taskStructureChan, doneChan, &wg)
 				wg.Add(1)
-				log.Printf("=> Tache %v: %s", i, task.Name)
-				for j, dep := range task.Deps {
-					log.Printf("==> Deps[%v]: %v", j, dep)
-				}
 			}
 		}
-		go flue.Advertize(taskStructure, taskStructureChan, doneChan)
+		go flue.Advertize(taskStructureChan, doneChan)
 		router := flue.NewRouter(*taskStructure)
 
 		go log.Fatal(http.ListenAndServe(":8080", router))
