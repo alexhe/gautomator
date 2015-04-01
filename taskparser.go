@@ -71,7 +71,7 @@ func (this *TaskGraphStructure) AddPortEdge(src, srcPort, dst, dstPort string, d
 	// Now fill the matrix
 	this.DegreeMatrix.Set(dstTaskId, dstTaskId, this.DegreeMatrix.At(dstTaskId, dstTaskId)+1)
 	this.DegreeMatrix.Set(srcTaskId, srcTaskId, this.DegreeMatrix.At(srcTaskId, srcTaskId)+1)
-	this.DegreeMatrix.Set(srcTaskId, dstTaskId, 1)
+	this.AdjacencyMatrix.Set(srcTaskId, dstTaskId, 1)
 }
 
 //TODO: write a merge function to merge two structures:
