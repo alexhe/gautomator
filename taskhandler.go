@@ -16,9 +16,9 @@ type Task struct {
 	Status int // -2: queued
 	// -1: running
 	// >=0 : return code
-	StartTime            time.Time
-	EndTime              time.Time
-	CommunicationChannel chan bool // true: run, false: wait
+	StartTime      time.Time
+	EndTime        time.Time
+	TaskCanRunChan chan bool // true: run, false: wait
 }
 
 // This is the structure corresponding to the "dot-graph" of a task list
@@ -34,7 +34,13 @@ type TaskGraphStructure struct {
 
 func PrintAdjacencyMatrix(taskStructure *TaskGraphStructure) {
 	rowSize, colSize := taskStructure.AdjacencyMatrix.Dims()
+	fmt.Printf("  ")
+	for c := 0; c < colSize; c++ {
+		fmt.Printf("%v ", taskStructure.Tasks[c].Name)
+	}
+	fmt.Printf("\n")
 	for r := 0; r < rowSize; r++ {
+		fmt.Printf("%v ", taskStructure.Tasks[r].Name)
 		for c := 0; c < colSize; c++ {
 			fmt.Printf("%v ", taskStructure.AdjacencyMatrix.At(r, c))
 		}

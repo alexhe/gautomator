@@ -24,7 +24,7 @@ func random(min int, max int) int {
 func Runner(task *Task, doneChan chan<- *Task, wg *sync.WaitGroup) {
 	log.Printf("[Name:%v] Queued", task.Name)
 	for {
-		letsGo := <-task.CommunicationChannel
+		letsGo := <-task.TaskCanRunChan
 		// For each dependency of the task
 		// We can run if the sum of the element of the column Id of the current task is 0
 
@@ -63,13 +63,13 @@ func Advertize(taskStructure *TaskGraphStructure, doneChan <-chan *Task) {
 			sum += taskStructure.AdjacencyMatrix.At(r, taskIndex)
 		}
 		if sum == 0 && taskStructure.Tasks[taskIndex].Status < 0 {
-			taskStructure.Tasks[taskIndex].CommunicationChannel <- true
+			taskStructure.Tasks[taskIndex].TaskCanRunChan <- true
 		}
 	}
 	for {
 		task := <-doneChan
 
-		// Adapting the AdjaDonecency matrix...
+		// Adapting the Adjacency matrix...
 		// TaskId is finished, it cannot be the source of any task anymore
 		// Set the row at 0
 		rowSize, colSize := taskStructure.AdjacencyMatrix.Dims()
@@ -85,7 +85,7 @@ func Advertize(taskStructure *TaskGraphStructure, doneChan <-chan *Task) {
 			}
 
 			if sum == 0 && taskStructure.Tasks[taskIndex].Status == -2 {
-				taskStructure.Tasks[taskIndex].CommunicationChannel <- true
+				taskStructure.Tasks[taskIndex].TaskCanRunChan <- true
 			}
 		}
 	}
