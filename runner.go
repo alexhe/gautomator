@@ -21,35 +21,23 @@ func random(min int, max int) int {
 // run the task given as arguments if the deps are done
 // Post the task to the doncChannel once done
 //
-func Runner(taskStructure *TaskGraphStructure, taskId int, taskStructureChan <-chan *TaskGraphStructure, doneChan chan<- int, wg *sync.WaitGroup) {
+func Runner(taskStructure *TaskGraphStructure, taskId int, doneChan chan<- int, wg *sync.WaitGroup) {
 	task := taskStructure.Tasks[taskId]
 	log.Printf("[Id:%v, Name:%v] Queued", taskId, task.Name)
 	for {
-		loop := 1
-		log.Printf("[Id:%v, Name:%v] loop %v", taskId, task.Name, loop)
-		// Let's go unless we cannot
-		loop += 1
-		letsGo := false
+		letsGo := <-task.CommunicationChannel
 		// For each dependency of the task
 		// We can run if the sum of the element of the column Id of the current task is 0
-		rowSize, _ := taskStructure.AdjacencyMatrix.Dims()
-		var sum float64
-		for r := 0; r < rowSize; r++ {
-			sum += taskStructure.AdjacencyMatrix.At(r, taskId)
-		}
 
-		if sum == 0 {
-			letsGo = true
-		}
 		if letsGo == true {
 			proto := "tcp"
 			socket := "localhost:4546"
-			sleepTime := random(5, 15)
+			sleepTime := random(1, 5)
 			task.Module = "sleep"
 			task.Args = []string{strconv.Itoa(sleepTime)}
 			task.Status = -1
 			log.Printf("[%v] Running (%v %v)", task.Name, task.Module, task.Args[0])
-			log.Printf("[%v] Connecting in %v on %v", task.Name, proto, socket)
+			//log.Printf("[%v] Connecting in %v on %v", task.Name, proto, socket)
 			task.StartTime = time.Now()
 			task.Status = Client(task, &proto, &socket)
 			task.EndTime = time.Now()
@@ -61,16 +49,47 @@ func Runner(taskStructure *TaskGraphStructure, taskId int, taskStructureChan <-c
 			log.Printf("[%v] Done", task.Name)
 			doneChan <- taskId
 			wg.Done()
-			return
+			//return
 		}
 	}
 }
 
 // The advertize goroutine, reads the tasks from doneChannel and write the TaskGraphStructure back to the taskStructureChan
-func Advertize(taskStructureChan chan<- *TaskGraphStructure, doneChan <-chan int) {
+func Advertize(taskStructure *TaskGraphStructure, doneChan <-chan int) {
+	// Let's launch the task that can initially run
+	rowSize, _ := taskStructure.AdjacencyMatrix.Dims()
+	for taskIndex, _ := range taskStructure.Tasks {
+		sum := float64(0)
+		for r := 0; r < rowSize; r++ {
+			sum += taskStructure.AdjacencyMatrix.At(r, taskIndex)
+		}
+		if sum == 0 && taskStructure.Tasks[taskIndex].Status < 0 {
+			taskStructure.Tasks[taskIndex].CommunicationChannel <- true
+		}
+	}
 	for {
-		<-doneChan
-		//log.Printf("[%v] Finished, advertizing", doneTask.Name)
-		//taskStructureChan <- taskGraphStructure
+		taskId := <-doneChan
+
+		// Adapting the AdjaDonecency matrix...
+		// TaskId is finished, it cannot be the source of any task anymore
+		// Set the row at 0
+		rowSize, colSize := taskStructure.AdjacencyMatrix.Dims()
+		for c := 0; c < colSize; c++ {
+			taskStructure.AdjacencyMatrix.Set(taskId, c, float64(0))
+		}
+		// For each dependency of the task
+		// We can run if the sum of the element of the column Id of the current task is 0
+		for taskIndex, _ := range taskStructure.Tasks {
+			sum := float64(0)
+			for r := 0; r < rowSize; r++ {
+				sum += taskStructure.AdjacencyMatrix.At(r, taskIndex)
+			}
+
+			if sum == 0 && taskStructure.Tasks[taskIndex].Status == -2 {
+				//				log.Printf("task %v can run", taskIndex)
+				taskStructure.Tasks[taskIndex].Status = -1
+				taskStructure.Tasks[taskIndex].CommunicationChannel <- true
+			}
+		}
 	}
 }

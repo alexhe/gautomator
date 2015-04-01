@@ -56,7 +56,6 @@ func main() {
 		// How many tasks
 
 		var wg sync.WaitGroup
-		taskStructureChan := make(chan *flue.TaskGraphStructure)
 		doneChan := make(chan int)
 		// DEBUG
 		fmt.Println("Ajacency Matrix")
@@ -65,12 +64,15 @@ func main() {
 		flue.PrintDegreeMatrix(taskStructure)
 
 		// END DEBUG
+
+		// For each task, if it can run, place true in its communication channel
 		for taskIndex, _ := range taskStructure.Tasks {
 			log.Printf("taskIndex: %v", taskIndex)
-			go flue.Runner(taskStructure, taskIndex, taskStructureChan, doneChan, &wg)
+			go flue.Runner(taskStructure, taskIndex, doneChan, &wg)
 			wg.Add(1)
 		}
-		go flue.Advertize(taskStructureChan, doneChan)
+		go flue.Advertize(taskStructure, doneChan)
+
 		router := flue.NewRouter(*taskStructure)
 
 		go log.Fatal(http.ListenAndServe(":8080", router))

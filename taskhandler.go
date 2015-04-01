@@ -15,8 +15,9 @@ type Task struct {
 	Status int // -2: queued
 	// -1: running
 	// >=0 : return code
-	StartTime time.Time
-	EndTime   time.Time
+	StartTime            time.Time
+	EndTime              time.Time
+	CommunicationChannel chan bool // true: run, false: wait
 }
 
 // This is the structure corresponding to the "dot-graph" of a task list
@@ -59,6 +60,7 @@ func NewTask() *Task {
 		-2,
 		time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
 		time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
+		make(chan bool),
 	}
 
 }
