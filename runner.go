@@ -1,7 +1,6 @@
 package flue
 
 import (
-	"github.com/gonum/matrix/mat64"
 	"log"
 	"math/rand" // Temp
 	"strconv"
@@ -23,7 +22,6 @@ func random(min int, max int) int {
 // Post the task to the doncChannel once done
 //
 func Runner(taskStructure *TaskGraphStructure, taskId int, taskStructureChan <-chan *TaskGraphStructure, doneChan chan<- int, wg *sync.WaitGroup) {
-	return
 	task := taskStructure.Tasks[taskId]
 	log.Printf("[Id:%v, Name:%v] Queued", taskId, task.Name)
 	for {
@@ -31,16 +29,17 @@ func Runner(taskStructure *TaskGraphStructure, taskId int, taskStructureChan <-c
 		log.Printf("[Id:%v, Name:%v] loop %v", taskId, task.Name, loop)
 		// Let's go unless we cannot
 		loop += 1
-		letsGo := true
+		letsGo := false
 		// For each dependency of the task
 		// We can run if the sum of the element of the column Id of the current task is 0
-		var taskDeps *mat64.Vector
-		taskDeps = taskStructure.AdjacencyMatrix.ColView(taskId)
-		for v := range taskDeps.RawVector().Data {
-			log.Printf("[Id:%v] src: %v", taskId, v)
-			if v != 0 {
-				letsGo = false
-			}
+		rowSize, _ := taskStructure.AdjacencyMatrix.Dims()
+		var sum float64
+		for r := 0; r < rowSize; r++ {
+			sum += taskStructure.AdjacencyMatrix.At(r, taskId)
+		}
+
+		if sum == 0 {
+			letsGo = true
 		}
 		if letsGo == true {
 			proto := "tcp"
