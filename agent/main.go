@@ -4,6 +4,8 @@ import (
 	//	"fmt"
 	//	"github.com/nu7hatch/gouuid"
 	"flag"
+	"fmt"
+	//	"github.com/gonum/matrix/mat64"
 	"github.com/owulveryck/flue"
 	"io/ioutil"
 	"log"
@@ -55,12 +57,18 @@ func main() {
 
 		var wg sync.WaitGroup
 		taskStructureChan := make(chan *flue.TaskGraphStructure)
-		doneChan := make(chan *int)
+		doneChan := make(chan int)
+		// DEBUG
+		fmt.Println("Ajacency Matrix")
+		flue.PrintAdjacencyMatrix(taskStructure)
+		fmt.Println("Degree Matrix")
+		flue.PrintDegreeMatrix(taskStructure)
+
+		// END DEBUG
 		for taskIndex, _ := range taskStructure.Tasks {
-			if task != nil {
-				go flue.Runner(taskStructure, taskIndex, taskStructureChan, doneChan, &wg)
-				wg.Add(1)
-			}
+			log.Printf("taskIndex: %v", taskIndex)
+			go flue.Runner(taskStructure, taskIndex, taskStructureChan, doneChan, &wg)
+			wg.Add(1)
 		}
 		go flue.Advertize(taskStructureChan, doneChan)
 		router := flue.NewRouter(*taskStructure)

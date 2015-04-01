@@ -1,6 +1,7 @@
 package flue
 
 import (
+	"fmt"
 	"github.com/gonum/matrix/mat64" // Matrix
 	"time"
 )
@@ -27,6 +28,26 @@ type TaskGraphStructure struct {
 	DegreeMatrix    *mat64.Dense
 	AdjacencyMatrix *mat64.Dense // Row id is the map id of the source task
 	// Col id is the map id of the destination task
+}
+
+func PrintAdjacencyMatrix(taskStructure *TaskGraphStructure) {
+	rowSize, colSize := taskStructure.AdjacencyMatrix.Dims()
+	for r := 0; r < rowSize; r++ {
+		for c := 0; c < colSize; c++ {
+			fmt.Printf("%v ", taskStructure.AdjacencyMatrix.At(r, c))
+		}
+		fmt.Printf("\n")
+	}
+}
+
+func PrintDegreeMatrix(taskStructure *TaskGraphStructure) {
+	rowSize, colSize := taskStructure.DegreeMatrix.Dims()
+	for r := 0; r < rowSize; r++ {
+		for c := 0; c < colSize; c++ {
+			fmt.Printf("%v ", taskStructure.DegreeMatrix.At(r, c))
+		}
+		fmt.Printf("\n")
+	}
 }
 
 func NewTask() *Task {
