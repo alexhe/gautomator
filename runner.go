@@ -21,17 +21,25 @@ func random(min int, max int) int {
 // run the task given as arguments if the deps are done
 // Post the task to the doncChannel once done
 //
-func Runner(taskStructure *TaskGraphStructure, task *Task, taskStructureChan <-chan *TaskGraphStructure, doneChan chan<- *Task, wg *sync.WaitGroup) {
-	log.Printf("[%v] Queued", task.Name)
+func Runner(taskStructure *TaskGraphStructure, taskId int, taskStructureChan <-chan *TaskGraphStructure, doneChan chan<- int, wg *sync.WaitGroup) {
+	task := taskStructure.Tasks[taskId]
+	log.Printf("[Id:%v, Name:%v] Queued", taskId, task.Name)
 	for {
+		loop := 1
+		log.Printf("[Id:%v, Name:%v] loop %v", taskId, task.Name, loop)
 		// Let's go unless we cannot
-		letsGo := true
+		loop += 1
+		letsGo := false
 		// For each dependency of the task
-		for _, dep := range task.Deps {
-			depTask := GetTask(dep, taskStructure)
-			if depTask.Status < 0 {
-				letsGo = false
-			}
+		// We can run if the sum of the element of the column Id of the current task is 0
+		rowSize, _ := taskStructure.AdjacencyMatrix.Dims()
+		var sum float64
+		for r := 0; r < rowSize; r++ {
+			sum += taskStructure.AdjacencyMatrix.At(r, taskId)
+		}
+
+		if sum == 0 {
+			letsGo = true
 		}
 		if letsGo == true {
 			proto := "tcp"
@@ -51,7 +59,7 @@ func Runner(taskStructure *TaskGraphStructure, task *Task, taskStructureChan <-c
 			//task.Status = 2
 			// Send it on the channel
 			log.Printf("[%v] Done", task.Name)
-			doneChan <- task
+			doneChan <- taskId
 			wg.Done()
 			return
 		}
@@ -59,7 +67,7 @@ func Runner(taskStructure *TaskGraphStructure, task *Task, taskStructureChan <-c
 }
 
 // The advertize goroutine, reads the tasks from doneChannel and write the TaskGraphStructure back to the taskStructureChan
-func Advertize(taskGraphStructure *TaskGraphStructure, taskStructureChan chan<- *TaskGraphStructure, doneChan <-chan *Task) {
+func Advertize(taskStructureChan chan<- *TaskGraphStructure, doneChan <-chan int) {
 	for {
 		<-doneChan
 		//log.Printf("[%v] Finished, advertizing", doneTask.Name)

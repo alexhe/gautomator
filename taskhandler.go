@@ -1,6 +1,8 @@
 package flue
 
 import (
+	"fmt"
+	"github.com/gonum/matrix/mat64" // Matrix
 	"time"
 )
 
@@ -13,7 +15,6 @@ type Task struct {
 	Status int // -2: queued
 	// -1: running
 	// >=0 : return code
-	Deps      []string // A map index task1 will wait for task2, task3 and task4 to be completed
 	StartTime time.Time
 	EndTime   time.Time
 }
@@ -23,7 +24,30 @@ type Task struct {
 // The index is the source node
 // The value is an array of strings containing the destination
 type TaskGraphStructure struct {
-	Tasks []*Task
+	Tasks           map[int]*Task
+	DegreeMatrix    *mat64.Dense
+	AdjacencyMatrix *mat64.Dense // Row id is the map id of the source task
+	// Col id is the map id of the destination task
+}
+
+func PrintAdjacencyMatrix(taskStructure *TaskGraphStructure) {
+	rowSize, colSize := taskStructure.AdjacencyMatrix.Dims()
+	for r := 0; r < rowSize; r++ {
+		for c := 0; c < colSize; c++ {
+			fmt.Printf("%v ", taskStructure.AdjacencyMatrix.At(r, c))
+		}
+		fmt.Printf("\n")
+	}
+}
+
+func PrintDegreeMatrix(taskStructure *TaskGraphStructure) {
+	rowSize, colSize := taskStructure.DegreeMatrix.Dims()
+	for r := 0; r < rowSize; r++ {
+		for c := 0; c < colSize; c++ {
+			fmt.Printf("%v ", taskStructure.DegreeMatrix.At(r, c))
+		}
+		fmt.Printf("\n")
+	}
 }
 
 func NewTask() *Task {
@@ -33,7 +57,6 @@ func NewTask() *Task {
 		"dummy",
 		make([]string, 1),
 		-2,
-		make([]string, 0),
 		time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
 		time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
 	}
@@ -41,7 +64,9 @@ func NewTask() *Task {
 }
 func NewTaskGraphStructure() *TaskGraphStructure {
 	return &TaskGraphStructure{
-		make([]*Task, 0),
+		make(map[int]*Task, 0),
+		mat64.NewDense(0, 0, nil),
+		mat64.NewDense(0, 0, nil),
 	}
 }
 
