@@ -56,7 +56,7 @@ func main() {
 		// How many tasks
 
 		var wg sync.WaitGroup
-		doneChan := make(chan int)
+		doneChan := make(chan *flue.Task)
 		// DEBUG
 		fmt.Println("Ajacency Matrix")
 		flue.PrintAdjacencyMatrix(taskStructure)
@@ -68,7 +68,7 @@ func main() {
 		// For each task, if it can run, place true in its communication channel
 		for taskIndex, _ := range taskStructure.Tasks {
 			log.Printf("taskIndex: %v", taskIndex)
-			go flue.Runner(taskStructure, taskIndex, doneChan, &wg)
+			go flue.Runner(taskStructure.Tasks[taskIndex], doneChan, &wg)
 			wg.Add(1)
 		}
 		go flue.Advertize(taskStructure, doneChan)

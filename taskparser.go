@@ -51,6 +51,7 @@ func (this *TaskGraphStructure) AddPortEdge(src, srcPort, dst, dstPort string, d
 		this.Tasks[lastIndex] = taskObject
 		increment += 1
 		srcTaskId = lastIndex
+		taskObject.Id = srcTaskId
 		lastIndex += 1
 	}
 	// If the task does not exists, create it and add it to the structure
@@ -60,6 +61,7 @@ func (this *TaskGraphStructure) AddPortEdge(src, srcPort, dst, dstPort string, d
 		this.Tasks[lastIndex] = taskObject
 		increment += 1
 		dstTaskId = lastIndex
+		taskObject.Id = dstTaskId
 		lastIndex += 1
 	}
 	// If the size of the increment is not null

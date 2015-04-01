@@ -8,6 +8,7 @@ import (
 
 // A task is an action executed by a module
 type Task struct {
+	Id     int
 	Name   string //the task name
 	Node   string // The node name
 	Module string
@@ -53,6 +54,7 @@ func PrintDegreeMatrix(taskStructure *TaskGraphStructure) {
 
 func NewTask() *Task {
 	return &Task{
+		-1,
 		"null",
 		"localhost",
 		"dummy",
