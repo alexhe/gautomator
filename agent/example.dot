@@ -8,5 +8,4 @@ digraph layer3Tasks {
     F -> G;
     E -> G;
     G -> end;
-
 }
