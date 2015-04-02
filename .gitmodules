@@ -1,0 +1,3 @@
+[submodule "htdocs/static/js/sigma.js"]
+	path = htdocs/static/js/sigma.js
+	url = https://github.com/jacomyal/sigma.js.git
