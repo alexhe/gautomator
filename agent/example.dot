@@ -7,5 +7,7 @@ digraph layer3Tasks {
     C -> F;
     F -> G;
     E -> G;
-    G -> end;
+    G -> H;
+    G -> I;
+
 }

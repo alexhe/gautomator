@@ -49,16 +49,14 @@ func Client(task *Task, proto *string, socket *string) int {
 		Stderr:     os.Stderr,
 		StatusChan: remoteSender,
 	}
-	log.Printf("Sending command %v %s",command.Cmd,command.Args)
+	//log.Printf("Sending command %v %s", command.Cmd, command.Args)
 	err = sender.Send(command)
 	if err != nil {
 		log.Fatal(err)
 	}
 	//sender.Close()
 	response := &CommandResponse{}
-	log.Println("Receiving response")
 	err = receiver.Receive(response)
-	log.Println("Received")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -66,7 +64,6 @@ func Client(task *Task, proto *string, socket *string) int {
 	//sender.Close()
 	//remoteSender.Close()
 	//client.Close()
-	log.Println("All done, returning")
 	return response.Status
 	//	os.Exit(response.Status)
 }

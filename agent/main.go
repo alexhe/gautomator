@@ -4,6 +4,8 @@ import (
 	//	"fmt"
 	//	"github.com/nu7hatch/gouuid"
 	"flag"
+	"fmt"
+	//	"github.com/gonum/matrix/mat64"
 	"github.com/owulveryck/flue"
 	"io/ioutil"
 	"log"
@@ -54,19 +56,23 @@ func main() {
 		// How many tasks
 
 		var wg sync.WaitGroup
-		taskStructureChan := make(chan *flue.TaskGraphStructure)
 		doneChan := make(chan *flue.Task)
-		for i, task := range taskStructure.Tasks {
-			if task != nil {
-				go flue.Runner(taskStructure, task, taskStructureChan, doneChan, &wg)
-				wg.Add(1)
-				log.Printf("=> Tache %v: %s", i, task.Name)
-				for j, dep := range task.Deps {
-					log.Printf("==> Deps[%v]: %v", j, dep)
-				}
-			}
+		// DEBUG
+		fmt.Println("Ajacency Matrix")
+		flue.PrintAdjacencyMatrix(taskStructure)
+		fmt.Println("Degree Matrix")
+		flue.PrintDegreeMatrix(taskStructure)
+
+		// END DEBUG
+
+		// For each task, if it can run, place true in its communication channel
+		for taskIndex, _ := range taskStructure.Tasks {
+			log.Printf("taskIndex: %v", taskIndex)
+			go flue.Runner(taskStructure.Tasks[taskIndex], doneChan, &wg)
+			wg.Add(1)
 		}
-		go flue.Advertize(taskStructure, taskStructureChan, doneChan)
+		go flue.Advertize(taskStructure, doneChan)
+
 		router := flue.NewRouter(*taskStructure)
 
 		go log.Fatal(http.ListenAndServe(":8080", router))
