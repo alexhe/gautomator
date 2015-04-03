@@ -1,11 +1,8 @@
 package main
 
 import (
-	//	"fmt"
-	//	"github.com/nu7hatch/gouuid"
+	"encoding/json"
 	"flag"
-	"fmt"
-	//	"github.com/gonum/matrix/mat64"
 	"github.com/owulveryck/flue"
 	"io/ioutil"
 	"log"
@@ -53,15 +50,14 @@ func main() {
 
 		log.Println("Parsing...")
 		taskStructure := flue.ParseTasks(topologyDot)
-		// How many tasks
 
+		// TEST
+		sigmaStructure := flue.GetSigmaStructure(taskStructure)
+		jsonOutput, _ := json.Marshal(sigmaStructure)
+		log.Println(string(jsonOutput))
+		// End TEST
 		var wg sync.WaitGroup
 		doneChan := make(chan *flue.Task)
-		// DEBUG
-		fmt.Println("Ajacency Matrix")
-		flue.PrintAdjacencyMatrix(taskStructure)
-		fmt.Println("Degree Matrix")
-		flue.PrintDegreeMatrix(taskStructure)
 
 		// END DEBUG
 

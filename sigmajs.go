@@ -23,10 +23,17 @@ type SigmaStructure struct {
 	Edges []*SigmaEdge
 }
 
+func (this *SigmaStructure) AddEdge(sigmaEdge *SigmaEdge) {
+	this.Edges = append(this.Edges, sigmaEdge)
+}
+func (this *SigmaStructure) AddNode(sigmaNode *SigmaNode) {
+	this.Nodes = append(this.Nodes, sigmaNode)
+}
+
 func NewSigmaStructure() *SigmaStructure {
 	return &SigmaStructure{
-		make([]*SigmaNode, 2),
-		make([]*SigmaEdge, 1),
+		make([]*SigmaNode, 0),
+		make([]*SigmaEdge, 0),
 	}
 }
 func NewSigmaEdge() *SigmaEdge {
@@ -48,9 +55,30 @@ func NewSigmaNode() *SigmaNode {
 		"Def",
 	}
 }
-
-func GetSigmaTaskStructure(taskGraphStructure *TaskGraphStructure) *SigmaStructure {
+func GetSigmaStructure(taskGraphStructure *TaskGraphStructure) *SigmaStructure {
 	// First parse the taskGraphStructure.Tasks and create the node array
-	return nil
-
+	var sigmaStructure *SigmaStructure
+	sigmaStructure = NewSigmaStructure()
+	for _, task := range taskGraphStructure.Tasks {
+		sigmaNode := NewSigmaNode()
+		sigmaNode.Id = task.Id
+		sigmaNode.Label = task.Name
+		sigmaStructure.AddNode(sigmaNode)
+	}
+	rowSize, colSize := taskGraphStructure.AdjacencyMatrix.Dims()
+	edgeId := 1
+	for r := 0; r < rowSize; r++ {
+		for c := 0; c < colSize; c++ {
+			// If there is a link, create the edge
+			if taskGraphStructure.AdjacencyMatrix.At(r, c) != 0 {
+				sigmaEdge := NewSigmaEdge()
+				sigmaEdge.Id = edgeId
+				sigmaEdge.Source = r
+				sigmaEdge.Target = c
+				edgeId += 1
+				sigmaStructure.AddEdge(sigmaEdge)
+			}
+		}
+	}
+	return sigmaStructure
 }
