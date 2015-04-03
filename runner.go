@@ -1,6 +1,7 @@
 package flue
 
 import (
+	"github.com/gonum/matrix/mat64" // Matrix
 	"log"
 	"math/rand" // Temp
 	"strconv"
@@ -66,24 +67,26 @@ func Advertize(taskStructure *TaskGraphStructure, doneChan <-chan *Task) {
 			taskStructure.Tasks[taskIndex].TaskCanRunChan <- true
 		}
 	}
+	doneAdjacency := mat64.DenseCopyOf(taskStructure.AdjacencyMatrix)
 	for {
 		task := <-doneChan
 
 		//TODO : There is absolutely no need to change the adjacency matrix AT ALL
+		// It is a lot better to create a copy
 
 		// Adapting the Adjacency matrix...
 		// TaskId is finished, it cannot be the source of any task anymore
 		// Set the row at 0
-		rowSize, colSize := taskStructure.AdjacencyMatrix.Dims()
+		rowSize, colSize := doneAdjacency.Dims()
 		for c := 0; c < colSize; c++ {
-			taskStructure.AdjacencyMatrix.Set(task.Id, c, float64(0))
+			doneAdjacency.Set(task.Id, c, float64(0))
 		}
 		// For each dependency of the task
 		// We can run if the sum of the element of the column Id of the current task is 0
 		for taskIndex, _ := range taskStructure.Tasks {
 			sum := float64(0)
 			for r := 0; r < rowSize; r++ {
-				sum += taskStructure.AdjacencyMatrix.At(r, taskIndex)
+				sum += doneAdjacency.At(r, taskIndex)
 			}
 
 			if sum == 0 && taskStructure.Tasks[taskIndex].Status == -2 {
