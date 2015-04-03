@@ -13,7 +13,12 @@ type SigmaNode struct {
 }
 
 type SigmaEdge struct {
-	id     int
-	source int
-	target int
+	Id     int
+	Source int
+	Target int
+}
+
+type SigmaJson struct {
+	Edges []SigmaEdge
+	Nodes []SigmaNode
 }
