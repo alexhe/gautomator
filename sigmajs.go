@@ -18,7 +18,11 @@ type SigmaEdge struct {
 	Target int
 }
 
-type SigmaJson struct {
+type SigmaStructure struct {
 	Edges []SigmaEdge
 	Nodes []SigmaNode
+}
+
+func GetSigmaTaskStructure(taskGraphStructure *TaskGraphStructure) *SigmaStructure {
+
 }
