@@ -17,11 +17,13 @@ type Route struct {
 type Routes []Route
 
 // Courtesy of http://stackoverflow.com/questions/26211954/how-do-i-pass-arguments-to-my-handler
-func showTasks(w http.ResponseWriter, r *http.Request, taskStruct TaskGraphStructure) {
-	json.NewEncoder(w).Encode(taskStruct)
+func showTasks(w http.ResponseWriter, r *http.Request, taskStructure *TaskGraphStructure) {
+	sigmaStructure := GetSigmaStructure(taskStructure)
+	//	jsonOutput, _ := json.Marshal(sigmaStructure)
+	json.NewEncoder(w).Encode(sigmaStructure)
 }
 
-func NewRouter(taskStruct TaskGraphStructure) *mux.Router {
+func NewRouter(taskStruct *TaskGraphStructure) *mux.Router {
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.Headers("Content-Type", "application/json", "X-Requested-With", "XMLHttpRequest")

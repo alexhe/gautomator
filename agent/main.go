@@ -69,7 +69,7 @@ func main() {
 		}
 		go flue.Advertize(taskStructure, doneChan)
 
-		router := flue.NewRouter(*taskStructure)
+		router := flue.NewRouter(taskStructure)
 
 		go log.Fatal(http.ListenAndServe(":8080", router))
 		wg.Wait()
