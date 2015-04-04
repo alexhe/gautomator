@@ -24,7 +24,6 @@ type Task struct {
 // This is the structure corresponding to the "dot-graph" of a task list
 // We store the nodes in a map
 // The index is the source node
-// The value is an array of strings containing the destination
 type TaskGraphStructure struct {
 	Tasks           map[int]*Task
 	DegreeMatrix    *mat64.Dense
