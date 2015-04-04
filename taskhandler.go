@@ -31,27 +31,27 @@ type TaskGraphStructure struct {
 	// Col id is the map id of the destination task
 }
 
-func PrintAdjacencyMatrix(taskStructure *TaskGraphStructure) {
-	rowSize, colSize := taskStructure.AdjacencyMatrix.Dims()
+func (this *TaskGraphStructure) PrintAdjacencyMatrix() {
+	rowSize, colSize := this.AdjacencyMatrix.Dims()
 	fmt.Printf("  ")
 	for c := 0; c < colSize; c++ {
-		fmt.Printf("%v ", taskStructure.Tasks[c].Name)
+		fmt.Printf("%v ", this.Tasks[c].Name)
 	}
 	fmt.Printf("\n")
 	for r := 0; r < rowSize; r++ {
-		fmt.Printf("%v ", taskStructure.Tasks[r].Name)
+		fmt.Printf("%v ", this.Tasks[r].Name)
 		for c := 0; c < colSize; c++ {
-			fmt.Printf("%v ", taskStructure.AdjacencyMatrix.At(r, c))
+			fmt.Printf("%v ", this.AdjacencyMatrix.At(r, c))
 		}
 		fmt.Printf("\n")
 	}
 }
 
-func PrintDegreeMatrix(taskStructure *TaskGraphStructure) {
-	rowSize, colSize := taskStructure.DegreeMatrix.Dims()
+func (this *TaskGraphStructure) PrintDegreeMatrix() {
+	rowSize, colSize := this.DegreeMatrix.Dims()
 	for r := 0; r < rowSize; r++ {
 		for c := 0; c < colSize; c++ {
-			fmt.Printf("%v ", taskStructure.DegreeMatrix.At(r, c))
+			fmt.Printf("%v ", this.DegreeMatrix.At(r, c))
 		}
 		fmt.Printf("\n")
 	}
