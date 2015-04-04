@@ -17,16 +17,24 @@ What **flue** should be someday:
 - Not too difficult to learn (I will tell you that in a few weeks)
 - A lot of library exists in the standard implementation
 
-# Principles
+# WIP
 
-I separate the topology in layers.
-By now, I count 4 layers, but there may be more in the future.
-- Layer 0: the infrastructure layer. Here we are talking about `os`, `ssh`, `users`, `ports` and so on.
-- Layer 3: the product layer. Here we are talking about `apache`, `nginx`, `weblogic`, `jboss`, ...
-- Layer 5: the middleware layer. Here we are talking about applicative architecture: `producer`, `consummer`, `database`, `webserver`
-- Layer 7: the applicative layer. Here we are talking about `ear`, `war`, `zip`, `html`, `sql`, ...
+## What's working:
+- The task parsing (from a dot file)
+- The remote task execution implementing the libchan from docker
+- the web server and the REST api is in progress but working
 
-**Flue** should be able to deploy any layer, and any composant of the layer.
+## How to:
+1) launch a server in a terminal: `go run agent/main.go`
+2) launch a "client" from another terminal: `go run agent/main.go -dot=example.dot`
+3) follow the stream on `http://localhost:8080/sigma.html`
+
+## What's next:
+- pass several tasks on the command line
+- merge the tasks
+- clean the web server and the REST code
+- clean all the code
+- implement the "node" concept
 
 # How to
 
