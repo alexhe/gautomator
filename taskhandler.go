@@ -78,3 +78,9 @@ func NewTaskGraphStructure() *TaskGraphStructure {
 		mat64.NewDense(0, 0, nil),
 	}
 }
+
+// Returns a combination of the current structure
+// and the one passed as argument
+func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStructure) *TaskGraphStructure {
+
+}
