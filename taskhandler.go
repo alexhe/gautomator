@@ -82,5 +82,5 @@ func NewTaskGraphStructure() *TaskGraphStructure {
 // Returns a combination of the current structure
 // and the one passed as argument
 func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStructure) *TaskGraphStructure {
-
+	return nil
 }
