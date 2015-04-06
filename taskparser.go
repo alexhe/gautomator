@@ -3,7 +3,6 @@ package flue
 import (
 	"github.com/awalterschulze/gographviz"
 	"github.com/gonum/matrix/mat64"
-	"log"
 )
 
 func AppendTask(slice []*Task, task *Task) []*Task {
