@@ -30,6 +30,8 @@ func main() {
 		var taskStructureArray []*flue.TaskGraphStructure
 
 		taskStructureArray = make([]*flue.TaskGraphStructure, len(dotFiles), len(dotFiles))
+		var taskStructure *flue.TaskGraphStructure
+		taskStructure = nil
 		for index, dotFile := range dotFiles {
 
 			var topologyDot []byte
@@ -40,10 +42,7 @@ func main() {
 
 			log.Printf("Parsing the file %v (%v)...", dotFile, index)
 			taskStructureArray[index] = flue.ParseTasks(topologyDot)
-			log.Printf("taskStructureArray[%v] filled", index)
 		}
-		var taskStructure *flue.TaskGraphStructure
-		taskStructure = nil
 		for index, taskStruct := range taskStructureArray {
 			if index == 0 {
 				taskStructure = taskStruct
@@ -51,14 +50,12 @@ func main() {
 				taskStructure = taskStructure.AugmentTaskStructure(taskStruct)
 			}
 		}
-		//taskStructure.PrintAdjacencyMatrix()
 		// Entering the workers area
 		var wg sync.WaitGroup
 		doneChan := make(chan *flue.Task)
 
 		// For each task, if it can run, place true in its communication channel
 		for taskIndex, _ := range taskStructure.Tasks {
-			log.Printf("taskIndex: %v", taskIndex)
 			go flue.Runner(taskStructure.Tasks[taskIndex], doneChan, &wg)
 			wg.Add(1)
 		}

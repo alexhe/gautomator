@@ -23,7 +23,7 @@ func random(min int, max int) int {
 // Post the task to the doncChannel once done
 //
 func Runner(task *Task, doneChan chan<- *Task, wg *sync.WaitGroup) {
-	log.Printf("[Name:%v] Queued", task.Name)
+	log.Printf("[%v:%v] Queued", task.Id, task.Name)
 	for {
 		letsGo := <-task.TaskCanRunChan
 		// For each dependency of the task
@@ -36,7 +36,7 @@ func Runner(task *Task, doneChan chan<- *Task, wg *sync.WaitGroup) {
 			task.Module = "sleep"
 			task.Args = []string{strconv.Itoa(sleepTime)}
 			task.Status = -1
-			log.Printf("[%v] Running (%v %v)", task.Name, task.Module, task.Args[0])
+			log.Printf("[%v:%v] Running (%v %v)", task.Id, task.Name, task.Module, task.Args[0])
 			//log.Printf("[%v] Connecting in %v on %v", task.Name, proto, socket)
 			task.StartTime = time.Now()
 			task.Status = Client(task, &proto, &socket)
@@ -46,7 +46,7 @@ func Runner(task *Task, doneChan chan<- *Task, wg *sync.WaitGroup) {
 			// Adjust the Status
 			//task.Status = 2
 			// Send it on the channel
-			log.Printf("[%v] Done", task.Name)
+			log.Printf("[%v:%v] Done", task.Id, task.Name)
 			doneChan <- task
 			wg.Done()
 			//return

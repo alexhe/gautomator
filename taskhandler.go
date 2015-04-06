@@ -130,6 +130,7 @@ func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStr
 	//TODO: Merge the tasks
 	actualSize := len(this.Tasks)
 	for i, task := range taskStructure.Tasks {
+		task.Id = actualSize + i
 		this.Tasks[actualSize+i] = task
 	}
 	this.PrintAdjacencyMatrix()
