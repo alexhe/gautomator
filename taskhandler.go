@@ -3,6 +3,7 @@ package flue
 import (
 	"fmt"
 	"github.com/gonum/matrix/mat64" // Matrix
+	"log"
 	"time"
 )
 
@@ -82,7 +83,29 @@ func NewTaskGraphStructure() *TaskGraphStructure {
 // Returns a combination of the current structure
 // and the one passed as argument
 func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStructure) *TaskGraphStructure {
-	this.AdjacencyMatrix.Grow(taskStructure.AdjacencyMatrix.Dims())
-	this.DegreeMatrix.Grow(taskStructure.DegreeMatrix.Dims())
-	return nil
+	initialRowLen, initialColLen := this.AdjacencyMatrix.Dims()
+	addedRowLen, addedColLen := taskStructure.AdjacencyMatrix.Dims()
+	log.Printf("ir:%v, ic:%v, ar:%v, ac:%v, r:%v, c:%v", initialRowLen, initialColLen, addedRowLen, addedColLen, initialRowLen+addedRowLen, initialColLen+addedColLen)
+	this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(addedRowLen, addedColLen))
+	for r := 0; r < initialRowLen+addedRowLen; r++ {
+		for c := 0; c < initialColLen+addedColLen; c++ {
+			switch {
+			case r < initialRowLen && c < initialColLen:
+				// If we are in the original matrix: do nothing
+			case r < initialRowLen && c > initialColLen:
+				// If outside, put some zero
+				this.AdjacencyMatrix.Set(r, c, float64(0))
+			case r > initialRowLen && c < initialColLen:
+				// If outside, put some zero
+				this.AdjacencyMatrix.Set(r, c, float64(0))
+			case r > initialRowLen && c > initialColLen:
+				// Add the new matrix
+				this.AdjacencyMatrix.Set(r, c, float64(0))
+			}
+		}
+	}
+	//this.DegreeMatrix.Grow(taskStructure.DegreeMatrix.Dims())
+	//this.PrintAdjacencyMatrix()
+	log.Println("Returning...")
+	return this
 }
