@@ -1,16 +1,12 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"github.com/owulveryck/flue"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"sync"
-	//	"os"
-	//	    "syscall"
-	//	"os/signal"
 )
 
 func cleanup() {
@@ -19,23 +15,11 @@ func cleanup() {
 
 func main() {
 
-	/*
-		// Catching the interrupt
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, os.Interrupt)
-		signal.Notify(c, syscall.SIGTERM)
-		go func() {
-		    <-c
-		    cleanup()
-		    os.Exit(1)
-		}()
-	*/
 	//Parsing the dot
 	var dotFiles []string
 	flag.Parse()
 	dotFiles = flag.Args()
-	log.Printf("tail: %v", dotFiles)
-	if dotFiles == []string(nil) {
+	if len(dotFiles) == 0 {
 		log.Println("Server mode")
 		proto := "tcp"
 		socket := "localhost:4546"
