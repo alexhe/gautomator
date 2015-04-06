@@ -34,13 +34,13 @@ type TaskGraphStructure struct {
 
 func (this *TaskGraphStructure) PrintAdjacencyMatrix() {
 	rowSize, colSize := this.AdjacencyMatrix.Dims()
-	//	fmt.Printf("  ")
-	//	for c := 0; c < colSize; c++ {
-	//		fmt.Printf("%v ", this.Tasks[c].Name)
-	//	}
+	fmt.Printf("  ")
+	for c := 0; c < colSize; c++ {
+		fmt.Printf("%v ", this.Tasks[c].Name)
+	}
 	fmt.Printf("\n")
 	for r := 0; r < rowSize; r++ {
-		//		fmt.Printf("%v ", this.Tasks[r].Name)
+		fmt.Printf("%v ", this.Tasks[r].Name)
 		for c := 0; c < colSize; c++ {
 			fmt.Printf("%v ", this.AdjacencyMatrix.At(r, c))
 		}
@@ -127,8 +127,12 @@ func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStr
 			}
 		}
 	}
+	//TODO: Merge the tasks
+	actualSize := len(this.Tasks)
+	for i, task := range taskStructure.Tasks {
+		this.Tasks[actualSize+i] = task
+	}
 	this.PrintAdjacencyMatrix()
 	this.PrintDegreeMatrix()
-	//TODO: Merge the tasks
 	return this
 }
