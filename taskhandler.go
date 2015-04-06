@@ -34,13 +34,13 @@ type TaskGraphStructure struct {
 
 func (this *TaskGraphStructure) PrintAdjacencyMatrix() {
 	rowSize, colSize := this.AdjacencyMatrix.Dims()
-	fmt.Printf("  ")
-	for c := 0; c < colSize; c++ {
-		fmt.Printf("%v ", this.Tasks[c].Name)
-	}
+	//	fmt.Printf("  ")
+	//	for c := 0; c < colSize; c++ {
+	//		fmt.Printf("%v ", this.Tasks[c].Name)
+	//	}
 	fmt.Printf("\n")
 	for r := 0; r < rowSize; r++ {
-		fmt.Printf("%v ", this.Tasks[r].Name)
+		//		fmt.Printf("%v ", this.Tasks[r].Name)
 		for c := 0; c < colSize; c++ {
 			fmt.Printf("%v ", this.AdjacencyMatrix.At(r, c))
 		}
@@ -83,12 +83,13 @@ func NewTaskGraphStructure() *TaskGraphStructure {
 // Returns a combination of the current structure
 // and the one passed as argument
 func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStructure) *TaskGraphStructure {
+	// merging adjacency matrix
 	initialRowLen, initialColLen := this.AdjacencyMatrix.Dims()
 	addedRowLen, addedColLen := taskStructure.AdjacencyMatrix.Dims()
-	log.Printf("ir:%v, ic:%v, ar:%v, ac:%v, r:%v, c:%v", initialRowLen, initialColLen, addedRowLen, addedColLen, initialRowLen+addedRowLen, initialColLen+addedColLen)
 	this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(addedRowLen, addedColLen))
 	for r := 0; r < initialRowLen+addedRowLen; r++ {
 		for c := 0; c < initialColLen+addedColLen; c++ {
+			log.Printf("r:%v,c:%v", r, c)
 			switch {
 			case r < initialRowLen && c < initialColLen:
 				// If we are in the original matrix: do nothing
@@ -98,14 +99,36 @@ func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStr
 			case r > initialRowLen && c < initialColLen:
 				// If outside, put some zero
 				this.AdjacencyMatrix.Set(r, c, float64(0))
-			case r > initialRowLen && c > initialColLen:
+			case r >= initialRowLen && c >= initialColLen:
 				// Add the new matrix
-				this.AdjacencyMatrix.Set(r, c, float64(0))
+				this.AdjacencyMatrix.Set(r, c, taskStructure.AdjacencyMatrix.At(r-addedRowLen, c-addedColLen))
+			}
+		}
+	}
+	// merging degree matrix
+	initialRowLen, initialColLen = this.DegreeMatrix.Dims()
+	addedRowLen, addedColLen = taskStructure.DegreeMatrix.Dims()
+	this.DegreeMatrix = mat64.DenseCopyOf(this.DegreeMatrix.Grow(addedRowLen, addedColLen))
+	for r := 0; r < initialRowLen+addedRowLen; r++ {
+		for c := 0; c < initialColLen+addedColLen; c++ {
+			log.Printf("r:%v,c:%v", r, c)
+			switch {
+			case r < initialRowLen && c < initialColLen:
+				// If we are in the original matrix: do nothing
+			case r < initialRowLen && c > initialColLen:
+				// If outside, put some zero
+				this.DegreeMatrix.Set(r, c, float64(0))
+			case r > initialRowLen && c < initialColLen:
+				// If outside, put some zero
+				this.DegreeMatrix.Set(r, c, float64(0))
+			case r >= initialRowLen && c >= initialColLen:
+				// Add the new matrix
+				this.DegreeMatrix.Set(r, c, taskStructure.DegreeMatrix.At(r-addedRowLen, c-addedColLen))
 			}
 		}
 	}
 	//this.DegreeMatrix.Grow(taskStructure.DegreeMatrix.Dims())
-	//this.PrintAdjacencyMatrix()
-	log.Println("Returning...")
+	this.PrintAdjacencyMatrix()
+	this.PrintDegreeMatrix()
 	return this
 }
