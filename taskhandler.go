@@ -116,10 +116,10 @@ func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStr
 			case r < initialRowLen && c < initialColLen:
 				// If we are in the original matrix: do nothing
 			case r < initialRowLen && c > initialColLen:
-				// If outside, put some zero
+				// If outside, set zero
 				this.DegreeMatrix.Set(r, c, float64(0))
 			case r > initialRowLen && c < initialColLen:
-				// If outside, put some zero
+				// If outside, set zero
 				this.DegreeMatrix.Set(r, c, float64(0))
 			case r >= initialRowLen && c >= initialColLen:
 				// Add the new matrix
@@ -127,8 +127,8 @@ func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStr
 			}
 		}
 	}
-	//this.DegreeMatrix.Grow(taskStructure.DegreeMatrix.Dims())
 	this.PrintAdjacencyMatrix()
 	this.PrintDegreeMatrix()
+	//TODO: Merge the tasks
 	return this
 }
