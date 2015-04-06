@@ -10,6 +10,7 @@ import (
 // A task is an action executed by a module
 type Task struct {
 	Id     int
+	Origin string
 	Name   string //the task name
 	Node   string // The node name
 	Module string
@@ -61,6 +62,7 @@ func (this *TaskGraphStructure) PrintDegreeMatrix() {
 func NewTask() *Task {
 	return &Task{
 		-1,
+		"null",
 		"null",
 		"localhost",
 		"dummy",
@@ -127,13 +129,10 @@ func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStr
 			}
 		}
 	}
-	//TODO: Merge the tasks
 	actualSize := len(this.Tasks)
 	for i, task := range taskStructure.Tasks {
 		task.Id = actualSize + i
 		this.Tasks[actualSize+i] = task
 	}
-	this.PrintAdjacencyMatrix()
-	this.PrintDegreeMatrix()
 	return this
 }
