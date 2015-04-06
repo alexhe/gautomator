@@ -136,3 +136,19 @@ func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStr
 	}
 	return this
 }
+
+// the aim of this function is to find if a task has a subdefinition (aka an origin) and change it
+// Example:
+// imagine the graphs
+// digraph bla {
+//    a -> b;
+//    b -> c;
+// }
+// digraph b {
+//    alpha -> gamma;
+// }
+// then alpha and beta will have "b" as Origin.
+// therefore we should add a link in the AdjacencyMatix and in the DegreeMatrix
+func (this *TaskGraphStructure) RationalizeTaskStructure() *TaskGraphStructure {
+	return nil
+}
