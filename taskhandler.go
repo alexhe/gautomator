@@ -89,8 +89,8 @@ func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStr
 	initialRowLen, initialColLen := this.AdjacencyMatrix.Dims()
 	addedRowLen, addedColLen := taskStructure.AdjacencyMatrix.Dims()
 	this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(addedRowLen, addedColLen))
-	a,b:=this.AdjacencyMatrix.Dims()
-	log.Printf("DEBUG: %v,%v",a,b)
+	a, b := this.AdjacencyMatrix.Dims()
+	log.Printf("DEBUG: %v,%v", a, b)
 	for r := 0; r < initialRowLen+addedRowLen; r++ {
 		for c := 0; c < initialColLen+addedColLen; c++ {
 			log.Printf("Adjacency r:%v,c:%v", r, c)
@@ -140,31 +140,32 @@ func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStr
 }
 
 func (this *TaskGraphStructure) getTaskFromName(name string) (int, *Task) {
-    for index, task := range this.Tasks {
-	if task.Name == name {
-	    return index, task
+	for index, task := range this.Tasks {
+		if task.Name == name {
+			return index, task
+		}
 	}
-    }
-    return -1, nil
+	return -1, nil
 }
 
 func colSum(matrix *mat64.Dense, colId int) float64 {
-    row, _ := matrix.Dims()
-    sum := float64(0)
-    for r := 0 ; r < row ; r++ {
-	sum += matrix.At(r, colId)
-    }
-    return sum
+	row, _ := matrix.Dims()
+	sum := float64(0)
+	for r := 0; r < row; r++ {
+		sum += matrix.At(r, colId)
+	}
+	return sum
 }
 
 func rowSum(matrix *mat64.Dense, rowId int) float64 {
-    _, col := matrix.Dims()
-    sum := float64(0)
-    for c := 0 ; c < col ; c++ {
-	sum += matrix.At(rowId, c)	
-    }
-    return sum
+	_, col := matrix.Dims()
+	sum := float64(0)
+	for c := 0; c < col; c++ {
+		sum += matrix.At(rowId, c)
+	}
+	return sum
 }
+
 // the aim of this function is to find if a task has a subdefinition (aka an origin) and change it
 // Example:
 // imagine the graphs
@@ -178,35 +179,46 @@ func rowSum(matrix *mat64.Dense, rowId int) float64 {
 // then alpha and beta will have "b" as Origin.
 // therefore we should add a link in the AdjacencyMatix and in the DegreeMatrix
 func (this *TaskGraphStructure) Relink() *TaskGraphStructure {
-    _, col := this.AdjacencyMatrix.Dims()
-    for _, task := range this.Tasks {
-	if colSum(this.AdjacencyMatrix, task.Id) == 0 {
-	    id, _ := this.getTaskFromName(task.Origin)
-	    if id != -1 {
-		this.AdjacencyMatrix.Set(id, task.Id, float64(1))
-	    }
-	}
-	if rowSum(this.AdjacencyMatrix, task.Id) == 0 {
-	    id, _ := this.getTaskFromName(task.Origin)
-	    if id != -1 {
-		for c :=0 ; c < col ; c++ {
-		    this.AdjacencyMatrix.Set(task.Id,c,this.AdjacencyMatrix.At(task.Id,c) + this.AdjacencyMatrix.At(id,c))
+	_, col := this.AdjacencyMatrix.Dims()
+	for _, task := range this.Tasks {
+		if colSum(this.AdjacencyMatrix, task.Id) == 0 {
+			id, _ := this.getTaskFromName(task.Origin)
+			if id != -1 {
+				this.AdjacencyMatrix.Set(id, task.Id, float64(1))
+			}
 		}
-	    }
+		if rowSum(this.AdjacencyMatrix, task.Id) == 0 {
+			id, _ := this.getTaskFromName(task.Origin)
+			if id != -1 {
+				for c := 0; c < col; c++ {
+					this.AdjacencyMatrix.Set(task.Id, c, this.AdjacencyMatrix.At(task.Id, c)+this.AdjacencyMatrix.At(id, c))
+				}
+			}
+		}
 	}
-    }
-    /*
-    for each task {
-          // Relink the origin 
-          if sum(col(task)) = 0 {
-	       set 1 at Adjacency(rowId(origin),colId(task))
-	   }
-	   // Relink the destination
-	   if sum(row(task)) = 0 {
-		row(task)=row(task)+row(origin)
-	   }
-       }
+	//TODO: complete the degreematrix
+	return this
+}
 
-    */
-    return this
+// Duplicate the task "id"
+// Returns the id of the new task and the whole structure
+func (this *TaskGraphStructure) DuplicateTask(id int) (int, *TaskGraphStructure) {
+	row, col := this.AdjacencyMatrix.Dims()
+	// Add the task to the list
+	origin := this.Tasks[id]
+	newId := row + 1
+	newTask := origin
+	newTask.Id = newId
+	this.Tasks[newId] = newTask
+	// Adjust the AdjacencyMatrix
+	this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(1, 1))
+	// Copy the row 'id' to row 'newId'
+	for r := 0; r < newId; r++ {
+		this.AdjacencyMatrix.Set(r, newId, this.AdjacencyMatrix.At(r, id))
+	}
+	// Copy the col 'id' to col 'newId'
+	for c := 0; c < newId; c++ {
+		this.AdjacencyMatrix.Set(newId, c, this.AdjacencyMatrix.At(id, c))
+	}
+	return this
 }
