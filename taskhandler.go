@@ -181,7 +181,9 @@ func (this *TaskGraphStructure) RationalizeTaskStructure() *TaskGraphStructure {
     for _, task := range this.Tasks {
 	if colSum(this.AdjacencyMatrix, task.Id) == 0 {
 	    id, _ := this.getTaskFromName(task.Origin)
-	    this.AdjacencyMatrix.Set(id, task.Id, float64(1))
+	    if id != -1 {
+		this.AdjacencyMatrix.Set(id, task.Id, float64(1))
+	    }
 	}
     }
     /*
