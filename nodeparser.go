@@ -6,8 +6,8 @@ import (
 	"io/ioutil"
 )
 
-func ParseNode(filename string) *TaskDefinition {
-	taskDefJson, err := ioutil.ReadFile(filename)
+func ParseNode(filename *string) *TaskDefinition {
+	taskDefJson, err := ioutil.ReadFile(*filename)
 
 	if err != nil {
 		fmt.Println("Err is ", err)

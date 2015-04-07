@@ -16,7 +16,7 @@ func main() {
 
 	//Parsing the dot
 	var dotFiles []string
-	//var nodesFileJson = flag.String("nodes", "", "json file for node definition")
+	var nodesFileJson = flag.String("nodes", "", "json file for node definition")
 	flag.Parse()
 	dotFiles = flag.Args()
 	if len(dotFiles) == 0 {
@@ -29,6 +29,7 @@ func main() {
 
 		taskStructure := flue.ParseDotFiles(dotFiles)
 		// Parse the nodes.json and adapt the tasks
+		_ = flue.ParseNode(nodesFileJson)
 
 		// Entering the workers area
 		var wg sync.WaitGroup

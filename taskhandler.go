@@ -3,7 +3,6 @@ package flue
 import (
 	"fmt"
 	"github.com/gonum/matrix/mat64" // Matrix
-	"log"
 	"time"
 )
 
@@ -89,11 +88,9 @@ func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStr
 	initialRowLen, initialColLen := this.AdjacencyMatrix.Dims()
 	addedRowLen, addedColLen := taskStructure.AdjacencyMatrix.Dims()
 	this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(addedRowLen, addedColLen))
-	a, b := this.AdjacencyMatrix.Dims()
-	log.Printf("DEBUG: %v,%v", a, b)
+	//a, b := this.AdjacencyMatrix.Dims()
 	for r := 0; r < initialRowLen+addedRowLen; r++ {
 		for c := 0; c < initialColLen+addedColLen; c++ {
-			log.Printf("Adjacency r:%v,c:%v", r, c)
 			switch {
 			case r < initialRowLen && c < initialColLen:
 				// If we are in the original matrix: do nothing
@@ -115,7 +112,6 @@ func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStr
 	this.DegreeMatrix = mat64.DenseCopyOf(this.DegreeMatrix.Grow(addedRowLen, addedColLen))
 	for r := 0; r < initialRowLen+addedRowLen; r++ {
 		for c := 0; c < initialColLen+addedColLen; c++ {
-			log.Printf("Degree r:%v,c:%v", r, c)
 			switch {
 			case r < initialRowLen && c < initialColLen:
 				// If we are in the original matrix: do nothing

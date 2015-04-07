@@ -35,7 +35,6 @@ func (this *TaskGraphStructure) AddPortEdge(src, srcPort, dst, dstPort string, d
 	increment := 0 // The number of new lines and cols needed
 	for taskId, taskObject := range this.Tasks {
 		if taskObject != nil {
-			//log.Println("Current task is",taskObject.Name)
 			// If the task exists, add src as a dependency
 			if taskObject.Name == dst {
 				dstTaskId = taskId
@@ -107,12 +106,9 @@ func ParseTasks(topologyDot []byte) *TaskGraphStructure {
 		panic(err)
 	}
 	// Display the graph
-	//fmt.Println(parsed)
 	var topology *TaskGraphStructure
 	topology = NewTaskGraphStructure()
 	gographviz.Analyse(parsed, topology)
-	//fmt.Println(topology.role["Ref2"][0])
-	//fmt.Println(topology.role["Ref1"][1])
 	return topology
 }
 
@@ -135,7 +131,6 @@ func ParseDotFiles(dotFiles []string) *TaskGraphStructure {
 			log.Panic("Cannot read file: ", dotFile)
 		}
 
-		//log.Printf("Parsing the file %v (%v)...", dotFile, index)
 		taskStructureArray[index] = ParseTasks(topologyDot)
 	}
 	for index, taskStruct := range taskStructureArray {
