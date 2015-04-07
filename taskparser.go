@@ -3,6 +3,8 @@ package flue
 import (
 	"github.com/awalterschulze/gographviz"
 	"github.com/gonum/matrix/mat64"
+	"io/ioutil"
+	"log"
 )
 
 func AppendTask(slice []*Task, task *Task) []*Task {
@@ -115,4 +117,38 @@ func ParseTasks(topologyDot []byte) *TaskGraphStructure {
 	//fmt.Println(topology.role["Ref2"][0])
 	//fmt.Println(topology.role["Ref1"][1])
 	return topology
+}
+
+// Parse, relink etc... the files passed as argument
+func ParseDotFiles(dotFiles []string) *TaskGraphStructure {
+
+	// Initialization of the structures
+	var taskStructureArray []*TaskGraphStructure
+
+	taskStructureArray = make([]*TaskGraphStructure, len(dotFiles), len(dotFiles))
+	var taskStructure *TaskGraphStructure
+	taskStructure = nil
+	// Parsing each dot file
+	for index, dotFile := range dotFiles {
+
+		// TODO: if it's not a dotfile, continue
+		var topologyDot []byte
+		topologyDot, err := ioutil.ReadFile(dotFile)
+		if err != nil {
+			log.Panic("Cannot read file: ", dotFile)
+		}
+
+		//log.Printf("Parsing the file %v (%v)...", dotFile, index)
+		taskStructureArray[index] = ParseTasks(topologyDot)
+	}
+	for index, taskStruct := range taskStructureArray {
+		if index == 0 {
+			taskStructure = taskStruct
+		} else {
+			taskStructure = taskStructure.AugmentTaskStructure(taskStruct)
+		}
+	}
+	// Relink the graph
+	taskStructure = taskStructure.Relink()
+	return taskStructure
 }

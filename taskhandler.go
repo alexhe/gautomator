@@ -203,7 +203,7 @@ func (this *TaskGraphStructure) Relink() *TaskGraphStructure {
 // Duplicate the task "id"
 // Returns the id of the new task and the whole structure
 func (this *TaskGraphStructure) DuplicateTask(id int) (int, *TaskGraphStructure) {
-	row, col := this.AdjacencyMatrix.Dims()
+	row, _ := this.AdjacencyMatrix.Dims()
 	// Add the task to the list
 	origin := this.Tasks[id]
 	newId := row + 1
@@ -220,5 +220,5 @@ func (this *TaskGraphStructure) DuplicateTask(id int) (int, *TaskGraphStructure)
 	for c := 0; c < newId; c++ {
 		this.AdjacencyMatrix.Set(newId, c, this.AdjacencyMatrix.At(id, c))
 	}
-	return this
+	return newId, this
 }

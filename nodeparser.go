@@ -6,14 +6,14 @@ import (
 	"io/ioutil"
 )
 
-func ParseNode() {
-	rolesJson, err := ioutil.ReadFile("books/nodes.json")
+func ParseNode(filename string) *TaskDefinition {
+	taskDefJson, err := ioutil.ReadFile(filename)
 
 	if err != nil {
 		fmt.Println("Err is ", err)
 	}
 
-	var roles Roles
-	json.Unmarshal(rolesJson, &roles)
-	fmt.Println(roles)
+	var taskDef *TaskDefinition
+	json.Unmarshal(taskDefJson, taskDef)
+	return taskDef
 }

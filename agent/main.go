@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"github.com/owulveryck/flue"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"sync"
@@ -17,6 +16,7 @@ func main() {
 
 	//Parsing the dot
 	var dotFiles []string
+	//var nodesFileJson = flag.String("nodes", "", "json file for node definition")
 	flag.Parse()
 	dotFiles = flag.Args()
 	if len(dotFiles) == 0 {
@@ -26,31 +26,10 @@ func main() {
 		flue.Rserver(&proto, &socket)
 	} else {
 		log.Println("Client mode")
-		// Parsing each dot file
-		var taskStructureArray []*flue.TaskGraphStructure
 
-		taskStructureArray = make([]*flue.TaskGraphStructure, len(dotFiles), len(dotFiles))
-		var taskStructure *flue.TaskGraphStructure
-		taskStructure = nil
-		for index, dotFile := range dotFiles {
+		taskStructure := flue.ParseDotFiles(dotFiles)
+		// Parse the nodes.json and adapt the tasks
 
-			var topologyDot []byte
-			topologyDot, err := ioutil.ReadFile(dotFile)
-			if err != nil {
-				log.Panic("Cannot read file: ", dotFile)
-			}
-
-			log.Printf("Parsing the file %v (%v)...", dotFile, index)
-			taskStructureArray[index] = flue.ParseTasks(topologyDot)
-		}
-		for index, taskStruct := range taskStructureArray {
-			if index == 0 {
-				taskStructure = taskStruct
-			} else {
-				taskStructure = taskStructure.AugmentTaskStructure(taskStruct)
-			}
-		}
-		taskStructure = taskStructure.Relink()
 		// Entering the workers area
 		var wg sync.WaitGroup
 		doneChan := make(chan *flue.Task)
