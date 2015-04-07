@@ -177,12 +177,21 @@ func rowSum(matrix *mat64.Dense, rowId int) float64 {
 // }
 // then alpha and beta will have "b" as Origin.
 // therefore we should add a link in the AdjacencyMatix and in the DegreeMatrix
-func (this *TaskGraphStructure) RationalizeTaskStructure() *TaskGraphStructure {
+func (this *TaskGraphStructure) Relink() *TaskGraphStructure {
+    _, col := this.AdjacencyMatrix.Dims()
     for _, task := range this.Tasks {
 	if colSum(this.AdjacencyMatrix, task.Id) == 0 {
 	    id, _ := this.getTaskFromName(task.Origin)
 	    if id != -1 {
 		this.AdjacencyMatrix.Set(id, task.Id, float64(1))
+	    }
+	}
+	if rowSum(this.AdjacencyMatrix, task.Id) == 0 {
+	    id, _ := this.getTaskFromName(task.Origin)
+	    if id != -1 {
+		for c :=0 ; c < col ; c++ {
+		    this.AdjacencyMatrix.Set(task.Id,c,this.AdjacencyMatrix.At(task.Id,c) + this.AdjacencyMatrix.At(id,c))
+		}
 	    }
 	}
     }
@@ -199,5 +208,5 @@ func (this *TaskGraphStructure) RationalizeTaskStructure() *TaskGraphStructure {
        }
 
     */
-    return nil
+    return this
 }
