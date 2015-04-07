@@ -3,7 +3,7 @@ package flue
 import (
 	"github.com/awalterschulze/gographviz"
 	"github.com/gonum/matrix/mat64"
-	"log"
+	//"log"
 )
 
 func AppendTask(slice []*Task, task *Task) []*Task {
@@ -83,10 +83,12 @@ func (this *TaskGraphStructure) AddEdge(src, dst string, directed bool, attrs ma
 	this.AddPortEdge(src, "", dst, "", directed, attrs)
 }
 func (this *TaskGraphStructure) AddNode(parentGraph string, name string, attrs map[string]string) {
-	log.Printf("parentGraph: %v, name: %v", parentGraph, name)
-	for key, value := range attrs {
-		log.Printf("Arg: %v, Value:%v", key, value)
-	}
+	/*
+		log.Printf("parentGraph: %v, name: %v", parentGraph, name)
+		for key, value := range attrs {
+			log.Printf("Arg: %v, Value:%v", key, value)
+		}
+	*/
 
 }
 func (this *TaskGraphStructure) AddAttr(parentGraph string, field, value string) {}

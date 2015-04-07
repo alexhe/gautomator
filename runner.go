@@ -1,6 +1,7 @@
 package flue
 
 import (
+	"github.com/gonum/matrix/mat64" // Matrix
 	"log"
 	"math/rand" // Temp
 	"strconv"
@@ -22,7 +23,7 @@ func random(min int, max int) int {
 // Post the task to the doncChannel once done
 //
 func Runner(task *Task, doneChan chan<- *Task, wg *sync.WaitGroup) {
-	log.Printf("[Name:%v] Queued", task.Name)
+	log.Printf("[%v:%v] Queued", task.Id, task.Name)
 	for {
 		letsGo := <-task.TaskCanRunChan
 		// For each dependency of the task
@@ -35,7 +36,7 @@ func Runner(task *Task, doneChan chan<- *Task, wg *sync.WaitGroup) {
 			task.Module = "sleep"
 			task.Args = []string{strconv.Itoa(sleepTime)}
 			task.Status = -1
-			log.Printf("[%v] Running (%v %v)", task.Name, task.Module, task.Args[0])
+			log.Printf("[%v:%v] Running (%v %v)", task.Id, task.Name, task.Module, task.Args[0])
 			//log.Printf("[%v] Connecting in %v on %v", task.Name, proto, socket)
 			task.StartTime = time.Now()
 			task.Status = Client(task, &proto, &socket)
@@ -45,7 +46,7 @@ func Runner(task *Task, doneChan chan<- *Task, wg *sync.WaitGroup) {
 			// Adjust the Status
 			//task.Status = 2
 			// Send it on the channel
-			log.Printf("[%v] Done", task.Name)
+			log.Printf("[%v:%v] Done", task.Id, task.Name)
 			doneChan <- task
 			wg.Done()
 			//return
@@ -66,22 +67,26 @@ func Advertize(taskStructure *TaskGraphStructure, doneChan <-chan *Task) {
 			taskStructure.Tasks[taskIndex].TaskCanRunChan <- true
 		}
 	}
+	doneAdjacency := mat64.DenseCopyOf(taskStructure.AdjacencyMatrix)
 	for {
 		task := <-doneChan
+
+		//TODO : There is absolutely no need to change the adjacency matrix AT ALL
+		// It is a lot better to create a copy
 
 		// Adapting the Adjacency matrix...
 		// TaskId is finished, it cannot be the source of any task anymore
 		// Set the row at 0
-		rowSize, colSize := taskStructure.AdjacencyMatrix.Dims()
+		rowSize, colSize := doneAdjacency.Dims()
 		for c := 0; c < colSize; c++ {
-			taskStructure.AdjacencyMatrix.Set(task.Id, c, float64(0))
+			doneAdjacency.Set(task.Id, c, float64(0))
 		}
 		// For each dependency of the task
 		// We can run if the sum of the element of the column Id of the current task is 0
 		for taskIndex, _ := range taskStructure.Tasks {
 			sum := float64(0)
 			for r := 0; r < rowSize; r++ {
-				sum += taskStructure.AdjacencyMatrix.At(r, taskIndex)
+				sum += doneAdjacency.At(r, taskIndex)
 			}
 
 			if sum == 0 && taskStructure.Tasks[taskIndex].Status == -2 {
