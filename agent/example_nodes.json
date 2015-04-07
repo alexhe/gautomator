@@ -1,0 +1,15 @@
+[
+   {
+        "taskName":"My task name",
+        "module":"shell",
+        "args":" sleep 2",
+        "host":"localhost:4546"
+    },
+    {
+        "taskName":"my task2",
+        "module":"dummy",
+        "args":"",
+        "host":"localhost:4546"
+    }
+]
+
