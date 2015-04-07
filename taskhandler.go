@@ -222,3 +222,27 @@ func (this *TaskGraphStructure) DuplicateTask(id int) (int, *TaskGraphStructure)
 	}
 	return newId, this
 }
+
+// Return a structure of all the task with the given origin
+func (this *TaskGraphStructure) GetSubstructure(origin string) *TaskGraphStructure {
+	subTaskStructure := NewTaskGraphStructure()
+	index := 0
+	tasksToExtract := make(map[int]*Task, 0)
+	for _, task := range this.Tasks {
+		if task.Origin == origin {
+			tasksToExtract[index] = task
+			index += 1
+		}
+	}
+	// Create the matrix of the correct size
+	size := len(tasksToExtract)
+	subTaskStructure.AdjacencyMatrix = mat64.NewDense(size, size, nil)
+	subTaskStructure.DegreeMatrix = mat64.NewDense(size, size, nil)
+	for i, task := range tasksToExtract {
+		subTaskStructure.Tasks[i] = task
+		subTaskStructure.Tasks[i].Id = i
+		subTaskStructure.AdjacencyMatrix.Set(i, i, this.AdjacencyMatrix.At(task.Id, task.Id))
+		subTaskStructure.DegreeMatrix.Set(i, i, this.DegreeMatrix.At(task.Id, task.Id))
+	}
+	return subTaskStructure
+}
