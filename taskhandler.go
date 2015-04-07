@@ -89,9 +89,11 @@ func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStr
 	initialRowLen, initialColLen := this.AdjacencyMatrix.Dims()
 	addedRowLen, addedColLen := taskStructure.AdjacencyMatrix.Dims()
 	this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(addedRowLen, addedColLen))
+	a,b:=this.AdjacencyMatrix.Dims()
+	log.Printf("DEBUG: %v,%v",a,b)
 	for r := 0; r < initialRowLen+addedRowLen; r++ {
 		for c := 0; c < initialColLen+addedColLen; c++ {
-			log.Printf("r:%v,c:%v", r, c)
+			log.Printf("Adjacency r:%v,c:%v", r, c)
 			switch {
 			case r < initialRowLen && c < initialColLen:
 				// If we are in the original matrix: do nothing
@@ -103,7 +105,7 @@ func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStr
 				this.AdjacencyMatrix.Set(r, c, float64(0))
 			case r >= initialRowLen && c >= initialColLen:
 				// Add the new matrix
-				this.AdjacencyMatrix.Set(r, c, taskStructure.AdjacencyMatrix.At(r-addedRowLen, c-addedColLen))
+				this.AdjacencyMatrix.Set(r, c, taskStructure.AdjacencyMatrix.At(r-initialRowLen, c-initialColLen))
 			}
 		}
 	}
@@ -113,7 +115,7 @@ func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStr
 	this.DegreeMatrix = mat64.DenseCopyOf(this.DegreeMatrix.Grow(addedRowLen, addedColLen))
 	for r := 0; r < initialRowLen+addedRowLen; r++ {
 		for c := 0; c < initialColLen+addedColLen; c++ {
-			log.Printf("r:%v,c:%v", r, c)
+			log.Printf("Degree r:%v,c:%v", r, c)
 			switch {
 			case r < initialRowLen && c < initialColLen:
 				// If we are in the original matrix: do nothing
@@ -125,7 +127,7 @@ func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStr
 				this.DegreeMatrix.Set(r, c, float64(0))
 			case r >= initialRowLen && c >= initialColLen:
 				// Add the new matrix
-				this.DegreeMatrix.Set(r, c, taskStructure.DegreeMatrix.At(r-addedRowLen, c-addedColLen))
+				this.DegreeMatrix.Set(r, c, taskStructure.DegreeMatrix.At(r-initialRowLen, c-initialColLen))
 			}
 		}
 	}

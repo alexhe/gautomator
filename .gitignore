@@ -1,4 +1,5 @@
 .DS_Store
+sg/*
 *.exe
 agent/*.exe?
 htdocs/static/example*
