@@ -77,9 +77,6 @@ func (this *TaskGraphStructure) AddPortEdge(src, srcPort, dst, dstPort string, d
 	this.AdjacencyMatrix.Set(srcTaskId, dstTaskId, 1)
 }
 
-//TODO: write a merge function to merge two structures:
-// -> Concat the task map
-// -> merge the matrix
 func (this *TaskGraphStructure) AddEdge(src, dst string, directed bool, attrs map[string]string) {
 	this.AddPortEdge(src, "", dst, "", directed, attrs)
 }
