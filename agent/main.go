@@ -50,6 +50,7 @@ func main() {
 				taskStructure = taskStructure.AugmentTaskStructure(taskStruct)
 			}
 		}
+		taskStructure = taskStructure.Relink()
 		// Entering the workers area
 		var wg sync.WaitGroup
 		doneChan := make(chan *flue.Task)

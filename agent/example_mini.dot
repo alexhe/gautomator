@@ -1,0 +1,13 @@
+digraph F {
+    AF -> BF;
+    BF -> DF;
+    BF -> CF;
+    BF -> EF;
+    DF -> FF;
+    CF -> FF;
+    FF -> GF;
+    EF -> GF;
+    GF -> HF;
+    GF -> IF;
+
+}

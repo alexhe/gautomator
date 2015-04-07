@@ -1,4 +1,4 @@
-digraph layer3Tasks {
+digraph marco {
     A -> B;
     B -> D;
     B -> C;
@@ -9,5 +9,4 @@ digraph layer3Tasks {
     E -> G;
     G -> H;
     G -> I;
-
 }
