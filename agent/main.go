@@ -55,6 +55,7 @@ func main() {
 			subTask.PrintAdjacencyMatrix()
 			taskStructure = taskStructure.AugmentTaskStructure(subTask)
 		}
+		taskStructure.Relink()
 		taskStructure.PrintAdjacencyMatrix()
 		// Entering the workers area
 		var wg sync.WaitGroup

@@ -35,10 +35,10 @@ func Runner(task *Task, doneChan chan<- *Task, wg *sync.WaitGroup) {
 			//sleepTime := random(1, 5)
 			// Stupid trick to make shell works... A Shell module will be implemented later"
 			if task.Module == "shell" {
-			   task.Module = "echo" 
-			   n := len(task.Args)
-			   task.Args[n] = "|"
-			   task.Args[n+1] = "/bin/ksh"
+				task.Module = "echo"
+				n := len(task.Args)
+				task.Args[n] = "|"
+				task.Args[n+1] = "/bin/ksh"
 			}
 			//task.Module = "sleep"
 			//task.Args = []string{strconv.Itoa(sleepTime)}
@@ -46,10 +46,10 @@ func Runner(task *Task, doneChan chan<- *Task, wg *sync.WaitGroup) {
 			log.Printf("[%v:%v] Running (%v %v)", task.Id, task.Name, task.Module, task.Args[0])
 			//log.Printf("[%v] Connecting in %v on %v", task.Name, proto, socket)
 			task.StartTime = time.Now()
-			if task.Module != "dummy" {
-			    task.Status = Client(task, &proto, &socket)
+			if task.Module != "dummy" && task.Module != "meta" {
+				task.Status = Client(task, &proto, &socket)
 			} else {
-			    task.Status = 0
+				task.Status = 0
 			}
 			task.EndTime = time.Now()
 			// ... Do a lot of stufs...
