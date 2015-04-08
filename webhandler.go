@@ -1,4 +1,4 @@
-package flue
+package gautomator
 
 // This is a basic example
 // Thanks http://thenewstack.io/make-a-restful-json-api-go/ for the tutorial

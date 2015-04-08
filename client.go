@@ -1,4 +1,4 @@
-package flue
+package gautomator
 
 import (
 	"crypto/tls"

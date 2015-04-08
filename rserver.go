@@ -1,4 +1,4 @@
-package flue
+package gautomator
 
 // rserver taken from the example of the libchan package
 

@@ -1,4 +1,4 @@
-package flue
+package gautomator
 
 import (
 	"github.com/gonum/matrix/mat64" // Matrix

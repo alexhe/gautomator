@@ -1,4 +1,4 @@
-package flue
+package gautomator
 
 // This will convert the TaskGraphStructure into a format suitable for sigmajs
 type SigmaNode struct {

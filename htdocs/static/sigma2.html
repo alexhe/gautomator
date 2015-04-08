@@ -51,7 +51,9 @@
                 animationsTime: 4000,
               skipErrors: true,
                 minNodeSize: 8,
-                maxNodeSize: 16
+                minEdgeSize: 3,
+                maxNodeSize: 16,
+                minArrowSize: 1
             }
         });
 
@@ -67,6 +69,8 @@
 		    for (i = 0; i < len; i++) {
 			nodes[i].x = Math.random();
 			nodes[i].y = Math.random();
+			//nodes[i].x = 0.6;
+			//nodes[i].y = 0.8;
 			nodes[i].size = s.graph.degree(nodes[i].id);
 			nodes[i].color = nodes[i].center ? '#333' : '#666';
 		    }
@@ -74,7 +78,7 @@
                     edges = s.graph.edges(),
                     len = edges.length;
 		    for (i = 0; i < len; i++) {
-			edges[i].type = 'curvedArrow';
+			edges[i].type = 'arrow';
                         }
 
 		    // Refresh the display:
@@ -82,13 +86,9 @@
 
 		    // ForceAtlas Layout
 		    s.startForceAtlas2();
-		    edges = s.graph.edges(),
-                    len = edges.length;
-		    for (i = 0; i < len; i++) {
-			edges[i].color = '#393';
-                        }
                 }
 	);
+        /*
         sigma.plugins.animate(
             s,
             {
@@ -104,4 +104,5 @@
                 }
             }
         );
+        */
 </script>

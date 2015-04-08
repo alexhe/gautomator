@@ -1,4 +1,4 @@
-package flue
+package gautomator
 
 // http://mholt.github.io/json-to-go/
 type TaskDefinition []struct {

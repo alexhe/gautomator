@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"github.com/owulveryck/flue"
+	"github.com/owulveryck/gautomator"
 	"log"
 	"net/http"
 	"sync"
@@ -23,13 +23,13 @@ func main() {
 		log.Println("Server mode")
 		proto := "tcp"
 		socket := "localhost:4546"
-		flue.Rserver(&proto, &socket)
+		gautomator.Rserver(&proto, &socket)
 	} else {
 		log.Println("Client mode")
 
-		taskStructure := flue.ParseDotFiles(dotFiles)
+		taskStructure := gautomator.ParseDotFiles(dotFiles)
 		// Parse the nodes.json and adapt the tasks
-		//nodeStructure := flue.ParseNode(nodesFileJson)
+		//nodeStructure := gautomator.ParseNode(nodesFileJson)
 
 		/*
 		for _, node := range *nodeStructure {
@@ -38,17 +38,17 @@ func main() {
 		*/
 		// Entering the workers area
 		var wg sync.WaitGroup
-		doneChan := make(chan *flue.Task)
+		doneChan := make(chan *gautomator.Task)
 
 		// For each task, if it can run, place true in its communication channel
 		for taskIndex, _ := range taskStructure.Tasks {
-			go flue.Runner(taskStructure.Tasks[taskIndex], doneChan, &wg)
+			go gautomator.Runner(taskStructure.Tasks[taskIndex], doneChan, &wg)
 			wg.Add(1)
 		}
-		go flue.Advertize(taskStructure, doneChan)
+		go gautomator.Advertize(taskStructure, doneChan)
 
 		// This is the web displa
-		router := flue.NewRouter(taskStructure)
+		router := gautomator.NewRouter(taskStructure)
 
 		go log.Fatal(http.ListenAndServe(":8080", router))
 
