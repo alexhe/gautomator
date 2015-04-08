@@ -63,7 +63,7 @@ func NewTask() *Task {
 		-1,
 		"null",
 		"null",
-		"localhost",
+		"null",
 		"dummy",
 		make([]string, 1),
 		-2,
