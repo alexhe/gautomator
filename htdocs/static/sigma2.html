@@ -47,6 +47,9 @@
 <script src="/js/sigma.js/src/misc/sigma.misc.drawHovers.js"></script>
 <!-- END SIGMA IMPORTS -->
 <script src="/js/sigma.js/plugins/sigma.parsers.json/sigma.parsers.json.js"></script>
+<script src="/js/sigma.layout.forceAtlas2.min.js"></script>
+<script src="/js/sigma.min.js"></script>
+<script src="/js/sigma.js/sigma.parsers.json.min.js"></script>
 <div id="container">
 	<style>
 		#graph-container {
@@ -73,9 +76,51 @@
 	* The object given as the second parameter is the base of the instance
 	* configuration object. The plugin will just add the "graph" key to it
 	* before the instanciation.
+        */
+        // these are just some preliminary settings 
+        var g = {
+            nodes: [],
+            edges: []
+        };
 
-	*/
-	sigma.parsers.json('/tasks', {
-		container: 'graph-container'
-	});
+        s = new sigma({
+            graph: g,
+            container: 'graph-container',
+            renderer: {
+                container: document.getElementById('graph-container'),
+                type: 'canvas'
+            },
+            settings: {
+                minNodeSize: 8,
+                maxNodeSize: 16
+            }
+        });
+
+	sigma.parsers.json(
+		'/tasks',
+		s,
+		function() {
+		    // this is needed in case the original JSON doesn't have color / size / x-y attributes 
+		    var i,
+			    nodes = s.graph.nodes(),
+			    len = nodes.length;
+
+		    for (i = 0; i < len; i++) {
+			nodes[i].x = Math.random();
+			nodes[i].y = Math.random();
+			nodes[i].size = s.graph.degree(nodes[i].id);
+			nodes[i].color = nodes[i].center ? '#333' : '#666';
+		    }
+                    
+                    edges = s.graph.edges(),
+                    len = edges.length;
+
+		    // Refresh the display:
+		    s.refresh();
+
+		    // ForceAtlas Layout
+		    s.startForceAtlas2();
+		}
+	);
+
 </script>

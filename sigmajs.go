@@ -9,6 +9,7 @@ type SigmaNode struct {
 	X     float64 `json:"x"`     //"x": 10,
 	Y     float64 `json:"y"`     //"y": -10,
 	Type  string  `json:"type"`  //"type": "tweetegy"
+	Color  string  `json:"color"`  //"type": "tweetegy"
 
 }
 
@@ -16,6 +17,7 @@ type SigmaEdge struct {
 	Id     string `json:"id"`
 	Source string `json:"source"`
 	Target string `json:"target"`
+	Type  string  `json:"type"`  //"type": "tweetegy"
 }
 
 type SigmaStructure struct {
@@ -41,6 +43,7 @@ func NewSigmaEdge() *SigmaEdge {
 		string(-1),
 		string(-1),
 		string(-1),
+		"curvedArrow",
 	}
 }
 
@@ -53,6 +56,7 @@ func NewSigmaNode() *SigmaNode {
 		0,
 		0,
 		"Def",
+		"#666",
 	}
 }
 func GetSigmaStructure(taskGraphStructure *TaskGraphStructure) *SigmaStructure {
