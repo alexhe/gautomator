@@ -9,7 +9,6 @@ type SigmaNode struct {
 	X     float64 `json:"x"`     //"x": 10,
 	Y     float64 `json:"y"`     //"y": -10,
 	Type  string  `json:"type"`  //"type": "tweetegy"
-	Color  string  `json:"color"`  //"type": "tweetegy"
 
 }
 
