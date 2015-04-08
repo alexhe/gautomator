@@ -28,8 +28,12 @@ func main() {
 		log.Println("Client mode")
 
 		taskStructure := gautomator.ParseDotFiles(dotFiles)
+		taskStructure.PrintAdjacencyMatrix()
 		// Parse the nodes.json and adapt the tasks
 		nodeStructure := gautomator.ParseNode(nodesFileJson)
+		//var allSubTasks []*gautomator.TaskGraphStructure
+		allSubTasks := make(map[int]*gautomator.TaskGraphStructure, 0)
+		index := 0
 		for _, nodeDef := range nodeStructure {
 			for _, node := range nodeDef.Hosts {
 				log.Printf("searching a substructure for %v", nodeDef.Taskname)
@@ -40,9 +44,16 @@ func main() {
 					for i, _ := range subTasks.Tasks {
 						subTasks.Tasks[i].Node = node
 					}
-					taskStructure = taskStructure.AugmentTaskStructure(subTasks)
+					log.Println("Step0")
+					allSubTasks[index] = subTasks
+					log.Println("Step1")
+					index += 1
 				}
 			}
+		}
+		for _, subTask := range allSubTasks {
+			subTask.PrintAdjacencyMatrix()
+			taskStructure = taskStructure.AugmentTaskStructure(subTask)
 		}
 		taskStructure.PrintAdjacencyMatrix()
 		// Entering the workers area
