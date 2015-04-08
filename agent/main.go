@@ -28,7 +28,7 @@ func main() {
 		log.Println("Client mode")
 
 		taskStructure := gautomator.ParseDotFiles(dotFiles)
-		taskStructure.PrintAdjacencyMatrix()
+		//taskStructure.PrintAdjacencyMatrix()
 		// Parse the nodes.json and adapt the tasks
 		nodeStructure := gautomator.ParseNode(nodesFileJson)
 		//var allSubTasks []*gautomator.TaskGraphStructure
@@ -36,27 +36,25 @@ func main() {
 		index := 0
 		for _, nodeDef := range nodeStructure {
 			for _, node := range nodeDef.Hosts {
-				log.Printf("searching a substructure for %v", nodeDef.Taskname)
 				subTasks := taskStructure.GetSubstructure(nodeDef.Taskname)
 				// If there is subtask
 				if subTasks != nil {
-					log.Printf("Found a substructure for %v", nodeDef.Taskname)
 					for i, _ := range subTasks.Tasks {
 						subTasks.Tasks[i].Node = node
 					}
-					log.Println("Step0")
 					allSubTasks[index] = subTasks
-					log.Println("Step1")
 					index += 1
+				} else {
+					// TODO Duplicate a single task
 				}
 			}
 		}
 		for _, subTask := range allSubTasks {
-			subTask.PrintAdjacencyMatrix()
+			//subTask.PrintAdjacencyMatrix()
 			taskStructure = taskStructure.AugmentTaskStructure(subTask)
 		}
 		taskStructure.Relink()
-		taskStructure.PrintAdjacencyMatrix()
+		//taskStructure.PrintAdjacencyMatrix()
 		// Entering the workers area
 		var wg sync.WaitGroup
 		doneChan := make(chan *gautomator.Task)

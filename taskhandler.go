@@ -228,7 +228,7 @@ func (this *TaskGraphStructure) GetSubstructure(origin string) *TaskGraphStructu
 	tasksToExtract := make(map[int]*Task, 0)
 	for _, task := range this.Tasks {
 		if task.Origin == origin {
-			fmt.Printf("Adding %v(%v) at index:%v\n", task.Name, task.Id, index)
+			//fmt.Printf("Adding %v(%v) at index:%v\n", task.Name, task.Id, index)
 			tasksToExtract[index] = task
 			index += 1
 		}
@@ -240,12 +240,12 @@ func (this *TaskGraphStructure) GetSubstructure(origin string) *TaskGraphStructu
 		subTaskStructure.DegreeMatrix = mat64.NewDense(size, size, nil)
 		for i := 0; i < size; i++ {
 			task := tasksToExtract[i]
-			fmt.Printf("Task with ID:%v and name:%v will have id:%v\n", task.Id, task.Name, i)
+			i //fmt.Printf("Task with ID:%v and name:%v will have id:%v\n", task.Id, task.Name, i)
 			// BUG here probably
 			// Construct the AdjacencyMatrix line by line
 			for col := 0; col < size; col++ {
 				task2 := tasksToExtract[col]
-				fmt.Printf("Setting %v,%v with value from %v,%v\n", i, col, task.Id, task2.Id)
+				//fmt.Printf("Setting %v,%v with value from %v,%v\n", i, col, task.Id, task2.Id)
 				subTaskStructure.AdjacencyMatrix.Set(i, col, this.AdjacencyMatrix.At(task.Id, task2.Id))
 			}
 			subTaskStructure.DegreeMatrix.Set(i, i, this.DegreeMatrix.At(task.Id, task.Id))
@@ -256,7 +256,7 @@ func (this *TaskGraphStructure) GetSubstructure(origin string) *TaskGraphStructu
 			subTaskStructure.Tasks[i].Origin = task.Origin
 			subTaskStructure.Tasks[i].Id = i
 		}
-		subTaskStructure.PrintAdjacencyMatrix()
+		//subTaskStructure.PrintAdjacencyMatrix()
 		return subTaskStructure
 	} else {
 		return nil
