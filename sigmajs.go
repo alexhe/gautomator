@@ -1,5 +1,9 @@
 package gautomator
 
+import (
+    "fmt"
+)
+
 // This will convert the TaskGraphStructure into a format suitable for sigmajs
 type SigmaNode struct {
 	Id    string  `json:"id"`    // "id": "1",
@@ -64,7 +68,7 @@ func GetSigmaStructure(taskGraphStructure *TaskGraphStructure) *SigmaStructure {
 	for _, task := range taskGraphStructure.Tasks {
 		sigmaNode := NewSigmaNode()
 		sigmaNode.Id = string(task.Id)
-		sigmaNode.Label = task.Name
+		sigmaNode.Label = fmt.Sprint(task.Name,":",task.Node)
 		sigmaStructure.AddNode(sigmaNode)
 	}
 	rowSize, colSize := taskGraphStructure.AdjacencyMatrix.Dims()
