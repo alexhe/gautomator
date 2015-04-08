@@ -55,7 +55,6 @@ func NewSigmaNode() *SigmaNode {
 		0,
 		0,
 		"Def",
-		"#666",
 	}
 }
 func GetSigmaStructure(taskGraphStructure *TaskGraphStructure) *SigmaStructure {
