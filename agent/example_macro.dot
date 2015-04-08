@@ -1,4 +1,4 @@
-digraph marco {
+digraph macro {
     A -> B;
     B -> D;
     B -> C;

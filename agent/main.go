@@ -38,7 +38,7 @@ func main() {
 		var wg sync.WaitGroup
 		doneChan := make(chan *gautomator.Task)
 
-		// For each task, if it can run, place true in its communication channel
+		// For each task, launch a goroutine
 		for taskIndex, _ := range taskStructure.Tasks {
 			go gautomator.Runner(taskStructure.Tasks[taskIndex], doneChan, &wg)
 			wg.Add(1)
