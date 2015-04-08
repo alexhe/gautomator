@@ -127,13 +127,21 @@
                     
                     edges = s.graph.edges(),
                     len = edges.length;
+		    for (i = 0; i < len; i++) {
+			edges[i].type = 'curvedArrow';
+                        }
 
 		    // Refresh the display:
 		    s.refresh();
 
 		    // ForceAtlas Layout
 		    s.startForceAtlas2();
-		}
+		    edges = s.graph.edges(),
+                    len = edges.length;
+		    for (i = 0; i < len; i++) {
+			edges[i].color = '#393';
+                        }
+}
 	);
 
 </script>
