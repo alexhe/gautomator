@@ -3,6 +3,7 @@ package gautomator
 import (
 	"fmt"
 	"github.com/gonum/matrix/mat64" // Matrix
+	"log"
 	"time"
 )
 
@@ -180,6 +181,8 @@ func (this *TaskGraphStructure) Relink() *TaskGraphStructure {
 		if colSum(this.AdjacencyMatrix, task.Id) == 0 {
 			id, _ := this.getTaskFromName(task.Origin)
 			if id != -1 {
+				// Task is a meta task
+				this.Tasks[id].Module = "meta"
 				this.AdjacencyMatrix.Set(id, task.Id, float64(1))
 			}
 		}
@@ -225,20 +228,26 @@ func (this *TaskGraphStructure) GetSubstructure(origin string) *TaskGraphStructu
 	index := 0
 	tasksToExtract := make(map[int]*Task, 0)
 	for _, task := range this.Tasks {
+		log.Printf("DEBUG: task.Origin:%v", task.Origin)
 		if task.Origin == origin {
+			log.Printf("Found task index %v is %v (%v)", index, origin, task.Origin)
 			tasksToExtract[index] = task
 			index += 1
 		}
 	}
 	// Create the matrix of the correct size
 	size := len(tasksToExtract)
-	subTaskStructure.AdjacencyMatrix = mat64.NewDense(size, size, nil)
-	subTaskStructure.DegreeMatrix = mat64.NewDense(size, size, nil)
-	for i, task := range tasksToExtract {
-		subTaskStructure.Tasks[i] = task
-		subTaskStructure.Tasks[i].Id = i
-		subTaskStructure.AdjacencyMatrix.Set(i, i, this.AdjacencyMatrix.At(task.Id, task.Id))
-		subTaskStructure.DegreeMatrix.Set(i, i, this.DegreeMatrix.At(task.Id, task.Id))
+	if size > 0 {
+		subTaskStructure.AdjacencyMatrix = mat64.NewDense(size, size, nil)
+		subTaskStructure.DegreeMatrix = mat64.NewDense(size, size, nil)
+		for i, task := range tasksToExtract {
+			subTaskStructure.Tasks[i] = task
+			subTaskStructure.Tasks[i].Id = i
+			subTaskStructure.AdjacencyMatrix.Set(i, i, this.AdjacencyMatrix.At(task.Id, task.Id))
+			subTaskStructure.DegreeMatrix.Set(i, i, this.DegreeMatrix.At(task.Id, task.Id))
+		}
+		return subTaskStructure
+	} else {
+		return nil
 	}
-	return subTaskStructure
 }

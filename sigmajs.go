@@ -1,14 +1,15 @@
 package gautomator
 
 import (
-    "fmt"
+	"fmt"
+	"strconv"
 )
 
 // This will convert the TaskGraphStructure into a format suitable for sigmajs
 type SigmaNode struct {
 	Id    string  `json:"id"`    // "id": "1",
 	Label string  `json:"label"` //"label": "Node 1",
-	Color string  `json:"coloe"` //"color": "rgb(90,90,90)",
+	Color string  `json:"color"` //"color": "rgb(90,90,90)",
 	Size  float64 `json:"size"`  //"size": 100,
 	X     float64 `json:"x"`     //"x": 10,
 	Y     float64 `json:"y"`     //"y": -10,
@@ -20,7 +21,7 @@ type SigmaEdge struct {
 	Id     string `json:"id"`
 	Source string `json:"source"`
 	Target string `json:"target"`
-	Type  string  `json:"type"`  //"type": "tweetegy"
+	Type   string `json:"type"` //"type": "tweetegy"
 }
 
 type SigmaStructure struct {
@@ -67,8 +68,8 @@ func GetSigmaStructure(taskGraphStructure *TaskGraphStructure) *SigmaStructure {
 	sigmaStructure = NewSigmaStructure()
 	for _, task := range taskGraphStructure.Tasks {
 		sigmaNode := NewSigmaNode()
-		sigmaNode.Id = string(task.Id)
-		sigmaNode.Label = fmt.Sprint(task.Name,":",task.Node)
+		sigmaNode.Id = strconv.Itoa(task.Id)
+		sigmaNode.Label = fmt.Sprint(task.Name, ":", task.Node)
 		sigmaStructure.AddNode(sigmaNode)
 	}
 	rowSize, colSize := taskGraphStructure.AdjacencyMatrix.Dims()
@@ -78,9 +79,9 @@ func GetSigmaStructure(taskGraphStructure *TaskGraphStructure) *SigmaStructure {
 			// If there is a link, create the edge
 			if taskGraphStructure.AdjacencyMatrix.At(r, c) != 0 {
 				sigmaEdge := NewSigmaEdge()
-				sigmaEdge.Id = string(edgeId)
-				sigmaEdge.Source = string(r)
-				sigmaEdge.Target = string(c)
+				sigmaEdge.Id = strconv.Itoa(edgeId)
+				sigmaEdge.Source = strconv.Itoa(r)
+				sigmaEdge.Target = strconv.Itoa(c)
 				edgeId += 1
 				sigmaStructure.AddEdge(sigmaEdge)
 			}

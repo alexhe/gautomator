@@ -30,10 +30,21 @@ func main() {
 		taskStructure := gautomator.ParseDotFiles(dotFiles)
 		// Parse the nodes.json and adapt the tasks
 		nodeStructure := gautomator.ParseNode(nodesFileJson)
-
-		for _, node := range nodeStructure {
-		    log.Printf("taskName: %v, module: %v",node.Taskname,node.Module)
+		for _, nodeDef := range nodeStructure {
+			for _, node := range nodeDef.Hosts {
+				log.Printf("searching a substructure for %v", nodeDef.Taskname)
+				subTasks := taskStructure.GetSubstructure(nodeDef.Taskname)
+				// If there is subtask
+				if subTasks != nil {
+					log.Printf("Found a substructure for %v", nodeDef.Taskname)
+					for i, _ := range subTasks.Tasks {
+						subTasks.Tasks[i].Node = node
+					}
+					taskStructure = taskStructure.AugmentTaskStructure(subTasks)
+				}
+			}
 		}
+		taskStructure.PrintAdjacencyMatrix()
 		// Entering the workers area
 		var wg sync.WaitGroup
 		doneChan := make(chan *gautomator.Task)
