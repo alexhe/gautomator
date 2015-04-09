@@ -29,7 +29,6 @@ func main() {
 
 		taskStructure := gautomator.ParseDotFiles(dotFiles)
 		// Parse the nodes.json and adapt the tasks
-		taskStructure.PrintDot()
 		nodeStructure := gautomator.ParseNode(nodesFileJson)
 		//var allSubTasks []*gautomator.TaskGraphStructure
 		allSubTasks := make(map[int]*gautomator.TaskGraphStructure, 0)
@@ -49,15 +48,16 @@ func main() {
 				}
 			}
 		}
-		/*
+		
 		for _, subTask := range allSubTasks {
 			//subTask.PrintAdjacencyMatrix()
 			taskStructure = taskStructure.AugmentTaskStructure(subTask)
 		}
 		taskStructure.Relink()
-		*/
+	
 		//taskStructure.PrintAdjacencyMatrix()
 		// Entering the workers area
+		taskStructure.PrintDot()
 		var wg sync.WaitGroup
 		doneChan := make(chan *gautomator.Task)
 

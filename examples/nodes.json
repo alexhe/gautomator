@@ -6,10 +6,11 @@
       ]
    },
    {
-      "taskName":"DomaineConsommateurManaged",
+      "taskName":"DomaineProducteurManaged",
       "hosts":[
          "node1:4546",
-         "node2:4546"
+         "node2:4546",
+         "node3:4546"
       ]
    },
 {
