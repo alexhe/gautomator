@@ -221,6 +221,18 @@ func (this *TaskGraphStructure) DuplicateTask(id int) (int, *TaskGraphStructure)
 	return newId, this
 }
 
+// This function print the dot file associated with the graph
+func (this *TaskGraphStructure) PrintDot() {
+    row, col := this.AdjacencyMatrix.Dims()
+    for r:=0 ; r<row;r++ {
+	for c:=0;c<col;c++ {
+	    if this.AdjacencyMatrix.At(r,c) == 1 {
+		fmt.Printf("%v -> %v\n",this.Tasks[r].Name, this.Tasks[c].Name)
+	    }
+	}
+    }
+
+}
 // Return a structure of all the task with the given origin
 func (this *TaskGraphStructure) GetSubstructure(origin string) *TaskGraphStructure {
 	subTaskStructure := NewTaskGraphStructure()
@@ -240,7 +252,7 @@ func (this *TaskGraphStructure) GetSubstructure(origin string) *TaskGraphStructu
 		subTaskStructure.DegreeMatrix = mat64.NewDense(size, size, nil)
 		for i := 0; i < size; i++ {
 			task := tasksToExtract[i]
-			i //fmt.Printf("Task with ID:%v and name:%v will have id:%v\n", task.Id, task.Name, i)
+			//fmt.Printf("Task with ID:%v and name:%v will have id:%v\n", task.Id, task.Name, i)
 			// BUG here probably
 			// Construct the AdjacencyMatrix line by line
 			for col := 0; col < size; col++ {

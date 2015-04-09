@@ -28,6 +28,7 @@ func main() {
 		log.Println("Client mode")
 
 		taskStructure := gautomator.ParseDotFiles(dotFiles)
+		taskStructure.PrintDot()
 		//taskStructure.PrintAdjacencyMatrix()
 		// Parse the nodes.json and adapt the tasks
 		nodeStructure := gautomator.ParseNode(nodesFileJson)
