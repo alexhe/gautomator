@@ -1,0 +1,26 @@
+[
+   {
+      "taskName":"DomaineConsommateurAdmin",
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+   {
+      "taskName":"DomaineConsommateurManaged",
+      "hosts":[
+         "node1:4546",
+         "node2:4546"
+      ]
+   },
+{
+      "taskName":"B",
+      "module":"shell",
+      "args":[
+         "sleep",
+         "2"
+      ],
+      "hosts":[
+         "localhost:4546"
+      ]
+   }
+]

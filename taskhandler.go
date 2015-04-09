@@ -175,6 +175,8 @@ func rowSum(matrix *mat64.Dense, rowId int) float64 {
 // then alpha and beta will have "b" as Origin.
 // therefore we should add a link in the AdjacencyMatix and in the DegreeMatrix
 func (this *TaskGraphStructure) Relink() *TaskGraphStructure {
+	// IN this array we store the row,col on which we set 1
+	backup := make([]int, 0)	
 	_, col := this.AdjacencyMatrix.Dims()
 	for _, task := range this.Tasks {
 		if colSum(this.AdjacencyMatrix, task.Id) == 0 {
@@ -183,13 +185,22 @@ func (this *TaskGraphStructure) Relink() *TaskGraphStructure {
 				// Task is a meta task
 				this.Tasks[id].Module = "meta"
 				this.AdjacencyMatrix.Set(id, task.Id, float64(1))
+				backup = append(backup,id,task.Id)
 			}
 		}
 		if rowSum(this.AdjacencyMatrix, task.Id) == 0 {
 			id, _ := this.getTaskFromName(task.Origin)
 			if id != -1 {
 				for c := 0; c < col; c++ {
+				    add := true
+				    for counter :=0 ; counter<len(backup)-1; counter+=2 {
+					if backup[counter] == id && backup[counter+1] ==c {
+					    add = false
+					}
+				    }
+				    if add == true {
 					this.AdjacencyMatrix.Set(task.Id, c, this.AdjacencyMatrix.At(task.Id, c)+this.AdjacencyMatrix.At(id, c))
+				    }
 				}
 			}
 		}
@@ -223,15 +234,16 @@ func (this *TaskGraphStructure) DuplicateTask(id int) (int, *TaskGraphStructure)
 
 // This function print the dot file associated with the graph
 func (this *TaskGraphStructure) PrintDot() {
+    fmt.Println("digraph G {")
     row, col := this.AdjacencyMatrix.Dims()
     for r:=0 ; r<row;r++ {
 	for c:=0;c<col;c++ {
 	    if this.AdjacencyMatrix.At(r,c) == 1 {
-		fmt.Printf("%v -> %v\n",this.Tasks[r].Name, this.Tasks[c].Name)
+		fmt.Printf("    %v_Id%v_%v -> %v_Id%v_%v\n",this.Tasks[r].Name, this.Tasks[r].Id, this.Tasks[r].Node, this.Tasks[c].Name, this.Tasks[c].Id, this.Tasks[c].Node)
 	    }
 	}
     }
-
+    fmt.Println("}")
 }
 // Return a structure of all the task with the given origin
 func (this *TaskGraphStructure) GetSubstructure(origin string) *TaskGraphStructure {
