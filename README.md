@@ -35,6 +35,19 @@ It will be tested as well on Linux.
 
 I will try to stick to pure go implementation to remain portable.
 
+# Dependencies
+
+I would stick to pure go implementation in order to get a single binary that may run "anywhere"
+
+Go dependency so far:
+
+* `github.com/docker/libchan` for the client/server communication
+* `github.com/docker/libchan/spdy`
+* `github.com/gonum/matrix/mat64` for the matrix manipulation (for the graph theory)
+* `github.com/awalterschulze/gographviz` for parsing the topology files
+* `github.com/gorilla/mux` for the webserver implementation
+
+
 # Note
 This project is in developpement.
 It is a work in progress and a Feature Driven Developement.
