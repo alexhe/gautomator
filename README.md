@@ -18,23 +18,10 @@ What **gautomator** should be someday:
 - A lot of library exists in the standard implementation
 
 # WIP
+gautomator is  in heavy developement, see the wiki and the issue for more information.
+And for even more information about the implementation:
 
-## What's working:
-- The task parsing (from a dot file)
-- The remote task execution implementing the libchan from docker
-- the web server and the REST api is in progress but working
-
-## How to:
-1) launch a server in a terminal: `go run agent/main.go`
-2) launch a "client" from another terminal: `go run agent/main.go -dot=example.dot`
-3) follow the stream on `http://localhost:8080/sigma.html`
-
-## What's next:
-- pass several tasks on the command line
-- merge the tasks
-- clean the web server and the REST code
-- clean all the code
-- implement the "node" concept
+* twitter: @owulveryck
 
 # How to
 
