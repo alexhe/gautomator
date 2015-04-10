@@ -17,28 +17,34 @@
         }
     </style>
     <script type="text/javascript">
-        $(document).ready(function(){
-        var a = document.getElementById("svg");
-
-        // Some help from http://stackoverflow.com/questions/6793312/how-to-use-jquery-in-svg-scalable-vector-graphics
-        //it's important to add an load event listener to the object, as it will load the svg doc asynchronously
-        a.addEventListener("load",function(){
-            var svgDoc = a.contentDocument; //get the inner DOM of alpha.svg
-            var svgRoot  = svgDoc.documentElement;
-
-            //now we can query stuff with jquery like this
-            //note that we pass in the svgRoot as the context node!
-            $("#32",svgRoot).children().css({'color': '#FFFFFF'});
-            $("#32",svgRoot).children().css({'fill': 'rgba(200,0,0,0.3)'});
-            //$("#32",svgRoot).children().addClass('blink');
-        },false);
-                                        })
         var testjson = [
             {
                 "id": "32",
-                "color": "0.5",
+                "status": "0"
+            },
+            {
+                "id": "33",
+                "status": "-1"
             }
         ];
+        $(document).ready(function(){
+        var a = document.getElementById("svg");
+
+            // Some help from http://stackoverflow.com/questions/6793312/how-to-use-jquery-in-svg-scalable-vector-graphics
+            //it's important to add an load event listener to the object, as it will load the svg doc asynchronously
+            a.addEventListener("load",function(){
+                var svgDoc = a.contentDocument; //get the inner DOM of alpha.svg
+                var svgRoot  = svgDoc.documentElement;
+
+                //now we can query stuff with jquery like this
+                //note that we pass in the svgRoot as the context node!
+                for(i=0; i < testjson.length; i++) {
+                    $("#" + testjson[i].id,svgRoot).children().css({'color': '#FFFFFF'});
+                    $("#" + testjson[i].id,svgRoot).children().css({'fill': 'rgba(100,0,0,0.3)'});
+                    //$("#32",svgRoot).children().addClass('blink');
+                }
+            },false);
+        })
     </script>
 </head>
 <body>
