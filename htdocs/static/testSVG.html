@@ -1,0 +1,26 @@
+<!doctype html>
+<!-- example at: http://www.sitepoint.com/dynamic-geo-maps-svg-jquery/ -->
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Map Sample</title>
+    <style type="text/css" media="all">
+        .map svg {
+            height: auto;
+            width: 350px;
+        }
+        .map g {
+            fill: #ccc;
+            stroke: #333;
+            stroke-width: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="map">
+        <object data="svgGraph.svg" type="image/svg+xml">
+              <img src="yourfallback.jpg" />
+          </object>
+    </div>
+</body>
+</html>
