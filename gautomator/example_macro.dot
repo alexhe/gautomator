@@ -1,0 +1,12 @@
+digraph macro {
+    A -> B;
+    B -> D;
+    B -> C;
+    B -> E;
+    D -> F;
+    C -> F;
+    F -> G;
+    E -> G;
+    G -> H;
+    G -> I;
+}
