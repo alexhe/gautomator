@@ -2,6 +2,27 @@
 <!-- example at: http://www.sitepoint.com/dynamic-geo-maps-svg-jquery/ -->
 <html>
 <head>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script>
+        var testjson=[
+            {
+                "id": "32",
+                "color": "0.5",
+            }
+        ];
+        function getNode(nodeTitle) {
+            var title = $("g.node title").filter(function (idx) {
+                return this.textContent.trim() === nodeTitle;
+            });
+            return title.parent();
+        }
+        $(function() {
+            $('#32').children().css({'fill': 'red'});
+            for(i=0; i < testjson.length; i++) {
+                $('#'+ testjson[i].id).children().css({'fill': 'rgba(11, 104, 170,0.5)'});
+            }
+        });
+    </script>
     <meta charset="UTF-8">
     <title>Map Sample</title>
     <style type="text/css" media="all">
