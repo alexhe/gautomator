@@ -3,26 +3,6 @@
 <html>
 <head>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-    <script>
-        var testjson=[
-            {
-                "id": "32",
-                "color": "0.5",
-            }
-        ];
-        function getNode(nodeTitle) {
-            var title = $("g.node title").filter(function (idx) {
-                return this.textContent.trim() === nodeTitle;
-            });
-            return title.parent();
-        }
-        $(function() {
-            $('#32').children().css({'fill': 'red'});
-            for(i=0; i < testjson.length; i++) {
-                $('#'+ testjson[i].id).children().css({'fill': 'rgba(11, 104, 170,0.5)'});
-            }
-        });
-    </script>
     <meta charset="UTF-8">
     <title>Map Sample</title>
     <style type="text/css" media="all">
@@ -36,12 +16,33 @@
             stroke-width: 1;
         }
     </style>
+    <script type="text/javascript">
+        $(document).ready(function(){
+        var a = document.getElementById("svg");
+
+        // Some help from http://stackoverflow.com/questions/6793312/how-to-use-jquery-in-svg-scalable-vector-graphics
+        //it's important to add an load event listener to the object, as it will load the svg doc asynchronously
+        a.addEventListener("load",function(){
+            var svgDoc = a.contentDocument; //get the inner DOM of alpha.svg
+            var svgRoot  = svgDoc.documentElement;
+
+            //now we can query stuff with jquery like this
+            //note that we pass in the svgRoot as the context node!
+            $("#32",svgRoot).children().css({'color': '#FFFFFF'});
+            $("#32",svgRoot).children().css({'fill': 'rgba(200,0,0,0.3)'});
+        },false);
+                                        })
+        var testjson = [
+            {
+                "id": "32",
+                "color": "0.5",
+            }
+        ];
+    </script>
 </head>
 <body>
     <div class="map">
-        <object data="svgGraph.svg" type="image/svg+xml">
-              <img src="yourfallback.jpg" />
-          </object>
+        <object data="svgGraph.svg" type="image/svg+xml" id="svg"/>
     </div>
 </body>
 </html>
