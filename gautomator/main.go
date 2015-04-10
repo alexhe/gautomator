@@ -19,12 +19,12 @@ func main() {
 	var nodesFileJson = flag.String("nodes", "", "json file for node definition")
 	flag.Parse()
 	dotFiles = flag.Args()
-	if len(dotFiles) == 0 {
-		log.Println("Server mode")
-		proto := "tcp"
-		socket := "localhost:4546"
-		gautomator.Rserver(&proto, &socket)
-	} else {
+	log.Println("Server mode")
+	proto := "tcp"
+	socket := "localhost:4546"
+	go gautomator.Rserver(&proto, &socket)
+
+	if len(dotFiles) != 0 {
 		log.Println("Client mode")
 
 		taskStructure := gautomator.ParseDotFiles(dotFiles)
@@ -48,13 +48,13 @@ func main() {
 				}
 			}
 		}
-		
+
 		for _, subTask := range allSubTasks {
 			//subTask.PrintAdjacencyMatrix()
 			taskStructure = taskStructure.AugmentTaskStructure(subTask)
 		}
 		taskStructure.Relink()
-	
+
 		//taskStructure.PrintAdjacencyMatrix()
 		// Entering the workers area
 		taskStructure.PrintDot()
