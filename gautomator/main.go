@@ -57,7 +57,6 @@ func main() {
 
 		//taskStructure.PrintAdjacencyMatrix()
 		// Entering the workers area
-		taskStructure.PrintDot()
 		var wg sync.WaitGroup
 		doneChan := make(chan *gautomator.Task)
 
