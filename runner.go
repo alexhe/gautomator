@@ -46,7 +46,7 @@ func Runner(task *Task, doneChan chan<- *Task, wg *sync.WaitGroup) {
 			log.Printf("[%v:%v] Running (%v %v)", task.Id, task.Name, task.Module, task.Args[0])
 			//log.Printf("[%v] Connecting in %v on %v", task.Name, proto, socket)
 			task.StartTime = time.Now()
-			if task.Module != "dummy" || task.Module != "meta" {
+			if task.Module != "dummy" && task.Module != "meta" {
 				task.Status = Client(task, &proto, &socket)
 			} else {
 				task.Status = 0
