@@ -177,7 +177,7 @@ func rowSum(matrix *mat64.Dense, rowId int) float64 {
 // therefore we should add a link in the AdjacencyMatix and in the DegreeMatrix
 func (this *TaskGraphStructure) Relink() *TaskGraphStructure {
 	// IN this array we store the row,col on which we set 1
-	backup := make([]int, 0)
+	backup := make(map[string][]int, 0)
 	_, col := this.AdjacencyMatrix.Dims()
 	for _, task := range this.Tasks {
 		if colSum(this.AdjacencyMatrix, task.Id) == 0 {
@@ -186,7 +186,7 @@ func (this *TaskGraphStructure) Relink() *TaskGraphStructure {
 				// Task is a meta task
 				this.Tasks[id].Module = "meta"
 				this.AdjacencyMatrix.Set(id, task.Id, float64(1))
-				backup = append(backup, id, task.Id)
+				backup[task.Origin] = append(backup[task.Origin], id, task.Id)
 			}
 		}
 		if rowSum(this.AdjacencyMatrix, task.Id) == 0 {
@@ -194,8 +194,8 @@ func (this *TaskGraphStructure) Relink() *TaskGraphStructure {
 			if id != -1 {
 				for c := 0; c < col; c++ {
 					add := true
-					for counter := 0; counter < len(backup)-1; counter += 2 {
-						if backup[counter] == id && backup[counter+1] == c {
+					for counter := 0; counter < len(backup[task.Origin])-1; counter += 2 {
+						if backup[task.Origin][counter] == id && backup[task.Origin][counter+1] == c {
 							add = false
 						}
 					}
