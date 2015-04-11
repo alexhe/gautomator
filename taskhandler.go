@@ -23,10 +23,6 @@ type Task struct {
 	TaskCanRunChan chan bool // true: run, false: wait
 }
 
-type jsonStructure struct {
-	Nodes []*Task `json:"task"`
-}
-
 // This is the structure corresponding to the "dot-graph" of a task list
 // We store the nodes in a map
 // The index is the source node
