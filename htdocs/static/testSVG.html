@@ -17,42 +17,36 @@
         }
     </style>
     <script type="text/javascript">
-        var testjson = [
-            {
-                "id": "32",
-                "status": "0"
-            },
-            {
-                "id": "33",
-                "status": "-1"
-            }
-        ];
-        $(document).ready(function(){
-            var a = document.getElementById("svg");
+	function updateGraph(svgRoot) {
+		$.getJSON( "/tasks", function() {
+			console.log( "success" );
+			}).done(function(data) {
+				for(i=0; i < data.length; i++) {
+					if(data[i].status == '0') {
+						color = 'rgba(100,100,0,0.5)'
+					} else {
+						color = 'rgba(100,0,0,0.5)'
+					}
+						$("#" + data[i].id,svgRoot).children().css({'color': '#FFFFFF'});
+						$("#" + data[i].id,svgRoot).children().css({'fill': color});
+				}
+			});
+	}
+	$(document).ready(function(){
+		var a = document.getElementById("svg");
 
-            // Some help from http://stackoverflow.com/questions/6793312/how-to-use-jquery-in-svg-scalable-vector-graphics
-            //it's important to add an load event listener to the object, as it will load the svg doc asynchronously
-            a.addEventListener("load",function(){
-                var svgDoc = a.contentDocument; //get the inner DOM of alpha.svg
-                var svgRoot  = svgDoc.documentElement;
-
-                $(svgRoot).css({'width': '100%'});
-                $(svgRoot).css({'height': '100%'});
-                //now we can query stuff with jquery like this
-                //note that we pass in the svgRoot as the context node!
-                for(i=0; i < testjson.length; i++) {
-                if(testjson[i].status == '0') {
-                        color = 'rgba(100,100,0,0.5)'
-                        } else {
-                        color = 'rgba(100,0,0,0.5)'
-
-                        }
-                    $("#" + testjson[i].id,svgRoot).children().css({'color': '#FFFFFF'});
-                    $("#" + testjson[i].id,svgRoot).children().css({'fill': color});
-                    //$("#32",svgRoot).children().addClass('blink');
-                }
-            },false);
-        })
+		// Some help from http://stackoverflow.com/questions/6793312/how-to-use-jquery-in-svg-scalable-vector-graphics
+		//it's important to add an load event listener to the object, as it will load the svg doc asynchronously
+		a.addEventListener("load",function(){
+			var svgDoc = a.contentDocument; //get the inner DOM of alpha.svg
+			var svgRoot  = svgDoc.documentElement;
+			updateGraph(svgRoot);
+			$(svgRoot).css({'width': '100%'});
+			$(svgRoot).css({'height': '100%'});
+			//now we can query stuff with jquery like this
+			//note that we pass in the svgRoot as the context node!
+		},false);
+	})
     </script>
 </head>
 <body>
