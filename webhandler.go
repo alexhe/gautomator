@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"time"
 )
 
 func displaySvg(w http.ResponseWriter, r *http.Request, taskStructure *TaskGraphStructure) {
@@ -26,9 +27,6 @@ func displaySvg(w http.ResponseWriter, r *http.Request, taskStructure *TaskGraph
 
 	}
 	taskStructure.PrintDot(stdin)
-	//io.WriteString(stdin, "digraph G {\n")
-	//io.WriteString(stdin, " a->b\n")
-	//io.WriteString(stdin, "}\n")
 	// Command was successful
 	stdin.Close()
 	subProcess.Wait()
@@ -37,7 +35,36 @@ func displaySvg(w http.ResponseWriter, r *http.Request, taskStructure *TaskGraph
 
 // Courtesy of http://stackoverflow.com/questions/26211954/how-do-i-pass-arguments-to-my-handler
 func showTasks(w http.ResponseWriter, r *http.Request, taskStructure *TaskGraphStructure) {
-	//sigmaStructure := GetSigmaStructure(taskStructure)
-	//	jsonOutput, _ := json.Marshal(sigmaStructure)
-	json.NewEncoder(w).Encode(taskStructure.Tasks)
+	// A task is an action executed by a module
+	type taskJson struct {
+		Id     int      `json:"id"`
+		Origin string   `json:"origin"`
+		Name   string   `json:"name"` //the task name
+		Node   string   `json:"node"` // The node name
+		Module string   `json:"module"`
+		Args   []string `json:"args"`
+		Status int      `json:"status"` //-2: queued
+		// -1: running
+		// >=0 : return code
+		StartTime time.Time `json:"startTime"`
+		EndTime   time.Time `json:"endTime"`
+	}
+	var tasksJ []taskJson
+	for _, task := range taskStructure.Tasks {
+		var taskJ taskJson
+		taskJ.Id = task.Id
+		taskJ.Origin = task.Origin
+		taskJ.Name = task.Name
+		taskJ.Node = task.Node
+		taskJ.Module = task.Module
+		taskJ.Args = task.Args
+		taskJ.Status = task.Status
+		taskJ.StartTime = task.StartTime
+		taskJ.EndTime = task.EndTime
+		tasksJ = append(tasksJ, taskJ)
+	}
+	err := json.NewEncoder(w).Encode(tasksJ)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
