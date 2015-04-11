@@ -3,6 +3,7 @@ package gautomator
 import (
 	"fmt"
 	"github.com/gonum/matrix/mat64" // Matrix
+	"io"
 	"time"
 )
 
@@ -233,33 +234,30 @@ func (this *TaskGraphStructure) DuplicateTask(id int) (int, *TaskGraphStructure)
 }
 
 // This function print the dot file associated with the graph
-func (this *TaskGraphStructure) PrintDot() {
-	fmt.Println("digraph G {")
+func (this *TaskGraphStructure) PrintDot(w io.Writer) {
+	fmt.Fprintln(w, "digraph G {")
 	// Writing node definition
 	for _, task := range this.Tasks {
-		fmt.Printf("\t\"%v\" [\n", task.Id)
-		fmt.Printf("\t\tid = \"%v\"\n", task.Id)
+		fmt.Fprintf(w, "\t\"%v\" [\n", task.Id)
+		fmt.Fprintf(w, "\t\tid = \"%v\"\n", task.Id)
 		if task.Module == "meta" {
-			fmt.Println("\t\tshape=diamond")
-			fmt.Printf("\t\tlabel=\"%v\"", task.Name)
+			fmt.Fprintln(w, "\t\tshape=diamond")
+			fmt.Fprintf(w, "\t\tlabel=\"%v\"", task.Name)
 		} else {
-			fmt.Printf("\t\tlabel = \"<name>%v|<node>%v|<module>%v\"\n", task.Name, task.Node, task.Module)
-			fmt.Printf("\t\tshape = \"record\"\n")
+			fmt.Fprintf(w, "\t\tlabel = \"<name>%v|<node>%v|<module>%v\"\n", task.Name, task.Node, task.Module)
+			fmt.Fprintf(w, "\t\tshape = \"record\"\n")
 		}
-		if task.Node != "null" {
-			fmt.Println("\t\tcolor=lightblue2, style=filled")
-		}
-		fmt.Printf("\t];\n")
+		fmt.Fprintf(w, "\t];\n")
 	}
 	row, col := this.AdjacencyMatrix.Dims()
 	for r := 0; r < row; r++ {
 		for c := 0; c < col; c++ {
 			if this.AdjacencyMatrix.At(r, c) == 1 {
-				fmt.Printf("\t%v -> %v\n", this.Tasks[r].Id, this.Tasks[c].Id)
+				fmt.Fprintf(w, "\t%v -> %v\n", this.Tasks[r].Id, this.Tasks[c].Id)
 			}
 		}
 	}
-	fmt.Println("}")
+	fmt.Fprintln(w, "}")
 }
 
 // Return a structure of all the task with the given origin
