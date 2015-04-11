@@ -60,7 +60,7 @@ func Runner(task *Task, doneChan chan<- *Task, wg *sync.WaitGroup) {
 			log.Printf("[%v:%v] Done", task.Id, task.Name)
 			doneChan <- task
 			wg.Done()
-			//return
+			return
 		}
 	}
 }

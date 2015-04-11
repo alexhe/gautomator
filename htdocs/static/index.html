@@ -22,13 +22,15 @@
 			console.log( "success" );
 			}).done(function(data) {
 				for(i=0; i < data.length; i++) {
-					if(data[i].status == '0') {
-						color = 'rgba(100,100,0,0.5)'
-					} else {
-						color = 'rgba(100,0,0,0.5)'
+					switch (data[i].status) {
+						case 0:
+							color = 'rgba(100,100,0,0.5)'
+							break;
+						default:
+							color = 'rgba(100,0,0,0.5)'
 					}
-						$("#" + data[i].id,svgRoot).children().css({'color': '#FFFFFF'});
-						$("#" + data[i].id,svgRoot).children().css({'fill': color});
+					$("#" + data[i].id,svgRoot).children().css({'color': '#FFFFFF'});
+					$("#" + data[i].id,svgRoot).children().css({'fill': color});
 				}
 			});
 		setTimeout("updateGraph()",5000);
