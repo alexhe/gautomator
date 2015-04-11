@@ -9,18 +9,22 @@ import (
 
 // A task is an action executed by a module
 type Task struct {
-	Id     int
-	Origin string
-	Name   string //the task name
-	Node   string // The node name
-	Module string
-	Args   []string
-	Status int // -2: queued
+	Id     int      `json:"id"`
+	Origin string   `json:"origin"`
+	Name   string   `json:"name"` //the task name
+	Node   string   `json:"node"` // The node name
+	Module string   `json:"module"`
+	Args   []string `json:"args"`
+	Status int      `json:"status"` //-2: queued
 	// -1: running
 	// >=0 : return code
-	StartTime      time.Time
-	EndTime        time.Time
+	StartTime      time.Time `json:"startTime"`
+	EndTime        time.Time `json:"endTime"`
 	TaskCanRunChan chan bool // true: run, false: wait
+}
+
+type jsonStructure struct {
+	Nodes []*Task `json:"task"`
 }
 
 // This is the structure corresponding to the "dot-graph" of a task list
