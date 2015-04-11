@@ -3,7 +3,6 @@ package gautomator
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"os/exec"
@@ -35,9 +34,10 @@ func displaySvg(w http.ResponseWriter, r *http.Request, taskStructure *TaskGraph
 		fmt.Println("An error occured: ", err) //replace with logger, or anything you want
 
 	}
-	io.WriteString(stdin, "digraph G {\n")
-	io.WriteString(stdin, " a->b\n")
-	io.WriteString(stdin, "}\n")
+	taskStructure.PrintDot(stdin)
+	//io.WriteString(stdin, "digraph G {\n")
+	//io.WriteString(stdin, " a->b\n")
+	//io.WriteString(stdin, "}\n")
 	// Command was successful
 	stdin.Close()
 	subProcess.Wait()
