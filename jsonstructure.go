@@ -6,7 +6,7 @@ import (
 )
 
 // This will convert the TaskGraphStructure into a format suitable for sigmajs
-type SigmaNode struct {
+type jsonNode struct {
 	Id    string  `json:"id"`    // "id": "1",
 	Label string  `json:"label"` //"label": "Node 1",
 	Color string  `json:"color"` //"color": "rgb(90,90,90)",
@@ -17,33 +17,33 @@ type SigmaNode struct {
 
 }
 
-type SigmaEdge struct {
+type jsonEdge struct {
 	Id     string `json:"id"`
 	Source string `json:"source"`
 	Target string `json:"target"`
 	Type   string `json:"type"` //"type": "tweetegy"
 }
 
-type SigmaStructure struct {
-	Nodes []*SigmaNode `json:"nodes"`
-	Edges []*SigmaEdge `json:"edges"`
+type jsonStructure struct {
+	Nodes []*jsonNode `json:"nodes"`
+	Edges []*jsonEdge `json:"edges"`
 }
 
-func (this *SigmaStructure) AddEdge(sigmaEdge *SigmaEdge) {
+func (this *jsonStructure) AddEdge(sigmaEdge *jsonEdge) {
 	this.Edges = append(this.Edges, sigmaEdge)
 }
-func (this *SigmaStructure) AddNode(sigmaNode *SigmaNode) {
+func (this *jsonStructure) AddNode(sigmaNode *jsonNode) {
 	this.Nodes = append(this.Nodes, sigmaNode)
 }
 
-func NewSigmaStructure() *SigmaStructure {
-	return &SigmaStructure{
-		make([]*SigmaNode, 0),
-		make([]*SigmaEdge, 0),
+func NewjsonStructure() *jsonStructure {
+	return &jsonStructure{
+		make([]*jsonNode, 0),
+		make([]*jsonEdge, 0),
 	}
 }
-func NewSigmaEdge() *SigmaEdge {
-	return &SigmaEdge{
+func NewjsonEdge() *jsonEdge {
+	return &jsonEdge{
 		string(-1),
 		string(-1),
 		string(-1),
@@ -51,8 +51,8 @@ func NewSigmaEdge() *SigmaEdge {
 	}
 }
 
-func NewSigmaNode() *SigmaNode {
-	return &SigmaNode{
+func NewjsonNode() *jsonNode {
+	return &jsonNode{
 		"-1",
 		"Default Node",
 		"rgb(90,90,90)",
@@ -62,30 +62,15 @@ func NewSigmaNode() *SigmaNode {
 		"Def",
 	}
 }
-func GetSigmaStructure(taskGraphStructure *TaskGraphStructure) *SigmaStructure {
+func GetjsonStructure(taskGraphStructure *TaskGraphStructure) *jsonStructure {
 	// First parse the taskGraphStructure.Tasks and create the node array
-	var sigmaStructure *SigmaStructure
-	sigmaStructure = NewSigmaStructure()
+	var sigmaStructure *jsonStructure
+	//sigmaStructure = NewjsonStructure()
 	for _, task := range taskGraphStructure.Tasks {
-		sigmaNode := NewSigmaNode()
+		sigmaNode := NewjsonNode()
 		sigmaNode.Id = strconv.Itoa(task.Id)
 		sigmaNode.Label = fmt.Sprint(task.Name, ":", task.Node)
 		sigmaStructure.AddNode(sigmaNode)
-	}
-	rowSize, colSize := taskGraphStructure.AdjacencyMatrix.Dims()
-	edgeId := 1
-	for r := 0; r < rowSize; r++ {
-		for c := 0; c < colSize; c++ {
-			// If there is a link, create the edge
-			if taskGraphStructure.AdjacencyMatrix.At(r, c) != 0 {
-				sigmaEdge := NewSigmaEdge()
-				sigmaEdge.Id = strconv.Itoa(edgeId)
-				sigmaEdge.Source = strconv.Itoa(r)
-				sigmaEdge.Target = strconv.Itoa(c)
-				edgeId += 1
-				sigmaStructure.AddEdge(sigmaEdge)
-			}
-		}
 	}
 	return sigmaStructure
 }
