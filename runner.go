@@ -82,10 +82,6 @@ func Advertize(taskStructure *TaskGraphStructure, doneChan <-chan *Task) {
 	for {
 		task := <-doneChan
 
-		//TODO : There is absolutely no need to change the adjacency matrix AT ALL
-		// It is a lot better to create a copy
-
-		// Adapting the Adjacency matrix...
 		// TaskId is finished, it cannot be the source of any task anymore
 		// Set the row at 0
 		rowSize, colSize := doneAdjacency.Dims()
