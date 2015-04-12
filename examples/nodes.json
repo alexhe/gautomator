@@ -14,10 +14,20 @@
       ]
    },
 {
-      "taskName":"CreateJVM",
+      "taskName":"CreateJVMbla",
       "module":"shell",
       "args":[
          "sleep",
+         "10"
+      ],
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+{
+      "taskName":"CreateJVM",
+      "module":"sleep",
+      "args":[
          "10"
       ],
       "hosts":[

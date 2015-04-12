@@ -49,7 +49,6 @@ func Client(task *Task, proto *string, socket *string) int {
 		Stderr:     os.Stderr,
 		StatusChan: remoteSender,
 	}
-	//log.Printf("Sending command %v %s", command.Cmd, command.Args)
 	err = sender.Send(command)
 	if err != nil {
 		log.Fatal(err)
