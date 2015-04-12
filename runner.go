@@ -79,9 +79,12 @@ func Advertize(taskStructure *TaskGraphStructure, doneChan <-chan *Task) {
 		}
 	}
 	doneAdjacency := mat64.DenseCopyOf(taskStructure.AdjacencyMatrix)
+	// Store the task that we have already advertized
+	var advertized []int
 	for {
 		task := <-doneChan
 
+		log.Printf("DEBUG: task:%v(%v) is finished", task.Name, task.Id)
 		// TaskId is finished, it cannot be the source of any task anymore
 		// Set the row at 0
 		rowSize, colSize := doneAdjacency.Dims()
@@ -96,8 +99,20 @@ func Advertize(taskStructure *TaskGraphStructure, doneChan <-chan *Task) {
 				sum += doneAdjacency.At(r, taskIndex)
 			}
 
+			// This task can be advertized...
 			if sum == 0 && taskStructure.Tasks[taskIndex].Status == -2 {
-				taskStructure.Tasks[taskIndex].TaskCanRunChan <- true
+				// ... if it has not been advertized already
+				advertizeIt := true
+				for _, value := range advertized {
+					if value == taskIndex {
+						advertizeIt = false
+					}
+				}
+				if advertizeIt == true {
+					advertized = append(advertized, taskIndex)
+					log.Printf("DEBUG: Asdvertizing task:%v(%v) (index:%v)", taskStructure.Tasks[taskIndex].Name, taskStructure.Tasks[taskIndex].Id, taskIndex)
+					taskStructure.Tasks[taskIndex].TaskCanRunChan <- true
+				}
 			}
 		}
 	}
