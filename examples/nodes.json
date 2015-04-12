@@ -8,17 +8,17 @@
    {
       "taskName":"DomaineProducteurManaged",
       "hosts":[
-         "node1:4546",
-         "node2:4546",
-         "node3:4546"
+         "localhost:4546",
+         "localhost:4546",
+         "localhost:4546"
       ]
    },
 {
-      "taskName":"B",
+      "taskName":"CreateJVM",
       "module":"shell",
       "args":[
          "sleep",
-         "2"
+         "10"
       ],
       "hosts":[
          "localhost:4546"
