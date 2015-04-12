@@ -5,8 +5,8 @@ digraph layer5 {
     DomaineProducteurAdmin -> DomaineProducteurManaged
     DomaineConsommateurAdmin -> DomaineConsommateurManaged
     ApacheConsommateur
-    BDDMaster -> BDDSlave
     BDDMaster -> DomaineProducteurAdmin
+    BDDMaster -> BDDSlave
     BDDMaster -> DomaineConsommateurAdmin
     BDDMaster -> layer7
     DomaineConsommateurManaged -> layer7

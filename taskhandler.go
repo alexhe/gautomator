@@ -200,7 +200,7 @@ func (this *TaskGraphStructure) Relink() *TaskGraphStructure {
 							add = false
 						}
 					}
-					if add == true {
+					if add == true && this.Tasks[c].Origin != task.Origin {
 						this.AdjacencyMatrix.Set(task.Id, c, this.AdjacencyMatrix.At(task.Id, c)+this.AdjacencyMatrix.At(id, c))
 					}
 				}
