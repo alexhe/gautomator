@@ -15,7 +15,8 @@ type Task struct {
 	Node   string   `json:"node"` // The node name
 	Module string   `json:"module"`
 	Args   []string `json:"args"`
-	Status int      `json:"status"` //-2: queued
+	Status int      `json:"status"` //-3: queued
+	// -2 Advertized (infored that the dependencies are done)
 	// -1: running
 	// >=0 : return code
 	StartTime      time.Time `json:"startTime"`
@@ -67,7 +68,7 @@ func NewTask() *Task {
 		"null",
 		"dummy",
 		make([]string, 1),
-		-2,
+		-3,
 		time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
 		time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
 		make(chan bool),
