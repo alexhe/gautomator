@@ -33,7 +33,9 @@
 					$("#" + data[i].id,svgRoot).children().css({'fill': color});
 				}
 			});
-		setTimeout("updateGraph(svgRoot)",5000);
+                 setTimeout(function() {
+                        updateGraph(svgRoot);
+                 }, 2000)
 	}
 	$(document).ready(function(){
 		var a = document.getElementById("svg");
