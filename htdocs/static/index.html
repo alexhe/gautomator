@@ -39,7 +39,7 @@
 							color = 'rgba(230, 0, 0, 0.5)'
 					}
 					$("#" + data[i].id,svgRoot).children().css({'color': '#FFFFFF'});
-					$("#" + data[i].id,svgRoot).children().css({'fill': color});
+					$("#" + data[i].id,svgRoot).children("polygon").css({'fill': color});
 				}
 			});
                  setTimeout(function() {
