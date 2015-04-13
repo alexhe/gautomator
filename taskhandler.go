@@ -222,14 +222,20 @@ func (this *TaskGraphStructure) Relink() *TaskGraphStructure {
 // Duplicate the task "id"
 // Returns the id of the new task and the whole structure
 func (this *TaskGraphStructure) DuplicateTask(name string) []int {
-	newIds := make([]int,0)
+	newIds := make([]int,1)
+	newIds[0] = -1
 	Ids := this.getTaskFromName(name)
-	for id := range Ids {
+	for _, id := range Ids {
 	    if id != -1 {
 		newId, _ := this.AdjacencyMatrix.Dims()
-		newIds = append(newIds,newId)
+		if newIds[0] == -1 {
+		    newIds = append(newIds[1:],newId)
+		} else {
+		    newIds = append(newIds,newId)
+		}
 		newTask := NewTask()
 		newTask.Id = newId
+		this.Tasks[newId] = newTask
 		newTask.Origin = this.Tasks[id].Origin
 		newTask.Module = this.Tasks[id].Module
 		newTask.Node = this.Tasks[id].Node

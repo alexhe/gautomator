@@ -45,8 +45,16 @@ func (this *TaskGraphStructure) InstanciateTaskStructure(taskInstances TaskDefin
 					// TODO Duplicate a single task
 					// Get the id of the task to duplicate
 					log.Printf("DEBUG: Duplicating %v",taskInstance.Taskname)
-					//newId := this.DuplicateTask(taskInstance.Taskname)
-					//this.Tasks[newId].Node = node
+					newIds := this.DuplicateTask(taskInstance.Taskname)
+					log.Printf("DEBUG: %v",newIds)
+					for _, newId := range newIds {
+					    if newId != -1 {
+						log.Printf("Added id %v to the structure",newId)
+						log.Println("step1")
+						this.Tasks[newId].Node = node
+						log.Println("step2")
+					    }
+					}
 				}
 			}
 		}
@@ -60,11 +68,9 @@ func (this *TaskGraphStructure) InstanciateTaskStructure(taskInstances TaskDefin
 		for _, task := range this.Tasks {
 			if _, ok := taskInstances[task.Name]; ok {
 				if taskInstances[task.Name].Module != "" {
-					log.Printf("DEBUG module %v (%v)", taskInstances[task.Name].Module, task.Name)
 					task.Module = taskInstances[task.Name].Module
 				}
 				if taskInstances[task.Name].Args != nil {
-					log.Printf("DEBUG Args %v (%v)", taskInstances[task.Name].Args, task.Name)
 					task.Args = taskInstances[task.Name].Args
 				}
 			}
