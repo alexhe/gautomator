@@ -70,6 +70,20 @@
       ]
    },
    {
+      "taskName":"BDDMaster",
+      "module":"/tmp/test",
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+   {
+      "taskName":"BDDSlave",
+      "module":"/tmp/test",
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+   {
       "taskName":"CreateFS_weblogic",
       "module":"/tmp/test",
       "hosts":[

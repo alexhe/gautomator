@@ -15,6 +15,20 @@
             stroke: #333;
             stroke-width: 1;
         }
+	.blink {
+		animation: blink 1s steps(5, start) infinite;
+		-webkit-animation: blink 1s steps(5, start) infinite;
+	}
+	@keyframes blink {
+		to {
+			visibility: hidden;
+		}
+	}
+	@-webkit-keyframes blink {
+		to {
+			visibility: hidden;
+		}
+	}
     </style>
     <script type="text/javascript">
 	function updateGraph(svgRoot) {
@@ -38,7 +52,7 @@
 						default:
 							color = 'rgba(230, 0, 0, 0.5)'
 					}
-					$("#" + data[i].id,svgRoot).children().css({'color': '#FFFFFF'});
+					$("#" + data[i].id,svgRoot).children("text").css({'color': '#FFFFFF'});
 					$("#" + data[i].id,svgRoot).children("polygon").css({'fill': color});
 				}
 			});
