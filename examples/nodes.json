@@ -15,20 +15,112 @@
    },
    {
       "taskName":"CreateJVM",
-      "module":"sleep",
-      "args":[
-         "10"
-      ],
+      "module":"/tmp/test",
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+   {
+      "taskName":"AddToCluster",
+      "module":"/tmp/test",
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+   {
+      "taskName":"DeployProducteur",
+      "module":"/tmp/test",
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+   {
+      "taskName":"DeployConsommateur",
+      "module":"/tmp/test",
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+   {
+      "taskName":"SetupData",
+      "module":"/tmp/test",
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+   {
+      "taskName":"CreateDomain",
+      "module":"/tmp/test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"ApacheInstit",
-      "module":"sleep",
-      "args":[
-         "15"
-      ],
+      "module":"/tmp/test",
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+   {
+      "taskName":"InstallProduit_weblogic",
+      "module":"/tmp/test",
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+   {
+      "taskName":"CreateFS_weblogic",
+      "module":"/tmp/test",
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+   {
+      "taskName":"CreateUser_weblogic",
+      "module":"/tmp/test",
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+   {
+      "taskName":"InstallProduit_oracle",
+      "module":"/tmp/test",
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+   {
+      "taskName":"CreateFS_oracle",
+      "module":"/tmp/test",
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+   {
+      "taskName":"CreateUser_oracle",
+      "module":"/tmp/test",
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+   {
+      "taskName":"InstallProduit_apache",
+      "module":"/tmp/test",
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+   {
+      "taskName":"CreateFS_apache",
+      "module":"/tmp/test",
+      "hosts":[
+         "localhost:4546"
+      ]
+   },
+   {
+      "taskName":"CreateUser_apache",
+      "module":"/tmp/test",
       "hosts":[
          "localhost:4546"
       ]
@@ -37,7 +129,7 @@
       "taskName":"PurgeDomain",
       "module":"sleep",
       "args":[
-         "15"
+         "3"
       ],
       "hosts":[
          "localhost:4546"
