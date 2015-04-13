@@ -22,7 +22,9 @@ func main() {
 	log.Println("Server mode")
 	proto := "tcp"
 	socket := "localhost:4546"
+	var wg sync.WaitGroup
 	go gautomator.Rserver(&proto, &socket)
+	wg.Add(1)
 
 	if len(dotFiles) != 0 {
 		log.Println("Client mode")
@@ -70,7 +72,6 @@ func main() {
 
 		//taskStructure.PrintAdjacencyMatrix()
 		// Entering the workers area
-		var wg sync.WaitGroup
 		doneChan := make(chan *gautomator.Task)
 
 		// For each task, launch a goroutine
@@ -86,6 +87,6 @@ func main() {
 		go log.Fatal(http.ListenAndServe(":8080", router))
 
 		// Wait for all the runner(s) to be finished
-		wg.Wait()
 	}
+	wg.Wait()
 }
