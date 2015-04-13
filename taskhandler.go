@@ -236,6 +236,7 @@ func (this *TaskGraphStructure) DuplicateTask(name string) []int {
 		newTask := NewTask()
 		newTask.Id = newId
 		this.Tasks[newId] = newTask
+		newTask.Name = this.Tasks[id].Name
 		newTask.Origin = this.Tasks[id].Origin
 		newTask.Module = this.Tasks[id].Module
 		newTask.Node = this.Tasks[id].Node
