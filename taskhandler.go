@@ -235,20 +235,23 @@ func (this *TaskGraphStructure) DuplicateTask(name string) []int {
 		}
 		newTask := NewTask()
 		newTask.Id = newId
-		this.Tasks[newId] = newTask
 		newTask.Name = this.Tasks[id].Name
 		newTask.Origin = this.Tasks[id].Origin
 		newTask.Module = this.Tasks[id].Module
 		newTask.Node = this.Tasks[id].Node
 		newTask.Args = this.Tasks[id].Args
 		newTask.Status = this.Tasks[id].Status
+		this.Tasks[newId] = newTask
 		this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(1, 1))
+		this.DegreeMatrix = mat64.DenseCopyOf(this.DegreeMatrix.Grow(1, 1))
 		for r := 0; r < newId; r++ {
 		    this.AdjacencyMatrix.Set(r, newId, this.AdjacencyMatrix.At(r, id))
+		    this.DegreeMatrix.Set(r, newId, this.DegreeMatrix.At(r, id))
 		}
 		// Copy the col 'id' to col 'newId'
 		for c := 0; c < newId; c++ {
 		    this.AdjacencyMatrix.Set(newId, c, this.AdjacencyMatrix.At(id, c))
+		    this.DegreeMatrix.Set(newId, c, this.DegreeMatrix.At(id, c))
 		}
 	    }
 	}

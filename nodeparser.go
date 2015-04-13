@@ -3,8 +3,8 @@ package gautomator
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"io/ioutil"
 )
 
 func ParseNode(filename *string) TaskDefinition {
@@ -36,30 +36,29 @@ func (this *TaskGraphStructure) InstanciateTaskStructure(taskInstances TaskDefin
 				// If there is subtask
 				if subTasks != nil {
 					for i, _ := range subTasks.Tasks {
-						log.Printf("Setting node %v on task %v (%v)", node, subTasks.Tasks[i].Name, i)
 						subTasks.Tasks[i].Node = node
 					}
 					allSubTasks[index] = subTasks
 					index += 1
 				} else {
-					// TODO Duplicate a single task
-					// Get the id of the task to duplicate
-					log.Printf("DEBUG: Duplicating %v",taskInstance.Taskname)
-					newIds := this.DuplicateTask(taskInstance.Taskname)
-					log.Printf("DEBUG: %v",newIds)
-					for _, newId := range newIds {
-					    log.Println("step0")
-					    if newId != -1 {
-						log.Printf("Added id %v to the structure",newId)
-						log.Println("step1")
-						this.Tasks[newId].Node = node
-						log.Println("step2")
+					// TODO If a tasks exists with a node == null, do not duplicate, change it
+					for _, task := range this.Tasks {
+					    if task.Name == taskInstance.Taskname {
+						if task.Node == "null" || task.Node == node {
+							task.Node = node
+						} else {
+						    newIds := this.DuplicateTask(taskInstance.Taskname)
+						    for _, newId := range newIds {
+							if newId != -1 {
+							    this.Tasks[newId].Node = node
+							}
+						    }
+						}
 					    }
 					}
 				}
 			}
 		}
-		log.Println("step3")
 
 		for _, subTask := range allSubTasks {
 			//subTask.PrintAdjacencyMatrix()
