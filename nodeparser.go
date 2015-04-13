@@ -48,6 +48,7 @@ func (this *TaskGraphStructure) InstanciateTaskStructure(taskInstances TaskDefin
 					newIds := this.DuplicateTask(taskInstance.Taskname)
 					log.Printf("DEBUG: %v",newIds)
 					for _, newId := range newIds {
+					    log.Println("step0")
 					    if newId != -1 {
 						log.Printf("Added id %v to the structure",newId)
 						log.Println("step1")
@@ -58,6 +59,7 @@ func (this *TaskGraphStructure) InstanciateTaskStructure(taskInstances TaskDefin
 				}
 			}
 		}
+		log.Println("step3")
 
 		for _, subTask := range allSubTasks {
 			//subTask.PrintAdjacencyMatrix()
