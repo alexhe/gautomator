@@ -32,16 +32,26 @@ func (this *TaskGraphStructure) InstanciateTaskStructure(taskInstances TaskDefin
 		index := 0
 		for _, taskInstance := range taskInstances {
 			for _, node := range taskInstance.Hosts {
+			    doNotDuplicate := false
+			    for _, task := range this.Tasks {
+				    if task.Origin == taskInstance.Taskname && task.Node == "null" {
+					// Setting the node to node
+					task.Node = node
+					doNotDuplicate = true
+				    }
+			    }
+
+			    if doNotDuplicate != true {
 				subTasks := this.GetSubstructure(taskInstance.Taskname)
 				// If there is subtask
 				if subTasks != nil {
+					// TODO,  if a subtask exists with dummy, set it the hostname and no not add it
 					for i, _ := range subTasks.Tasks {
 						subTasks.Tasks[i].Node = node
 					}
 					allSubTasks[index] = subTasks
 					index += 1
 				} else {
-					// TODO If a tasks exists with a node == null, do not duplicate, change it
 					for _, task := range this.Tasks {
 					    if task.Name == taskInstance.Taskname {
 						if task.Node == "null" || task.Node == node {
@@ -57,6 +67,7 @@ func (this *TaskGraphStructure) InstanciateTaskStructure(taskInstances TaskDefin
 					    }
 					}
 				}
+			    }
 			}
 		}
 
