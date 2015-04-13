@@ -13,19 +13,28 @@
          "localhost:4546"
       ]
    },
-{
-      "taskName":"CreateJVMbla",
-      "module":"shell",
+   {
+      "taskName":"CreateJVM",
+      "module":"sleep",
       "args":[
-         "sleep",
          "10"
+      ],
+      "hosts":[
+         "dmcllc03:4546"
+      ]
+   },
+   {
+      "taskName":"ApacheInstit",
+      "module":"sleep",
+      "args":[
+         "15"
       ],
       "hosts":[
          "localhost:4546"
       ]
    },
-{
-      "taskName":"CreateJVM",
+   {
+      "taskName":"PurgeDomain",
       "module":"sleep",
       "args":[
          "15"

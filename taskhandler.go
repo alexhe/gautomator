@@ -137,13 +137,19 @@ func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStr
 	return this
 }
 
-func (this *TaskGraphStructure) getTaskFromName(name string) (int, *Task) {
-	for index, task := range this.Tasks {
+func (this *TaskGraphStructure) getTaskFromName(name string) []int {
+	indexA := make([]int,1)
+	indexA[0] = -1
+	for _ , task := range this.Tasks {
 		if task.Name == name {
-			return index, task
+		    if indexA[0] == -1 {
+			indexA = append(indexA[1:],task.Id)
+		    } else {
+			indexA = append(indexA,task.Id)
+		    }
 		}
 	}
-	return -1, nil
+	return indexA
 }
 
 func colSum(matrix *mat64.Dense, colId int) float64 {
@@ -182,26 +188,28 @@ func (this *TaskGraphStructure) Relink() *TaskGraphStructure {
 	_, col := this.AdjacencyMatrix.Dims()
 	for _, task := range this.Tasks {
 		if colSum(this.AdjacencyMatrix, task.Id) == 0 {
-			id, _ := this.getTaskFromName(task.Origin)
-			if id != -1 {
+			id := this.getTaskFromName(task.Origin)
+			// TODO There should be only one task, otherwise display an error
+			if id[0] != -1 {
 				// Task is a meta task
-				this.Tasks[id].Module = "meta"
-				this.AdjacencyMatrix.Set(id, task.Id, float64(1))
-				backup[task.Origin] = append(backup[task.Origin], id, task.Id)
+				this.Tasks[id[0]].Module = "meta"
+				this.AdjacencyMatrix.Set(id[0], task.Id, float64(1))
+				backup[task.Origin] = append(backup[task.Origin], id[0], task.Id)
 			}
 		}
 		if rowSum(this.AdjacencyMatrix, task.Id) == 0 {
-			id, _ := this.getTaskFromName(task.Origin)
-			if id != -1 {
+			id := this.getTaskFromName(task.Origin)
+			// TODO There should be only one task, otherwise display an error
+			if id[0] != -1 {
 				for c := 0; c < col; c++ {
 					add := true
 					for counter := 0; counter < len(backup[task.Origin])-1; counter += 2 {
-						if backup[task.Origin][counter] == id && backup[task.Origin][counter+1] == c {
+						if backup[task.Origin][counter] == id[0] && backup[task.Origin][counter+1] == c {
 							add = false
 						}
 					}
 					if add == true && this.Tasks[c].Origin != task.Origin {
-						this.AdjacencyMatrix.Set(task.Id, c, this.AdjacencyMatrix.At(task.Id, c)+this.AdjacencyMatrix.At(id, c))
+						this.AdjacencyMatrix.Set(task.Id, c, this.AdjacencyMatrix.At(task.Id, c)+this.AdjacencyMatrix.At(id[0], c))
 					}
 				}
 			}
@@ -213,25 +221,35 @@ func (this *TaskGraphStructure) Relink() *TaskGraphStructure {
 
 // Duplicate the task "id"
 // Returns the id of the new task and the whole structure
-func (this *TaskGraphStructure) DuplicateTask(id int) (int, *TaskGraphStructure) {
+func (this *TaskGraphStructure) DuplicateTask(name string) []int {
+    /*
 	row, _ := this.AdjacencyMatrix.Dims()
 	// Add the task to the list
-	origin := this.Tasks[id]
-	newId := row + 1
+	Ids := this.getTaskFromName(name)
+	id := origin.Id
+	newId := row
 	newTask := origin
 	newTask.Id = newId
+	log.Println("Step3")
 	this.Tasks[newId] = newTask
 	// Adjust the AdjacencyMatrix
+	log.Println("Step4")
 	this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(1, 1))
 	// Copy the row 'id' to row 'newId'
+	log.Println("Step5")
 	for r := 0; r < newId; r++ {
+	    log.Printf("Step6: r:%v id=%v newId=%v",r,id,newId)
 		this.AdjacencyMatrix.Set(r, newId, this.AdjacencyMatrix.At(r, id))
 	}
 	// Copy the col 'id' to col 'newId'
 	for c := 0; c < newId; c++ {
+		log.Println("Step7")
 		this.AdjacencyMatrix.Set(newId, c, this.AdjacencyMatrix.At(id, c))
 	}
-	return newId, this
+	log.Println("Step8")
+	return newId
+	*/
+	return nil
 }
 
 // This function print the dot file associated with the graph
@@ -281,7 +299,6 @@ func (this *TaskGraphStructure) GetSubstructure(origin string) *TaskGraphStructu
 		for i := 0; i < size; i++ {
 			task := tasksToExtract[i]
 			//fmt.Printf("Task with ID:%v and name:%v will have id:%v\n", task.Id, task.Name, i)
-			// BUG here probably
 			// Construct the AdjacencyMatrix line by line
 			for col := 0; col < size; col++ {
 				task2 := tasksToExtract[col]
