@@ -29,46 +29,12 @@ func main() {
 	if len(dotFiles) != 0 {
 		log.Println("Client mode")
 
+		// Parse the dot file, recompose and reconstruct a big graph
 		taskStructure := gautomator.ParseDotFiles(dotFiles)
 		// Parse the nodes.json and adapt the tasks
 		taskInstances := gautomator.ParseNode(nodesFileJson)
-		allSubTasks := make(map[int]*gautomator.TaskGraphStructure, 0)
-		index := 0
-		for _, taskInstance := range taskInstances {
-			for _, node := range taskInstance.Hosts {
-				subTasks := taskStructure.GetSubstructure(taskInstance.Taskname)
-				// If there is subtask
-				if subTasks != nil {
-					for i, _ := range subTasks.Tasks {
-						log.Printf("Setting node %v on task %v (%v)", node, subTasks.Tasks[i].Name, i)
-						subTasks.Tasks[i].Node = node
-					}
-					allSubTasks[index] = subTasks
-					index += 1
-				} else {
-					// TODO Duplicate a single task
-				}
-			}
-		}
-
-		for _, subTask := range allSubTasks {
-			//subTask.PrintAdjacencyMatrix()
-			taskStructure = taskStructure.AugmentTaskStructure(subTask)
-		}
-		taskStructure.Relink()
-		// Now, for each task, assign module, hosts and co...
-		for _, task := range taskStructure.Tasks {
-			if _, ok := taskInstances[task.Name]; ok {
-				if taskInstances[task.Name].Module != "" {
-					log.Printf("DEBUG module %v (%v)", taskInstances[task.Name].Module, task.Name)
-					task.Module = taskInstances[task.Name].Module
-				}
-				if taskInstances[task.Name].Args != nil {
-					log.Printf("DEBUG Args %v (%v)", taskInstances[task.Name].Args, task.Name)
-					task.Args = taskInstances[task.Name].Args
-				}
-			}
-		}
+		// Parse the instanciate the task with the information from the node file
+		taskStructure.InstanciateTaskStructure(taskInstances)
 
 		//taskStructure.PrintAdjacencyMatrix()
 		// Entering the workers area
