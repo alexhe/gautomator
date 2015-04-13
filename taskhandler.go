@@ -222,34 +222,30 @@ func (this *TaskGraphStructure) Relink() *TaskGraphStructure {
 // Duplicate the task "id"
 // Returns the id of the new task and the whole structure
 func (this *TaskGraphStructure) DuplicateTask(name string) []int {
-    /*
-	row, _ := this.AdjacencyMatrix.Dims()
-	// Add the task to the list
+	newIds := make([]int,0)
 	Ids := this.getTaskFromName(name)
-	id := origin.Id
-	newId := row
-	newTask := origin
-	newTask.Id = newId
-	log.Println("Step3")
-	this.Tasks[newId] = newTask
-	// Adjust the AdjacencyMatrix
-	log.Println("Step4")
-	this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(1, 1))
-	// Copy the row 'id' to row 'newId'
-	log.Println("Step5")
-	for r := 0; r < newId; r++ {
-	    log.Printf("Step6: r:%v id=%v newId=%v",r,id,newId)
-		this.AdjacencyMatrix.Set(r, newId, this.AdjacencyMatrix.At(r, id))
+	for id := range Ids {
+	    if id != -1 {
+		newId, _ := this.AdjacencyMatrix.Dims()
+		newIds = append(newIds,newId)
+		newTask := NewTask()
+		newTask.Id = newId
+		newTask.Origin = this.Tasks[id].Origin
+		newTask.Module = this.Tasks[id].Module
+		newTask.Node = this.Tasks[id].Node
+		newTask.Args = this.Tasks[id].Args
+		newTask.Status = this.Tasks[id].Status
+		this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(1, 1))
+		for r := 0; r < newId; r++ {
+		    this.AdjacencyMatrix.Set(r, newId, this.AdjacencyMatrix.At(r, id))
+		}
+		// Copy the col 'id' to col 'newId'
+		for c := 0; c < newId; c++ {
+		    this.AdjacencyMatrix.Set(newId, c, this.AdjacencyMatrix.At(id, c))
+		}
+	    }
 	}
-	// Copy the col 'id' to col 'newId'
-	for c := 0; c < newId; c++ {
-		log.Println("Step7")
-		this.AdjacencyMatrix.Set(newId, c, this.AdjacencyMatrix.At(id, c))
-	}
-	log.Println("Step8")
-	return newId
-	*/
-	return nil
+	return newIds
 }
 
 // This function print the dot file associated with the graph
