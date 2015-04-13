@@ -8,17 +8,14 @@
    {
       "taskName":"DomaineProducteurManaged",
       "hosts":[
-         "localhost:4546",
+         "192.168.0.14:4546",
          "localhost:4546",
          "localhost:4546"
       ]
    },
    {
       "taskName":"CreateJVM",
-      "module":"/tmp/test",
-      "hosts":[
-         "localhost:4546"
-      ]
+      "module":"/tmp/test"
    },
    {
       "taskName":"AddToCluster",
