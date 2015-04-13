@@ -82,10 +82,12 @@ func Advertize(taskStructure *TaskGraphStructure, doneChan <-chan *Task) {
 		task := <-doneChan
 
 		// TaskId is finished, it cannot be the source of any task anymore
-		// Set the row at 0
+		// Set the row at 0 if status is 0
 		rowSize, colSize := doneAdjacency.Dims()
-		for c := 0; c < colSize; c++ {
-			doneAdjacency.Set(task.Id, c, float64(0))
+		if task.Status == 0 {
+			for c := 0; c < colSize; c++ {
+				doneAdjacency.Set(task.Id, c, float64(0))
+			}
 		}
 		// For each dependency of the task
 		// We can run if the sum of the element of the column Id of the current task is 0
