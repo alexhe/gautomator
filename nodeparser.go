@@ -26,6 +26,7 @@ func ParseNode(filename *string) TaskDefinition {
 	}
 	return taskDefinition
 }
+
 // TODO: this function is ugly and buggy...
 // Need to rethink it and recode it in a more mathematical and elegant way
 func (this *TaskGraphStructure) InstanciateTaskStructure(taskInstances TaskDefinition) {
