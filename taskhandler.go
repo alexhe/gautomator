@@ -138,15 +138,15 @@ func (this *TaskGraphStructure) AugmentTaskStructure(taskStructure *TaskGraphStr
 }
 
 func (this *TaskGraphStructure) getTaskFromName(name string) []int {
-	indexA := make([]int,1)
+	indexA := make([]int, 1)
 	indexA[0] = -1
-	for _ , task := range this.Tasks {
+	for _, task := range this.Tasks {
 		if task.Name == name {
-		    if indexA[0] == -1 {
-			indexA = append(indexA[1:],task.Id)
-		    } else {
-			indexA = append(indexA,task.Id)
-		    }
+			if indexA[0] == -1 {
+				indexA = append(indexA[1:], task.Id)
+			} else {
+				indexA = append(indexA, task.Id)
+			}
 		}
 	}
 	return indexA
@@ -222,38 +222,38 @@ func (this *TaskGraphStructure) Relink() *TaskGraphStructure {
 // Duplicate the task "id"
 // Returns the id of the new task and the whole structure
 func (this *TaskGraphStructure) DuplicateTask(name string) []int {
-	newIds := make([]int,1)
+	newIds := make([]int, 1)
 	newIds[0] = -1
 	Ids := this.getTaskFromName(name)
 	for _, id := range Ids {
-	    if id != -1 {
-		newId, _ := this.AdjacencyMatrix.Dims()
-		if newIds[0] == -1 {
-		    newIds = append(newIds[1:],newId)
-		} else {
-		    newIds = append(newIds,newId)
+		if id != -1 {
+			newId, _ := this.AdjacencyMatrix.Dims()
+			if newIds[0] == -1 {
+				newIds = append(newIds[1:], newId)
+			} else {
+				newIds = append(newIds, newId)
+			}
+			newTask := NewTask()
+			newTask.Id = newId
+			newTask.Name = this.Tasks[id].Name
+			newTask.Origin = this.Tasks[id].Origin
+			newTask.Module = this.Tasks[id].Module
+			newTask.Node = this.Tasks[id].Node
+			newTask.Args = this.Tasks[id].Args
+			newTask.Status = this.Tasks[id].Status
+			this.Tasks[newId] = newTask
+			this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(1, 1))
+			this.DegreeMatrix = mat64.DenseCopyOf(this.DegreeMatrix.Grow(1, 1))
+			for r := 0; r < newId; r++ {
+				this.AdjacencyMatrix.Set(r, newId, this.AdjacencyMatrix.At(r, id))
+				this.DegreeMatrix.Set(r, newId, this.DegreeMatrix.At(r, id))
+			}
+			// Copy the col 'id' to col 'newId'
+			for c := 0; c < newId; c++ {
+				this.AdjacencyMatrix.Set(newId, c, this.AdjacencyMatrix.At(id, c))
+				this.DegreeMatrix.Set(newId, c, this.DegreeMatrix.At(id, c))
+			}
 		}
-		newTask := NewTask()
-		newTask.Id = newId
-		newTask.Name = this.Tasks[id].Name
-		newTask.Origin = this.Tasks[id].Origin
-		newTask.Module = this.Tasks[id].Module
-		newTask.Node = this.Tasks[id].Node
-		newTask.Args = this.Tasks[id].Args
-		newTask.Status = this.Tasks[id].Status
-		this.Tasks[newId] = newTask
-		this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(1, 1))
-		this.DegreeMatrix = mat64.DenseCopyOf(this.DegreeMatrix.Grow(1, 1))
-		for r := 0; r < newId; r++ {
-		    this.AdjacencyMatrix.Set(r, newId, this.AdjacencyMatrix.At(r, id))
-		    this.DegreeMatrix.Set(r, newId, this.DegreeMatrix.At(r, id))
-		}
-		// Copy the col 'id' to col 'newId'
-		for c := 0; c < newId; c++ {
-		    this.AdjacencyMatrix.Set(newId, c, this.AdjacencyMatrix.At(id, c))
-		    this.DegreeMatrix.Set(newId, c, this.DegreeMatrix.At(id, c))
-		}
-	    }
 	}
 	return newIds
 }
