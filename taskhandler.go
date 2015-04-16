@@ -325,3 +325,26 @@ func (this *TaskGraphStructure) GetSubstructure(origin string) *TaskGraphStructu
 		return nil
 	}
 }
+
+// Returns a tasks array of all tasks with the same origin
+func getTasksWithOrigin(origin string) []*Tasks {
+    return nil
+}
+
+// Returns an extract of taskStructure containing only the tasks listed as argument.
+// All other tasks are nil, and non relative elements of the matrix are zeroed
+func (this *TaskStructure) getSubStructure(taskList []*Tasks) TaskStructure {
+    return nil
+}
+
+
+// Duplicate the task passed as argument, and returns the new task
+func (this *TaskStructure) duplicateTask(task *Task) *Task {
+    return nil
+}
+
+// Duplicate a taskstructure
+func duplicateTaskStructure(taskstructure *TaskStructure) *TaskStructure {
+    return nil
+}
+
