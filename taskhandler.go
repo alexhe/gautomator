@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"github.com/gonum/matrix/mat64" // Matrix
 	"io"
+	"log"
 	"time"
 )
 
 // A task is an action executed by a module
 type Task struct {
-	Id     int      `json:"id"`
+	Id     int `json:"id"`
+	Class  string
 	Origin string   `json:"origin"`
 	Name   string   `json:"name"` //the task name
 	Node   string   `json:"node"` // The node name
@@ -63,6 +65,7 @@ func (this *TaskGraphStructure) PrintDegreeMatrix() {
 func NewTask() *Task {
 	return &Task{
 		-1,
+		"initial",
 		"null",
 		"null",
 		"null",
@@ -285,66 +288,79 @@ func (this *TaskGraphStructure) PrintDot(w io.Writer) {
 	fmt.Fprintln(w, "}")
 }
 
-// Return a structure of all the task with the given origin
-func (this *TaskGraphStructure) GetSubstructure(origin string) *TaskGraphStructure {
-	subTaskStructure := NewTaskGraphStructure()
-	index := 0
-	tasksToExtract := make(map[int]*Task, 0)
+// Returns a tasks array of all tasks with the same origin
+func (this *TaskGraphStructure) getTasksWithOrigin(origin string) []Task {
+	returnTasks := make([]Task, 0)
 	for _, task := range this.Tasks {
 		if task.Origin == origin {
-			//fmt.Printf("Adding %v(%v) at index:%v\n", task.Name, task.Id, index)
-			tasksToExtract[index] = task
-			index += 1
+			returnTasks = append(returnTasks, *task)
 		}
 	}
-	// Create the matrix of the correct size
-	size := len(tasksToExtract)
-	if size > 0 {
-		subTaskStructure.AdjacencyMatrix = mat64.NewDense(size, size, nil)
-		subTaskStructure.DegreeMatrix = mat64.NewDense(size, size, nil)
-		for i := 0; i < size; i++ {
-			task := tasksToExtract[i]
-			//fmt.Printf("Task with ID:%v and name:%v will have id:%v\n", task.Id, task.Name, i)
-			// Construct the AdjacencyMatrix line by line
-			for col := 0; col < size; col++ {
-				task2 := tasksToExtract[col]
-				//fmt.Printf("Setting %v,%v with value from %v,%v\n", i, col, task.Id, task2.Id)
-				subTaskStructure.AdjacencyMatrix.Set(i, col, this.AdjacencyMatrix.At(task.Id, task2.Id))
-			}
-			subTaskStructure.DegreeMatrix.Set(i, i, this.DegreeMatrix.At(task.Id, task.Id))
-			subTaskStructure.Tasks[i] = NewTask()
-			subTaskStructure.Tasks[i].Name = task.Name
-			subTaskStructure.Tasks[i].Module = task.Module
-			subTaskStructure.Tasks[i].Args = task.Args
-			subTaskStructure.Tasks[i].Origin = task.Origin
-			subTaskStructure.Tasks[i].Id = i
-		}
-		//subTaskStructure.PrintAdjacencyMatrix()
-		return subTaskStructure
-	} else {
-		return nil
-	}
-}
-
-// Returns a tasks array of all tasks with the same origin
-func getTasksWithOrigin(origin string) []*Tasks {
-    return nil
+	return returnTasks
 }
 
 // Returns an extract of taskStructure containing only the tasks listed as argument.
 // All other tasks are nil, and non relative elements of the matrix are zeroed
-func (this *TaskStructure) getSubStructure(taskList []*Tasks) TaskStructure {
-    return nil
+/*
+func (this *TaskGraphStructure) getSubStructure(taskList []*Task) TaskGraphStructure {
+	return nil
 }
-
+*/
 
 // Duplicate the task passed as argument, and returns the new task
-func (this *TaskStructure) duplicateTask(task *Task) *Task {
-    return nil
+func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
+	returnTasks := make([]*Task, 0)
+	// First duplicate the tasks with same name
+	for _, task := range this.Tasks {
+		if task.Name == instance.Taskname {
+			for _, node := range instance.Hosts {
+				switch {
+				case task.Class == "first":
+					row, col := this.AdjacencyMatrix.Dims()
+					newId := row
+					newTask := NewTask()
+					newTask.Id = newId
+					newTask.Name = task.Name
+					newTask.Module = instance.Module
+					newTask.Origin = task.Origin
+					newTask.Node = node // Set the node to the new one
+					newTask.Args = instance.Args
+					this.Tasks[newId] = newTask
+					returnTasks = append(returnTasks, newTask)
+					this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(1, 1))
+					for r := 0; r < row; r++ {
+						for c := 0; c < col; c++ {
+							if this.Tasks[r].Origin != instance.Taskname {
+								this.AdjacencyMatrix.Set(r, newId, this.AdjacencyMatrix.At(r, task.Id))
+							}
+							if this.Tasks[c].Origin != instance.Taskname {
+								this.AdjacencyMatrix.Set(newId, c, this.AdjacencyMatrix.At(task.Id, c))
+							}
+						}
+					}
+				case task.Class == "initial":
+					task.Node = node
+					task.Module = instance.Module
+					task.Args = instance.Args
+					task.Class = "first"
+				}
+				// Then duplicate the tasks with same instance.Taskname
+			}
+		}
+	}
+	return returnTasks
 }
 
 // Duplicate a taskstructure
-func duplicateTaskStructure(taskstructure *TaskStructure) *TaskStructure {
-    return nil
+/*
+func duplicateTaskGraphStructure(taskstructure *TaskGraphStructure) *TaskGraphStructure {
+	return nil
 }
+*/
 
+func (this *TaskGraphStructure) InstanciateTaskStructure(taskDefinition TaskDefinition) {
+	for _, instance := range taskDefinition {
+		//newTasks := this.duplicateTasks(instance.Taskname, host)
+		this.instanciate(instance)
+	}
+}
