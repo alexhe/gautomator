@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gonum/matrix/mat64" // Matrix
 	"io"
+	"log"
 	"time"
 )
 
@@ -311,11 +312,14 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 	returnTasks := make([]*Task, 0)
 	// First duplicate the tasks with same name
 	for _, task := range this.Tasks {
+		//log.Printf("DEBUG: task %v", task.Name)
 		if task.Name == instance.Taskname {
 			for _, node := range instance.Hosts {
+				log.Printf("DEBUG: %v", node)
 				switch {
 				case task.Class == "first":
 					// Then duplicate
+					log.Printf("Duplicating %v on node %v", task.Name, node)
 					row, col := this.AdjacencyMatrix.Dims()
 					newId := row
 					newTask := NewTask()
@@ -362,7 +366,12 @@ func duplicateTaskGraphStructure(taskstructure *TaskGraphStructure) *TaskGraphSt
 func (this *TaskGraphStructure) InstanciateTaskStructure(taskDefinition TaskDefinition) {
 	for _, instance := range taskDefinition {
 		//newTasks := this.duplicateTasks(instance.Taskname, host)
-		instance.Module = fmt.Sprintf("%v%v", "../examples/modules/", instance.Module)
+		log.Printf("Instance %v %v %v", instance.Taskname, instance.Hosts, instance.Module)
+		if instance.Module != "" {
+			instance.Module = fmt.Sprintf("%v%v", "../examples/modules/", instance.Module)
+		} else {
+			instance.Module = "dummy"
+		}
 		this.instanciate(instance)
 	}
 }

@@ -9,7 +9,6 @@
       "taskName":"DomaineProducteurManaged",
       "hosts":[
          "192.168.0.14:4546",
-         "localhost:4546",
          "localhost:4546"
       ]
    },
