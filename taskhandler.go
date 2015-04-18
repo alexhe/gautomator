@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gonum/matrix/mat64" // Matrix
 	"io"
-	"log"
 	"time"
 )
 
@@ -316,6 +315,7 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 			for _, node := range instance.Hosts {
 				switch {
 				case task.Class == "first":
+					// Then duplicate
 					row, col := this.AdjacencyMatrix.Dims()
 					newId := row
 					newTask := NewTask()
@@ -339,6 +339,7 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 						}
 					}
 				case task.Class == "initial":
+					// Do not duplicate, simply adapt
 					task.Node = node
 					task.Module = instance.Module
 					task.Args = instance.Args

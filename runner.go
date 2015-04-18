@@ -32,14 +32,8 @@ func Runner(task *Task, doneChan chan<- *Task, wg *sync.WaitGroup) {
 		if letsGo == true {
 			proto := "tcp"
 			socket := task.Node
-			// Stupid trick to make shell works... A Shell module will be implemented later"
-			if task.Module == "shell" {
-				task.Module = "echo"
-				task.Args = append(task.Args, "|")
-				task.Args = append(task.Args, "/bin/ksh")
-			}
 			task.Status = -1
-			log.Printf("[%v:%v] Running (%v %v)", task.Id, task.Name, task.Module, task.Args[0])
+			log.Printf("[%v:%v] Running (%v)", task.Id, task.Name, task.Module)
 			log.Printf("[%v] Connecting in %v on %v", task.Name, proto, socket)
 			task.StartTime = time.Now()
 			if task.Module != "dummy" && task.Module != "meta" && task.Node != "null" {
