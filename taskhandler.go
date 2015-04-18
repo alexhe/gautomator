@@ -362,6 +362,7 @@ func duplicateTaskGraphStructure(taskstructure *TaskGraphStructure) *TaskGraphSt
 func (this *TaskGraphStructure) InstanciateTaskStructure(taskDefinition TaskDefinition) {
 	for _, instance := range taskDefinition {
 		//newTasks := this.duplicateTasks(instance.Taskname, host)
+		instance.Module = fmt.Sprintf("%v%v", "../examples/modules/", instance.Module)
 		this.instanciate(instance)
 	}
 }

@@ -15,130 +15,130 @@
    },
    {
       "taskName":"CreateJVM",
-      "module":"/tmp/test"
+      "module":"test"
    },
    {
       "taskName":"AddToCluster",
-      "module":"/tmp/test",
+      "module":"test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"DeployProducteur",
-      "module":"/tmp/test",
+      "module":"test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"DeployConsommateur",
-      "module":"/tmp/test",
+      "module":"test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"SetupData",
-      "module":"/tmp/test",
+      "module":"test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"CreateDomain",
-      "module":"/tmp/test",
+      "module":"test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"ApacheInstit",
-      "module":"/tmp/test",
+      "module":"test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"InstallProduit_weblogic",
-      "module":"/tmp/test",
+      "module":"test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"BDDMaster",
-      "module":"/tmp/test",
+      "module":"test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"BDDSlave",
-      "module":"/tmp/test",
+      "module":"test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"CreateFS_weblogic",
-      "module":"/tmp/test",
+      "module":"test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"CreateUser_weblogic",
-      "module":"/tmp/test",
+      "module":"test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"InstallProduit_oracle",
-      "module":"/tmp/test",
+      "module":"test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"CreateFS_oracle",
-      "module":"/tmp/test",
+      "module":"test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"CreateUser_oracle",
-      "module":"/tmp/test",
+      "module":"test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"InstallProduit_apache",
-      "module":"/tmp/test",
+      "module":"test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"CreateFS_apache",
-      "module":"/tmp/test",
+      "module":"test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"CreateUser_apache",
-      "module":"/tmp/test",
+      "module":"test",
       "hosts":[
          "localhost:4546"
       ]
    },
    {
       "taskName":"PurgeDomain",
-      "module":"sleep",
+      "module":"test",
       "args":[
          "3"
       ],
