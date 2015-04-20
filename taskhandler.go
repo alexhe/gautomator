@@ -9,13 +9,14 @@ import (
 )
 
 const (
-    TASKQUEUED = -3
-    TASKADVERTIZED = -2
-    TASKRUNNING = -1
+	TASKQUEUED     = -3
+	TASKADVERTIZED = -2
+	TASKRUNNING    = -1
 
-    ORPHAN = -2
-    FATHER = -1
+	ORPHAN = -2
+	FATHER = -1
 )
+
 // A task is an action executed by a module
 type Task struct {
 	Id     int `json:"id"`
@@ -350,7 +351,7 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 						}
 					}
 					this.duplicateSubtasks(newTask, node, instance)
-				    case task.Father == ORPHAN:
+				case task.Father == ORPHAN:
 					// Do not duplicate, simply adapt
 					task.Node = node
 					task.Module = instance.Module
@@ -366,50 +367,52 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 }
 
 func (this *TaskGraphStructure) duplicateSubtasks(father *Task, node string, instance TaskInstance) {
-    // if task.Father == ORPHAN, simply adapt its subtasks
-    row, col :=  this.AdjacencyMatrix.Dims()
-    if father.Father == ORPHAN {
-	for c:=0;c<col;c++ {
-	    if this.AdjacencyMatrix.At(father.Id,c) == 1 && this.Tasks[c].Origin == father.Name {
-		this.Tasks[c].Father = father.Id
-		this.Tasks[c].Node = node
-		this.Tasks[c].Module = instance.Module
-		this.Tasks[c].Args = instance.Args
-	    }
-	}
-    } else {
-	for co:=0;co<col;co++ {
-	    if this.AdjacencyMatrix.At(father.Id,co) == 1 && this.Tasks[co].Origin == father.Name {
-		source := this.Tasks[co]
-		log.Println("Duplicating %v",source.Name)
-		// Create a task
-		newId, _ := this.AdjacencyMatrix.Dims()
-		newTask := NewTask()
-		newTask.Id = newId
-		newTask.Father = father.Id
-		newTask.Name = source.Name
-		newTask.Module = instance.Module
-		newTask.Origin = source.Origin
-		newTask.Node = node // Set the node to the new one
-		newTask.Args = instance.Args
-		this.Tasks[newId] = newTask
-//		returnTasks = append(returnTasks, newTask)
-		this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(1, 1))
-		for r := 0; r < row; r++ {
-			for c := 0; c < col; c++ {
-				if this.Tasks[r].Origin != instance.Taskname {
-					this.AdjacencyMatrix.Set(r, newId, this.AdjacencyMatrix.At(r, source.Id))
+	// if task.Father == ORPHAN, simply adapt its subtasks
+	row, col := this.AdjacencyMatrix.Dims()
+	if father.Father == ORPHAN {
+		for c := 0; c < col; c++ {
+			if this.AdjacencyMatrix.At(father.Id, c) == 1 && this.Tasks[c].Origin == father.Name {
+				this.Tasks[c].Father = father.Id
+				this.Tasks[c].Node = node
+				this.Tasks[c].Module = instance.Module
+				this.Tasks[c].Args = instance.Args
+			}
+		}
+	} else {
+		for co := 0; co < col; co++ {
+			// Get the grand-father
+			grandFather := this.Tasks[father.Father]
+			if this.AdjacencyMatrix.At(grandFather.Id, co) == 1 && this.Tasks[co].Origin == grandFather.Name {
+				source := this.Tasks[co]
+				log.Println("Duplicating %v", source.Name)
+				// Create a task
+				newId, _ := this.AdjacencyMatrix.Dims()
+				newTask := NewTask()
+				newTask.Id = newId
+				newTask.Father = grandFather.Id
+				newTask.Name = source.Name
+				newTask.Module = instance.Module
+				newTask.Origin = source.Origin
+				newTask.Node = node // Set the node to the new one
+				newTask.Args = instance.Args
+				this.Tasks[newId] = newTask
+				//		returnTasks = append(returnTasks, newTask)
+				this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(1, 1))
+				for r := 0; r < row; r++ {
+					for c := 0; c < col; c++ {
+						if this.Tasks[r].Origin != instance.Taskname {
+							this.AdjacencyMatrix.Set(r, newId, this.AdjacencyMatrix.At(r, source.Id))
+						}
+						if this.Tasks[c].Origin != instance.Taskname {
+							this.AdjacencyMatrix.Set(newId, c, this.AdjacencyMatrix.At(source.Id, c))
+						}
+					}
 				}
-				if this.Tasks[c].Origin != instance.Taskname {
-					this.AdjacencyMatrix.Set(newId, c, this.AdjacencyMatrix.At(source.Id, c))
-				}
+
 			}
 		}
 
-	    }
 	}
-
-    }
 }
 
 // Duplicate a taskstructure
