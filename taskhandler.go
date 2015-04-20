@@ -15,7 +15,6 @@ const (
 
     ORPHAN = -2
     FATHER = -1
-
 )
 // A task is an action executed by a module
 type Task struct {
@@ -326,7 +325,7 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 			for _, node := range instance.Hosts {
 				log.Printf("DEBUG: %v", node)
 				switch {
-				case task.Father == -1:
+				case task.Father == FATHER:
 					// Then duplicate
 					log.Printf("Duplicating %v on node %v", task.Name, node)
 					row, col := this.AdjacencyMatrix.Dims()
@@ -352,12 +351,12 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 							}
 						}
 					}
-				case task.Father == -2:
+				    case task.Father == ORPHAN:
 					// Do not duplicate, simply adapt
 					task.Node = node
 					task.Module = instance.Module
 					task.Args = instance.Args
-					task.Father = -1
+					task.Father = FATHER
 				}
 				// Then duplicate the tasks with same instance.Taskname
 			}
