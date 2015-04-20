@@ -356,13 +356,29 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 					task.Node = node
 					task.Module = instance.Module
 					task.Args = instance.Args
+					this.duplicateSubtasks(task, node, instance.Module)
 					task.Father = FATHER
 				}
-				// Then duplicate the tasks with same instance.Taskname
+				// Then duplicate the tasks with same Father
 			}
 		}
 	}
 	return returnTasks
+}
+
+func (this *TaskGraphStructure) duplicateSubtasks(father *Task, node, module string) {
+    // if task.Father == ORPHAN, simply adapt its subtasks
+    _, col :=  this.AdjacencyMatrix.Dims()
+    if father.Father == ORPHAN {
+	for c:=0;c<col;c++ {
+	    if this.AdjacencyMatrix.At(father.Id,c) == 1 && this.Tasks[c].Origin == father.Name {
+		this.Tasks[c].Node = node
+		this.Tasks[c].Module = module
+	    }
+	}
+    } else {
+
+    }
 }
 
 // Duplicate a taskstructure
