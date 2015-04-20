@@ -320,10 +320,8 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 	returnTasks := make([]*Task, 0)
 	// First duplicate the tasks with same name
 	for _, task := range this.Tasks {
-		//log.Printf("DEBUG: task %v", task.Name)
 		if task.Name == instance.Taskname {
 			for _, node := range instance.Hosts {
-				log.Printf("DEBUG: %v", node)
 				switch {
 				case task.Father == FATHER:
 					// Then duplicate
