@@ -367,6 +367,7 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 }
 
 func (this *TaskGraphStructure) duplicateSubtasks(father *Task, node string, instance TaskInstance) {
+	//TODO : There shall be a for loop for all the tasks down to the last point
 	// if task.Father == ORPHAN, simply adapt its subtasks
 	row, col := this.AdjacencyMatrix.Dims()
 	if father.Father == ORPHAN {
@@ -384,7 +385,7 @@ func (this *TaskGraphStructure) duplicateSubtasks(father *Task, node string, ins
 			grandFather := this.Tasks[father.Father]
 			if this.AdjacencyMatrix.At(grandFather.Id, co) == 1 && this.Tasks[co].Origin == grandFather.Name {
 				source := this.Tasks[co]
-				log.Println("Duplicating %v", source.Name)
+				log.Printf("Duplicating %v (father: %v-%v, grandFather: %v-%v)", source.Name, father.Name, father.Id, grandFather.Name, grandFather.Id)
 				// Create a task
 				newId, _ := this.AdjacencyMatrix.Dims()
 				newTask := NewTask()
@@ -398,29 +399,24 @@ func (this *TaskGraphStructure) duplicateSubtasks(father *Task, node string, ins
 				this.Tasks[newId] = newTask
 				//		returnTasks = append(returnTasks, newTask)
 				this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(1, 1))
+				// Add a link to the father
+				this.AdjacencyMatrix.Set(father.Id, newId, float64(1))
 				for r := 0; r < row; r++ {
 					for c := 0; c < col; c++ {
-						if this.Tasks[r].Origin != instance.Taskname {
+						//if this.Tasks[r].Origin != instance.Taskname {
+						if r != grandFather.Id {
 							this.AdjacencyMatrix.Set(r, newId, this.AdjacencyMatrix.At(r, source.Id))
 						}
-						if this.Tasks[c].Origin != instance.Taskname {
+						if c != grandFather.Id {
+							//if this.Tasks[c].Origin != instance.Taskname {
 							this.AdjacencyMatrix.Set(newId, c, this.AdjacencyMatrix.At(source.Id, c))
 						}
 					}
 				}
-
 			}
 		}
-
 	}
 }
-
-// Duplicate a taskstructure
-/*
-func duplicateTaskGraphStructure(taskstructure *TaskGraphStructure) *TaskGraphStructure {
-	return nil
-}
-*/
 
 func (this *TaskGraphStructure) InstanciateTaskStructure(taskDefinition TaskDefinition) {
 	for _, instance := range taskDefinition {
@@ -432,5 +428,6 @@ func (this *TaskGraphStructure) InstanciateTaskStructure(taskDefinition TaskDefi
 			instance.Module = "dummy"
 		}
 		this.instanciate(instance)
+		this.Relink()
 	}
 }
