@@ -8,10 +8,19 @@ import (
 	"time"
 )
 
+const (
+    TASKQUEUED = -3
+    TASKADVERTIZED = -2
+    TASKRUNNING = -1
+
+    ORPHAN = -2
+    FATHER = -1
+
+)
 // A task is an action executed by a module
 type Task struct {
 	Id     int `json:"id"`
-	Class  string
+	Father int
 	Origin string   `json:"origin"`
 	Name   string   `json:"name"` //the task name
 	Node   string   `json:"node"` // The node name
@@ -65,13 +74,13 @@ func (this *TaskGraphStructure) PrintDegreeMatrix() {
 func NewTask() *Task {
 	return &Task{
 		-1,
-		"initial",
+		ORPHAN,
 		"null",
 		"null",
 		"null",
 		"dummy",
 		make([]string, 1),
-		-3,
+		TASKQUEUED,
 		time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
 		time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
 		make(chan bool),
@@ -317,12 +326,13 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 			for _, node := range instance.Hosts {
 				log.Printf("DEBUG: %v", node)
 				switch {
-				case task.Class == "first":
+				case task.Father == -1:
 					// Then duplicate
 					log.Printf("Duplicating %v on node %v", task.Name, node)
 					row, col := this.AdjacencyMatrix.Dims()
 					newId := row
 					newTask := NewTask()
+					newTask.Father = task.Id
 					newTask.Id = newId
 					newTask.Name = task.Name
 					newTask.Module = instance.Module
@@ -342,12 +352,12 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 							}
 						}
 					}
-				case task.Class == "initial":
+				case task.Father == -2:
 					// Do not duplicate, simply adapt
 					task.Node = node
 					task.Module = instance.Module
 					task.Args = instance.Args
-					task.Class = "first"
+					task.Father = -1
 				}
 				// Then duplicate the tasks with same instance.Taskname
 			}
