@@ -19,14 +19,15 @@ const (
 
 // A task is an action executed by a module
 type Task struct {
-	Id     int `json:"id"`
-	Father int
-	Origin string   `json:"origin"`
-	Name   string   `json:"name"` //the task name
-	Node   string   `json:"node"` // The node name
-	Module string   `json:"module"`
-	Args   []string `json:"args"`
-	Status int      `json:"status"` //-3: queued
+	Id       int `json:"id"`
+	Father   int
+	OriginId int      `json:"originId"`
+	Origin   string   `json:"origin"`
+	Name     string   `json:"name"` //the task name
+	Node     string   `json:"node"` // The node name
+	Module   string   `json:"module"`
+	Args     []string `json:"args"`
+	Status   int      `json:"status"` //-3: queued
 	// -2 Advertized (infored that the dependencies are done)
 	// -1: running
 	// >=0 : return code
@@ -75,6 +76,7 @@ func NewTask() *Task {
 	return &Task{
 		-1,
 		ORPHAN,
+		-1,
 		"null",
 		"null",
 		"null",
@@ -199,29 +201,31 @@ func (this *TaskGraphStructure) Relink() *TaskGraphStructure {
 	backup := make(map[string][]int, 0)
 	_, col := this.AdjacencyMatrix.Dims()
 	for _, task := range this.Tasks {
+		id := this.getTaskFromName(task.Origin)
+		if id[0] != -1 && task.OriginId == -1 {
+			task.OriginId = id[0]
+		}
 		if colSum(this.AdjacencyMatrix, task.Id) == 0 {
-			id := this.getTaskFromName(task.Origin)
 			// TODO There should be only one task, otherwise display an error
-			if id[0] != -1 {
+			if task.OriginId != -1 {
 				// Task is a meta task
-				this.Tasks[id[0]].Module = "meta"
-				this.AdjacencyMatrix.Set(id[0], task.Id, float64(1))
-				backup[task.Origin] = append(backup[task.Origin], id[0], task.Id)
+				this.Tasks[task.OriginId].Module = "meta"
+				this.AdjacencyMatrix.Set(task.OriginId, task.Id, float64(1))
+				backup[task.Origin] = append(backup[task.Origin], task.OriginId, task.Id)
 			}
 		}
 		if rowSum(this.AdjacencyMatrix, task.Id) == 0 {
-			id := this.getTaskFromName(task.Origin)
 			// TODO There should be only one task, otherwise display an error
-			if id[0] != -1 {
+			if task.OriginId != -1 {
 				for c := 0; c < col; c++ {
 					add := true
 					for counter := 0; counter < len(backup[task.Origin])-1; counter += 2 {
-						if backup[task.Origin][counter] == id[0] && backup[task.Origin][counter+1] == c {
+						if backup[task.Origin][counter] == task.OriginId && backup[task.Origin][counter+1] == c {
 							add = false
 						}
 					}
 					if add == true && this.Tasks[c].Origin != task.Origin {
-						this.AdjacencyMatrix.Set(task.Id, c, this.AdjacencyMatrix.At(task.Id, c)+this.AdjacencyMatrix.At(id[0], c))
+						this.AdjacencyMatrix.Set(task.Id, c, this.AdjacencyMatrix.At(task.Id, c)+this.AdjacencyMatrix.At(task.OriginId, c))
 					}
 				}
 			}
@@ -331,6 +335,7 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 					newId := row
 					newTask := NewTask()
 					newTask.Father = task.Id
+					newTask.OriginId = task.Id
 					newTask.Id = newId
 					newTask.Name = task.Name
 					newTask.Module = instance.Module
@@ -350,13 +355,13 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 							}
 						}
 					}
-					this.duplicateSubtasks(newTask, node, instance)
+					_ = this.duplicateSubtasks(newTask, node, instance)
 				case task.Father == ORPHAN:
 					// Do not duplicate, simply adapt
 					task.Node = node
 					task.Module = instance.Module
 					task.Args = instance.Args
-					this.duplicateSubtasks(task, node, instance)
+					this.adaptSubtask(task, node, instance)
 					task.Father = FATHER
 				}
 				// Then duplicate the tasks with same Father
@@ -366,56 +371,38 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 	return returnTasks
 }
 
-func (this *TaskGraphStructure) duplicateSubtasks(father *Task, node string, instance TaskInstance) {
-	//TODO : There shall be a for loop for all the tasks down to the last point
-	// if task.Father == ORPHAN, simply adapt its subtasks
-	row, col := this.AdjacencyMatrix.Dims()
-	if father.Father == ORPHAN {
-		for c := 0; c < col; c++ {
-			if this.AdjacencyMatrix.At(father.Id, c) == 1 && this.Tasks[c].Origin == father.Name {
-				this.Tasks[c].Father = father.Id
-				this.Tasks[c].Node = node
-				this.Tasks[c].Module = instance.Module
-				this.Tasks[c].Args = instance.Args
-			}
-		}
-	} else {
-		for co := 0; co < col; co++ {
-			// Get the grand-father
-			grandFather := this.Tasks[father.Father]
-			if this.AdjacencyMatrix.At(grandFather.Id, co) == 1 && this.Tasks[co].Origin == grandFather.Name {
-				source := this.Tasks[co]
-				log.Printf("Duplicating %v (father: %v-%v, grandFather: %v-%v)", source.Name, father.Name, father.Id, grandFather.Name, grandFather.Id)
-				// Create a task
-				newId, _ := this.AdjacencyMatrix.Dims()
-				newTask := NewTask()
-				newTask.Id = newId
-				newTask.Father = grandFather.Id
-				newTask.Name = source.Name
-				newTask.Module = instance.Module
-				newTask.Origin = source.Origin
-				newTask.Node = node // Set the node to the new one
-				newTask.Args = instance.Args
-				this.Tasks[newId] = newTask
-				//		returnTasks = append(returnTasks, newTask)
-				this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(1, 1))
-				// Add a link to the father
-				this.AdjacencyMatrix.Set(father.Id, newId, float64(1))
-				for r := 0; r < row; r++ {
-					for c := 0; c < col; c++ {
-						//if this.Tasks[r].Origin != instance.Taskname {
-						if r != grandFather.Id {
-							this.AdjacencyMatrix.Set(r, newId, this.AdjacencyMatrix.At(r, source.Id))
-						}
-						if c != grandFather.Id {
-							//if this.Tasks[c].Origin != instance.Taskname {
-							this.AdjacencyMatrix.Set(newId, c, this.AdjacencyMatrix.At(source.Id, c))
-						}
-					}
-				}
-			}
+func (this *TaskGraphStructure) adaptSubtask(father *Task, node string, instance TaskInstance) {
+	_, col := this.AdjacencyMatrix.Dims()
+	for c := 0; c < col; c++ {
+		if this.AdjacencyMatrix.At(father.Id, c) == 1 && this.Tasks[c].Origin == father.Name {
+			this.Tasks[c].Father = father.Id
+			this.Tasks[c].Node = node
+			this.Tasks[c].Module = instance.Module
+			this.Tasks[c].Args = instance.Args
 		}
 	}
+
+}
+func (this *TaskGraphStructure) duplicateSubtasks(father *Task, node string, instance TaskInstance) *TaskGraphStructure {
+	taskStructure := NewTaskGraphStructure()
+	// Get all the tasks with origin father.Name
+	myindex := 0
+	// Define a new origin composed of the Id
+	for _, task := range this.Tasks {
+		if father.Father == task.OriginId {
+			// task match, create a new task with the same informations...
+			newTask := NewTask()
+			newTask.Node = node
+			newTask.OriginId = father.Id
+			newTask.Module = instance.Module
+			newTask.Args = instance.Args
+			// ... Add it to the structure...
+			taskStructure.Tasks[myindex] = newTask
+			// ... Extract the matrix associated
+			// And add it to the structure as well
+		}
+	}
+	return taskStructure
 }
 
 func (this *TaskGraphStructure) InstanciateTaskStructure(taskDefinition TaskDefinition) {
