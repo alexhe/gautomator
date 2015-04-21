@@ -315,10 +315,9 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 					this = this.AugmentTaskStructure(this.duplicateSubtasks(newTask, node, instance))
 				case task.Father == ORPHAN:
 					// Do not duplicate, simply adapt
+					task.Debug = "instanciate/ORPHAN"
 					task.Node = node
-					if task.Module == "meta" {
-						task.Module = instance.Module
-					}
+					task.Module = instance.Module
 					task.Args = instance.Args
 					this.adaptSubtask(task, node, instance)
 					task.Father = FATHER
@@ -349,7 +348,7 @@ func (this *TaskGraphStructure) duplicateSubtasks(father *Task, node string, ins
 	myindex := 0
 	// Define a new origin composed of the Id
 	for _, task := range this.Tasks {
-		if father.Father == task.OriginId {
+		if father.Father == task.OriginId && task.Id != father.Id {
 			// task match, create a new task with the same informations...
 			newTask := NewTask()
 			newTask.Id = myindex
