@@ -34,6 +34,7 @@ type Task struct {
 	StartTime      time.Time `json:"startTime"`
 	EndTime        time.Time `json:"endTime"`
 	TaskCanRunChan chan bool // true: run, false: wait
+	Debug          string
 }
 
 // This is the structure corresponding to the "dot-graph" of a task list
@@ -86,6 +87,7 @@ func NewTask() *Task {
 		time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
 		time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
 		make(chan bool),
+		"null",
 	}
 
 }
@@ -242,13 +244,13 @@ func (this *TaskGraphStructure) PrintDot(w io.Writer) {
 	for _, task := range this.Tasks {
 		fmt.Fprintf(w, "\t\"%v\" [\n", task.Id)
 		fmt.Fprintf(w, "\t\tid = \"%v\"\n", task.Id)
-		if task.Module == "meta" {
-			fmt.Fprintln(w, "\t\tshape=diamond")
-			fmt.Fprintf(w, "\t\tlabel=\"%v\"", task.Name)
-		} else {
-			fmt.Fprintf(w, "\t\tlabel = \"<name>%v|<id>%v|<node>%v|<module>%v\"\n", task.Name, task.Id, task.Node, task.Module)
-			fmt.Fprintf(w, "\t\tshape = \"record\"\n")
-		}
+		//		if task.Module == "meta" {
+		//			fmt.Fprintln(w, "\t\tshape=diamond")
+		//			fmt.Fprintf(w, "\t\tlabel=\"%v\"", task.Name)
+		//		} else {
+		fmt.Fprintf(w, "\t\tlabel = \"<name>%v(%v/%v/%v)|<node>%v|<module>%v|<debug>%v\"\n", task.Name, task.Id, task.OriginId, task.Origin, task.Node, task.Module, task.Debug)
+		fmt.Fprintf(w, "\t\tshape = \"record\"\n")
+		//		}
 		fmt.Fprintf(w, "\t];\n")
 	}
 	row, col := this.AdjacencyMatrix.Dims()
@@ -291,7 +293,9 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 					newTask.OriginId = task.Id
 					newTask.Id = newId
 					newTask.Name = task.Name
-					newTask.Module = instance.Module
+					if task.Module != "meta" {
+						newTask.Module = instance.Module
+					}
 					newTask.Origin = task.Origin
 					newTask.Node = node // Set the node to the new one
 					newTask.Args = instance.Args
@@ -312,7 +316,9 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 				case task.Father == ORPHAN:
 					// Do not duplicate, simply adapt
 					task.Node = node
-					task.Module = instance.Module
+					if task.Module == "meta" {
+						task.Module = instance.Module
+					}
 					task.Args = instance.Args
 					this.adaptSubtask(task, node, instance)
 					task.Father = FATHER
@@ -327,9 +333,10 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 func (this *TaskGraphStructure) adaptSubtask(father *Task, node string, instance TaskInstance) {
 	_, col := this.AdjacencyMatrix.Dims()
 	for c := 0; c < col; c++ {
-		if this.AdjacencyMatrix.At(father.Id, c) == 1 && this.Tasks[c].Origin == father.Name {
+		if this.AdjacencyMatrix.At(father.Id, c) == 1 && this.Tasks[c].OriginId == father.Id {
 			this.Tasks[c].Father = father.Id
 			this.Tasks[c].Node = node
+			this.Tasks[c].Debug = "adaptSubtask"
 			this.Tasks[c].Module = instance.Module
 			this.Tasks[c].Args = instance.Args
 		}
@@ -350,8 +357,10 @@ func (this *TaskGraphStructure) duplicateSubtasks(father *Task, node string, ins
 			newTask.Node = node
 			newTask.Father = task.Id
 			newTask.OriginId = father.Id
+			newTask.Origin = father.Name
 			newTask.Module = instance.Module
 			newTask.Args = instance.Args
+			newTask.Debug = "duplicateSubtasks"
 			// ... Add it to the structure...
 			taskStructure.Tasks[myindex] = newTask
 			// ... Extract the matrix associated
@@ -379,6 +388,7 @@ func (this *TaskGraphStructure) InstanciateTaskStructure(taskDefinition TaskDefi
 		} else {
 			instance.Module = "dummy"
 		}
+		this.Relink()
 		this.instanciate(instance)
 		this.Relink()
 	}
