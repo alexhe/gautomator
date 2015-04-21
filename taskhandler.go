@@ -246,7 +246,7 @@ func (this *TaskGraphStructure) PrintDot(w io.Writer) {
 			fmt.Fprintln(w, "\t\tshape=diamond")
 			fmt.Fprintf(w, "\t\tlabel=\"%v\"", task.Name)
 		} else {
-			fmt.Fprintf(w, "\t\tlabel = \"<name>%v|<node>%v|<module>%v\"\n", task.Name, task.Node, task.Module)
+			fmt.Fprintf(w, "\t\tlabel = \"<name>%v|<id>%v|<node>%v|<module>%v\"\n", task.Name, task.Id, task.Node, task.Module)
 			fmt.Fprintf(w, "\t\tshape = \"record\"\n")
 		}
 		fmt.Fprintf(w, "\t];\n")
@@ -308,7 +308,7 @@ func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
 							}
 						}
 					}
-					_ = this.duplicateSubtasks(newTask, node, instance)
+					this = this.AugmentTaskStructure(this.duplicateSubtasks(newTask, node, instance))
 				case task.Father == ORPHAN:
 					// Do not duplicate, simply adapt
 					task.Node = node
@@ -346,6 +346,7 @@ func (this *TaskGraphStructure) duplicateSubtasks(father *Task, node string, ins
 			// task match, create a new task with the same informations...
 			newTask := NewTask()
 			newTask.Id = myindex
+			newTask.Name = task.Name
 			newTask.Node = node
 			newTask.Father = task.Id
 			newTask.OriginId = father.Id
