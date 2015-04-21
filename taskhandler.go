@@ -235,45 +235,6 @@ func (this *TaskGraphStructure) Relink() *TaskGraphStructure {
 	return this
 }
 
-// Duplicate the task "id"
-// Returns the id of the new task and the whole structure
-func (this *TaskGraphStructure) DuplicateTask(name string) []int {
-	newIds := make([]int, 1)
-	newIds[0] = -1
-	Ids := this.getTaskFromName(name)
-	for _, id := range Ids {
-		if id != -1 {
-			newId, _ := this.AdjacencyMatrix.Dims()
-			if newIds[0] == -1 {
-				newIds = append(newIds[1:], newId)
-			} else {
-				newIds = append(newIds, newId)
-			}
-			newTask := NewTask()
-			newTask.Id = newId
-			newTask.Name = this.Tasks[id].Name
-			newTask.Origin = this.Tasks[id].Origin
-			newTask.Module = this.Tasks[id].Module
-			newTask.Node = this.Tasks[id].Node
-			newTask.Args = this.Tasks[id].Args
-			newTask.Status = this.Tasks[id].Status
-			this.Tasks[newId] = newTask
-			this.AdjacencyMatrix = mat64.DenseCopyOf(this.AdjacencyMatrix.Grow(1, 1))
-			this.DegreeMatrix = mat64.DenseCopyOf(this.DegreeMatrix.Grow(1, 1))
-			for r := 0; r < newId; r++ {
-				this.AdjacencyMatrix.Set(r, newId, this.AdjacencyMatrix.At(r, id))
-				this.DegreeMatrix.Set(r, newId, this.DegreeMatrix.At(r, id))
-			}
-			// Copy the col 'id' to col 'newId'
-			for c := 0; c < newId; c++ {
-				this.AdjacencyMatrix.Set(newId, c, this.AdjacencyMatrix.At(id, c))
-				this.DegreeMatrix.Set(newId, c, this.DegreeMatrix.At(id, c))
-			}
-		}
-	}
-	return newIds
-}
-
 // This function print the dot file associated with the graph
 func (this *TaskGraphStructure) PrintDot(w io.Writer) {
 	fmt.Fprintln(w, "digraph G {")
@@ -311,14 +272,6 @@ func (this *TaskGraphStructure) getTasksWithOrigin(origin string) []Task {
 	}
 	return returnTasks
 }
-
-// Returns an extract of taskStructure containing only the tasks listed as argument.
-// All other tasks are nil, and non relative elements of the matrix are zeroed
-/*
-func (this *TaskGraphStructure) getSubStructure(taskList []*Task) TaskGraphStructure {
-	return nil
-}
-*/
 
 // Duplicate the task passed as argument, and returns the new task
 func (this *TaskGraphStructure) instanciate(instance TaskInstance) []*Task {
@@ -392,14 +345,25 @@ func (this *TaskGraphStructure) duplicateSubtasks(father *Task, node string, ins
 		if father.Father == task.OriginId {
 			// task match, create a new task with the same informations...
 			newTask := NewTask()
+			newTask.Id = myindex
 			newTask.Node = node
+			newTask.Father = task.Id
 			newTask.OriginId = father.Id
 			newTask.Module = instance.Module
 			newTask.Args = instance.Args
 			// ... Add it to the structure...
 			taskStructure.Tasks[myindex] = newTask
 			// ... Extract the matrix associated
+			taskStructure.AdjacencyMatrix = mat64.DenseCopyOf(taskStructure.AdjacencyMatrix.Grow(1, 1))
+			taskStructure.DegreeMatrix = mat64.DenseCopyOf(taskStructure.DegreeMatrix.Grow(1, 1))
+			myindex += 1
 			// And add it to the structure as well
+		}
+	}
+	row, col := taskStructure.AdjacencyMatrix.Dims()
+	for r := 0; r < row; r++ {
+		for c := 0; c < col; c++ {
+			taskStructure.AdjacencyMatrix.Set(r, c, this.AdjacencyMatrix.At(taskStructure.Tasks[r].Father, taskStructure.Tasks[c].Father))
 		}
 	}
 	return taskStructure
