@@ -27,6 +27,8 @@ And for even more information about the implementation:
 
 * grab a Go compiler from https://golang.org
 * `go get github.com/owulveryck/gautomator`
+* `go run main.go -nodes=../examples/nodes.json ../examples/*.dot`
+* `http://localhost:8080/index.html` (It needs dot installed for a representation, but it will change in the future)
 
 # tests and developement
 
